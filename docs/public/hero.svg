@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="85" fill="url(#g)" opacity="0.08"/>
+  <circle cx="100" cy="100" r="60" fill="url(#g)" opacity="0.12"/>
+  <text x="100" y="108" text-anchor="middle" font-size="52" font-weight="700" font-family="system-ui" fill="url(#g)">FE</text>
+  <text x="100" y="132" text-anchor="middle" font-size="18" font-weight="600" font-family="system-ui" fill="url(#g)">面试</text>
+  <circle cx="40" cy="40" r="8" fill="#7c3aed" opacity="0.3"/>
+  <circle cx="160" cy="50" r="5" fill="#2563eb" opacity="0.3"/>
+  <circle cx="150" cy="155" r="6" fill="#f59e0b" opacity="0.3"/>
+  <circle cx="45" cy="160" r="4" fill="#7c3aed" opacity="0.3"/>
+</svg>
