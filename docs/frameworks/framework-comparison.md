@@ -106,7 +106,7 @@ flowchart LR
 ### 3. 选型决策树
 
 ```mermaid
-graph TD
+flowchart TD
     A[选择前端框架] --> B{团队规模?}
     B -->|1-3 人| C{项目类型?}
     B -->|3-10 人| D{团队熟悉?}

@@ -111,7 +111,7 @@ task(category="quick", load_skills=[], prompt="Review the code in src/components
 ## 工具决策树
 
 ```mermaid
-graph TD
+flowchart TD
     A[选择 AI 编程工具 2026] --> B{需要 Agent 自动化?}
     B -->|日常编码辅助| C[Copilot]
     B -->|需要 Agent 能力| D{云 Agent 需求?}

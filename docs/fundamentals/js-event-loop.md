@@ -16,7 +16,7 @@ frequency: high
 ## 核心流程
 
 ```mermaid
-graph TD
+flowchart TD
     A[执行同步代码] --> B{微任务队列有任务?}
     B -->|是| C[全部执行微任务]
     C --> D{需要渲染DOM?}
@@ -118,7 +118,7 @@ Promise.resolve().then(() => console.log('5: Promise.then'))
 Node.js 的事件循环分为 6 个阶段：
 
 ```mermaid
-graph LR
+flowchart LR
     A[timers] --> B[pending callbacks]
     B --> C[idle, prepare]
     C --> D[poll]

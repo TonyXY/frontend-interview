@@ -235,7 +235,7 @@ div → main → v-if
 | **Block Tree** | Diff 遍历整棵树 | 跳过静态分支，只检查动态节点 |
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph Vue 2 的 Diff
         A1[开始 Diff] --> B1[遍历整棵树]
         B1 --> C1[每个节点逐属性比较]
@@ -248,8 +248,7 @@ graph TD
         C2 --> D2[静态节点直接跳过]
     end
     
-    style D1 fill:#fca5a5
-    style D2 fill:#86efac
+
 ```
 
 **性能数据（粗略参考）：**

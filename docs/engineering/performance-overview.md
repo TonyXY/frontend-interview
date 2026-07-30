@@ -30,7 +30,7 @@ Google 定义的三个核心指标，直接影响 SEO 排名：
 > 2024 年 3 月起，**INP (Interaction to Next Paint)** 正式替代 FID 成为 Core Web Vital。INP 衡量的是**页面所有交互的延迟**，而非仅首次。
 
 ```mermaid
-graph LR
+flowchart LR
     subgraph 加载
         A[TTFB] --> B[FCP]
         B --> C[LCP ✓]
@@ -55,7 +55,7 @@ graph LR
 看完指标后，怎么知道从哪下手？
 
 ```mermaid
-graph TD
+flowchart TD
     A[发现性能问题] --> B{主要问题是?}
     
     B -->|页面加载慢| C[加载优化]
@@ -63,24 +63,20 @@ graph TD
     B -->|页面跳动| E[布局稳定性]
     B -->|渲染慢| F[渲染优化]
     
-    %% 加载优化分支
     C --> C1{瓶颈是?}
     C1 -->|JS 太大| C2[代码分割 + Tree Shaking]
     C1 -->|图片太大| C3[WebP/AVIF + 响应式图片 + 懒加载]
     C1 -->|请求太多| C4[HTTP/2 + 资源合并 + Preconnect]
     C1 -->|首屏白屏| C5[SSR/SSG + 关键CSS内联]
     
-    %% 运行时优化
     D --> D1[避免长任务 > 50ms]
     D1 --> D2[requestIdleCallback 拆分]
     D1 --> D3[Web Worker 处理密集型计算]
     
-    %% 布局稳定
     E --> E1[设置图片/视频宽高]
     E --> E2[避免动态插入内容]
     E --> E3[字体加载优化]
     
-    %% 渲染优化
     F --> F1{原因?}
     F1 -->|频繁重排| F2[批量DOM操作 + 虚拟列表]
     F1 -->|不必要的渲染| F3[React.memo / shouldComponentUpdate]
@@ -192,7 +188,7 @@ element.style.height = height + 'px'
 ### 四、运行时优化
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph 主线程
         A[长任务 > 50ms] --> B[用户感知卡顿]
     end

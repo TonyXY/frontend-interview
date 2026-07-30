@@ -16,7 +16,7 @@ React 是一个**声明式 UI 库**——你描述"UI 应该长什么样"，Reac
 ## 核心流程
 
 ```mermaid
-graph LR
+flowchart LR
     A[声明式代码] --> B[JSX 编译]
     B --> C[创建 Virtual DOM]
     C --> D[Reconciliation 协调]
@@ -69,7 +69,7 @@ const vnode = {
 **为什么需要 Virtual DOM？**
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph 无VDOM
         A1[状态变化] --> B1[直接操作DOM]
         B1 --> C1[浏览器重排重绘]
@@ -152,7 +152,7 @@ function LifecycleDemo({ id }) {
 React 的 Diff 算法基于三个假设，**确保时间复杂度从 O(n³) 降到 O(n)**：
 
 ```mermaid
-graph TD
+flowchart TD
     A[新旧两棵 VDOM 树] --> B{层级不同?}
     B -->|是| C[直接销毁重建整棵子树]
     B -->|否| D{节点类型不同?}
@@ -180,7 +180,7 @@ graph TD
 ```
 
 ```mermaid
-graph LR
+flowchart LR
     subgraph 没有key
         A1[旧: A B C] --> B1[新: B A C]
         B1 --> C1[索引0: A→B replace]

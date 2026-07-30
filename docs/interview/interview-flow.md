@@ -16,7 +16,7 @@ frequency: medium
 ## 面试全流程泳道图
 
 ```mermaid
-flowchart TD
+flowchart LR
     subgraph 投递阶段
         A[修改简历] --> B[投递渠道]
         B --> C{简历筛选}
@@ -77,7 +77,7 @@ flowchart TD
 **考察重点：**
 
 ```mermaid
-graph LR
+flowchart LR
     subgraph 一面考察
         A[JS 基础] --> B[框架原理]
         B --> C[浏览器/网络]

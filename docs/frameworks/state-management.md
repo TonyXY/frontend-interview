@@ -183,7 +183,7 @@ function Counter() {
 ### 5. 选型建议
 
 ```mermaid
-graph TD
+flowchart TD
     A[需要状态管理?] --> B{状态复杂度}
     B -->|简单: props drilling 够用| C[useState / Context]
     B -->|中等: 多个组件共享| D{框架?}
