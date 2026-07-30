@@ -242,9 +242,9 @@ jsonp('https://api.example.com/user', { id: 1 }, 'callback')
 
 ```mermaid
 flowchart TD
-    A["父窗口<br/>http://parent.com"] -->|postMessage('hello', '*')| B["iframe<br/>http://child.com"]
-    B -->|监听 message 事件| C[收到数据]
-    C -->|postMessage('reply', 'http://parent.com')| D[父窗口]
+    A["父窗口<br/>http://parent.com"] -->|"postMessage(hello, *)"| B["iframe<br/>http://child.com"]
+    B -->|"监听 message 事件"| C[收到数据]
+    C -->|"postMessage(reply, http://parent.com)"| D[父窗口]
     D -->|监听 message 事件| E[收到回复]
 
     style A fill:#93c5fd
