@@ -156,23 +156,33 @@ AI Review 评论：
 
 ### 4. AI Review 配置（以 Cursor/Copilot 为例）
 
-```json
-// .cursorrules — 自定义 Review 规则
-{
-  "review": {
-    "rules": [
-      "不要使用 `any` 类型",
-      "所有 API 调用必须有错误处理",
-      "禁止使用 dangerouslySetInnerHTML",
-      "useEffect 必须有正确的依赖数组",
-      "禁止直接修改 state（必须用 setState / immer）"
-    ],
-    "ignore": [
-      "测试文件 (*.test.ts)",
-      "类型声明文件 (*.d.ts)"
-    ]
-  }
-}
+Cursor 2026 使用 `.cursor/rules/` 目录（取代旧的 `.cursorrules` 单文件），支持为不同场景编写独立的 Review 规则：
+
+```markdown
+# .cursor/rules/review.mdc — Review 规则（2026 新格式）
+---
+description: Code Review 规则
+globs: src/**/*.{ts,tsx}
+---
+
+- 不要使用 `any` 类型（用 `unknown` 替代）
+- 所有 API 调用必须有错误处理（try/catch 或 .catch）
+- 禁止使用 `dangerouslySetInnerHTML`
+- `useEffect` 必须有正确的依赖数组，无 lint 警告
+- 禁止直接修改 state（必须用 setState / immer）
+- 组件超过 200 行应考虑拆分
+```
+
+如果使用 Copilot，则配置为 `.github/copilot-instructions.md`：
+
+```markdown
+## Code Review Guidelines
+
+- No `any` type — use `unknown` instead
+- All API calls must have error handling
+- No `dangerouslySetInnerHTML` without explicit approval
+- useEffect must have complete dependency arrays
+- No direct state mutation
 ```
 
 AI Review 的局限与应对：

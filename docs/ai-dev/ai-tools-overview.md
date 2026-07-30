@@ -32,20 +32,20 @@ quadrantChart
 
 ## 主流工具对比
 
-| 维度 | GitHub Copilot | Cursor | Devin Desktop（原 Windsurf） | OpenCode |
-|------|---------------|--------|---------------------------|----------|
-| **基础模型** | GPT-5.5 / MAI-Code | Grok 4.5 / Composer | GPT-5.x / Claude 4.x | Claude 4.x / GPT-5.x |
-| **代码补全** | ⭐⭐⭐⭐⭐ 极快 | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐⭐ |
-| **多行生成** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ Composer | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Agent 模式** | ✅ GitHub Spark | ✅ Cloud Agents（7x24运行） | ✅ Devin Local / Cloud | ✅ 子代理编排 |
-| **云 Agent** | ❌ | ✅ 云端全天候运行 | ✅ Devin Cloud | ✅ |
-| **上下文感知** | 当前文件 + 附近 | 全项目索引 + Router 路由 | 多工作区 + 多仓库 | 多文件/多仓库 |
-| **自定义规则** | `.github/copilot-instructions.md` | `.cursorrules` + Hooks | Skills / Hooks / Plugins | Skills / Agent |
-| **多文件编辑** | ✅ 2026 新增 | ✅ | ✅ | ✅ |
-| **终端集成** | ❌ | ✅ | ✅ | ✅ |
-| **移动端** | ❌ | ✅ iPad/iPhone 全面支持 | ❌ | ❌ |
-| **智能路由** | ❌ | ✅ Cursor Router（Intelligence/Balance/Cost） | ❌ | ❌ |
-| **价格** | $10/月（个人） | $20/月（Pro） | $15/月（Devin Desktop） | 开源免费 / 按量付费 |
+| 维度 | GitHub Copilot | Cursor | Claude Code | Devin Desktop | Gemini Code Assist | OpenCode |
+|------|---------------|--------|------------|---------------|-------------------|----------|
+| **基础模型** | GPT-5.5 / MAI-Code | Grok 4.5 / Composer | Claude 4.x | GPT-5.x / Claude 4.x | Gemini 2.5 Pro | Claude 4.x / GPT-5.x |
+| **代码补全** | ⭐⭐⭐⭐⭐ 极快 | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐（无补全） | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **多行生成** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ Composer | ⭐⭐⭐⭐⭐ Agent | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Agent 模式** | ✅ GitHub Spark | ✅ Cloud Agents（7x24） | ✅ 终端 Agent | ✅ Devin Local/Cloud | ✅ | ✅ 子代理编排 |
+| **云 Agent** | ❌ | ✅ 云端全天候运行 | ❌（终端原生） | ✅ Devin Cloud | ✅ | ✅ |
+| **上下文感知** | 当前文件 + 附近 | 全项目索引 + Router | 全项目 + Git 历史 | 多工作区+多仓库 | 全仓库 100万 token | 多文件/多仓库 |
+| **自定义规则** | `.github/copilot-instructions.md` | `.cursor/rules/` + Hooks | `CLAUDE.md` + Hooks | Skills/Hooks/Plugins | GCP 集成规则 | Skills / Agent |
+| **多文件编辑** | ✅ 2026 新增 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **终端集成** | ❌ | ✅ | ✅（终端原生） | ✅ | ❌ | ✅ |
+| **移动端** | ❌ | ✅ iPad/iPhone | ❌ | ❌ | ❌ | ❌ |
+| **智能路由** | ❌ | ✅ Cursor Router | ❌ | ❌ | ❌ | ❌ |
+| **价格** | $10/月（个人） | $20/月（Pro） | $0.10/次调用 | $15/月（Desktop） | GCP 订阅 | 开源免费 / 按量付费 |
 
 ## 各工具的强项场景
 
@@ -97,6 +97,37 @@ function debounce(fn, delay, immediate = false) {
 - **Plugins 系统**：扩展 Devin 的能力
 - **MCP 支持**：连接自定义工具链
 
+### Claude Code（Anthropic）— 终端原生 Agent
+
+适合：**偏好终端工作流、需要深度推理、复杂重构**
+
+2025 年底 Anthropic 推出的 **Claude Code** 是终端原生的 AI 编码 Agent，直接与终端、文件系统和 Git 交互。
+
+```bash
+# Claude Code 典型用法
+claude "在 src/utils/ 下实现一个日期格式化工具函数，包含 TypeScript 类型和测试"
+
+# Agent 模式：自动规划执行
+claude --agent "将整个 pages/ 目录从 Page Router 迁移到 App Router"
+```
+
+特色：
+- **终端优先**：不依赖 IDE，任何编辑器都能配合
+- **深度推理**：Claude 4.x 级推理能力，适合复杂重构和架构设计
+- **Git 原生**：自动创建分支、commit、PR
+- **Claude Code as a Service**：可集成到 CI/CD 流水线
+
+### Gemini Code Assist（Google）— VS Code + JetBrains 集成
+
+适合：**GCP 生态用户、需要代码库级上下文理解的团队**
+
+2026 年 Gemini Code Assist 已深度集成到 VS Code 和 JetBrains IDE：
+
+- **Gemini 2.5 Pro**：100 万 token 上下文窗口，可理解整个代码库
+- **代码库感知**：不依赖索引，直接理解全仓库代码
+- **Google Cloud 集成**：与 Cloud Code、Artifact Registry 深度联动
+- **企业安全**：代码不上传第三方服务器，SOC 2 合规
+
 ### OpenCode — 开源 + Orchestration
 
 适合：**需要自定义 AI 工作流、多 agent 协作、私有化部署**
@@ -112,24 +143,31 @@ task(category="quick", load_skills=[], prompt="Review the code in src/components
 
 ```mermaid
 flowchart TD
-    A[选择 AI 编程工具 2026] --> B{需要 Agent 自动化?}
-    B -->|日常编码辅助| C[Copilot]
-    B -->|需要 Agent 能力| D{云 Agent 需求?}
+    A[选择 AI 编程工具 2026] --> B{工作流偏好?}
     
-    D -->|需要 7x24 云 Agent| E[Cursor Cloud Agents]
-    D -->|本地 Agent 即可| F{预算?}
+    B -->|IDE 内补全| C[需要 Agent 自动化?]
+    B -->|终端原生| D[Claude Code<br/>终端 Agent]
+    B -->|GCP 生态| E[Gemini Code Assist]
     
-    F -->|免费/开源| G[OpenCode]
-    F -->|付费| H{团队规模?}
+    C -->|日常编码辅助| F[Copilot]
+    C -->|需要 Agent 能力| G{云 Agent 需求?}
     
-    H -->|个人| I[Cursor Pro]
-    H -->|团队| J[Devin Desktop / Cursor Team]
+    G -->|需要 7x24 云 Agent| H[Cursor Cloud Agents]
+    G -->|本地 Agent 即可| I{预算?}
     
-    C --> K[✅ 极速补全 + 轻量生成]
-    E --> L[✅ 异步自动化 + 移动端监控]
-    G --> M[✅ 自定义工作流 + 编排]
-    I --> N[✅ Agent + Router 智能路由]
-    J --> O[✅ 多仓库协作 + Slack 集成]
+    I -->|免费/开源| J[OpenCode]
+    I -->|付费| K{团队规模?}
+    
+    K -->|个人| L[Cursor Pro / Claude Code]
+    K -->|团队| M[Devin Desktop / Cursor Team]
+    
+    F --> N[✅ 极速补全 + 轻量生成]
+    D --> O[✅ 深度推理 + 复杂重构]
+    E --> P[✅ 全仓库理解 + 企业安全]
+    H --> Q[✅ 异步自动化 + 移动端监控]
+    J --> R[✅ 自定义工作流 + 编排]
+    L --> S[✅ Agent + Router 智能路由]
+    M --> T[✅ 多仓库协作 + Slack 集成]
 ```
 
 ## 面试中如何展示 AI 能力
