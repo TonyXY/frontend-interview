@@ -5,7 +5,7 @@ description: AI 编程工具/Prompt 工程/Agent/RAG — AI 辅助开发总览
 
 # 🤖 AI 辅助开发
 
-AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG — **2024-2025 年面试的新增热门板块**。共 14 个知识点，从工具使用到自建 AI 系统的完整路径。
+AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG — **2025-2026 年面试的新增热门板块**。共 14 个知识点，从工具使用到自建 AI 系统的完整路径。
 
 <DifficultyBadge level="beginner" /> AI 工具使用经验 · <DifficultyBadge level="intermediate" /> 理解 AI 工作流原理 · <DifficultyBadge level="advanced" /> 构建 AI 应用与 Agent
 
@@ -34,7 +34,7 @@ flowchart TD
 ```
 
 ::: tip 💡 建议
-AI 是前端面试的新变量。即使公司不以 AI 为核心业务，**面试官也会关注你如何用 AI 提效**——这是 2025 年 P6+ 候选人的"默认技能"。
+AI 是前端面试的新变量。即使公司不以 AI 为核心业务，**面试官也会关注你如何用 AI 提效**——这是 2026 年 P6+ 候选人的"默认技能"。
 :::
 
 ---
