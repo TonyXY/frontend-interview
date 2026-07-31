@@ -21,7 +21,7 @@ flowchart TD
     B -->|有| C[了解竞品总包]
     B -->|没有| D[锚定期望区间]
     
-    C --> E[计算目标总包<br/>max(竞品, 期望)]
+    C --> E["计算目标总包<br/>max(竞品, 期望)"]
     D --> F[市场行情调研<br/>脉脉/OfferShow/Levels]
     
     E --> G[不先出价<br/>让 HR 先出]
