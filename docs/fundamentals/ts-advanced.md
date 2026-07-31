@@ -20,10 +20,10 @@ flowchart TD
     A["输入类型"] --> B{类型体操操作}
     
     B --> C[条件类型<br/>T extends U ? X : Y]
-    B --> D[映射类型<br/>{ [K in keyof T]: T[K] }]
-    B --> E[递归类型<br/>type DeepX<T> = ...]
-    B --> F[模板字面量<br/>`${A}_${B}`]
-    B --> G[infer 匹配<br/>T extends infer U ? ...]
+    B --> D["映射类型<br/>{ [K in keyof T]: T[K] }"]
+    B --> E["递归类型<br/>type DeepX<T> = ..."]
+    B --> F["模板字面量<br/>`${A}_${B}`"]
+    B --> G["infer 匹配<br/>T extends infer U ? ..."]
     
     C --> H[输出类型]
     D --> H

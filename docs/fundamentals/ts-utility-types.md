@@ -18,11 +18,11 @@ TypeScript 内置的 Utility Types 都是通过**泛型 + 条件类型 + 映射�
 ```mermaid
 flowchart TD
     subgraph 工具类型分类
-        A[属性变换] --> Partial / Required / Readonly
-        B[对象选择] --> Pick / Omit / Extract / Exclude
-        C[函数提取] --> ReturnType / Parameters
-        D[字符串变换] --> Uppercase / Capitalize
-        E[类型构造] --> Record / NonNullable
+        A[属性变换] --> A1["Partial / Required / Readonly"]
+        B[对象选择] --> B1["Pick / Omit / Extract / Exclude"]
+        C[函数提取] --> C1["ReturnType / Parameters"]
+        D[字符串变换] --> D1["Uppercase / Capitalize"]
+        E[类型构造] --> E1["Record / NonNullable"]
     end
     
     A --> F[映射类型]

@@ -160,7 +160,7 @@ console.log(globalObj.data)
 
 ```mermaid
 flowchart TD
-    subgraph 新生代（Scavenge 复制算法）
+    subgraph "新生代（Scavenge 复制算法）"
         A[From-Space<br/>活动对象] --> B[复制到<br/>To-Space]
         A --> C[不可达对象<br/>丢弃]
         B --> D{晋升条件?<br/>1. 存活超过 2 次 GC<br/>2. To-Space 已使用 > 25%}
@@ -169,7 +169,7 @@ flowchart TD
         B --> G[清空 From-Space<br/>交换 From/To]
     end
     
-    subgraph 老生代（Mark-Sweep-Compact）
+    subgraph "老生代（Mark-Sweep-Compact）"
         E --> H[标记阶段<br/>从根遍历标记可达]
         H --> I[清除阶段<br/>回收未标记对象]
         I --> J[压缩阶段<br/>整理碎片<br/>仅在必要时]

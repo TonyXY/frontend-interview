@@ -284,7 +284,7 @@ Paint 阶段将 Layout 计算好的节点**绘制成像素**——填充颜色�
 ```mermaid
 flowchart LR
     A[Layout Tree] --> B[生成 Paint 记录]
-    B --> C[paint() 调用栈]
+    B --> C["paint() 调用栈"]
     C --> D[背景颜色]
     C --> E[背景图片]
     C --> F[边框]

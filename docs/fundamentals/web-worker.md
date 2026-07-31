@@ -17,8 +17,8 @@ Web Worker 是浏览器提供的**真实多线程能力**——让 JS 在独立�
 
 ```mermaid
 flowchart TD
-    A[主线程 Main Thread] -->|new Worker('file.js')| B[Dedicated Worker]
-    A -->|new SharedWorker('file.js')| C[Shared Worker]
+    A[主线程 Main Thread] -->|"new Worker('file.js')"| B[Dedicated Worker]
+    A -->|"new SharedWorker('file.js')"| C[Shared Worker]
     A -->|navigator.serviceWorker.register| D[Service Worker]
     
     B -->|postMessage<br/>传输数据副本| A

@@ -198,7 +198,7 @@ flex-basis: auto;  /* 基础大小为内容大小，内容多的占更多空间 
 
 ```mermaid
 flowchart TD
-    subgraph Grid 布局示例 (3列)
+    subgraph "Grid 布局示例 (3列)"
         A[Header<br/>grid-column: 1 / -1]
         B[Sidebar<br/>grid-column: 1] --> C[Main<br/>grid-column: 2 / 4]
         D[Footer<br/>grid-column: 1 / -1]

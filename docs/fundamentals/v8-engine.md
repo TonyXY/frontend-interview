@@ -40,15 +40,15 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph V8 5.0 之前 (2017前)
+    subgraph "V8 5.0 之前 (2017前)"
         A1[Full-Codegen<br/>基线编译器] --> A2[Crankshaft<br/>优化编译器]
     end
     
-    subgraph V8 5.0~5.9 (2017)
+    subgraph "V8 5.0~5.9 (2017)"
         B1[Ignition<br/>解释器] --> B2[TurboFan<br/>优化编译器]
     end
     
-    subgraph V8 6.0+ (现在)
+    subgraph "V8 6.0+ (现在)"
         C1[Ignition<br/>解释器] --> C2[Sparkplug<br/>快速编译器<br/>≈ Full-Codegen]
         C2 --> C3[TurboFan<br/>优化编译器]
     end
@@ -143,13 +143,13 @@ const u3 = { age: 25, name: 'Charlie' }
 
 ```mermaid
 flowchart TD
-    subgraph 共享隐藏类（高效）
+    subgraph "共享隐藏类（高效）"
         A1["p1 {name, age}"] --> H1["隐藏类 C0<br/>→ name: 偏移 0<br/>→ age: 偏移 8"]
         A2["p2 {name, age}"] --> H1
         A3["p3 {name, age}"] --> H1
     end
     
-    subgraph 不同隐藏类（低效）
+    subgraph "不同隐藏类（低效）"
         B1["p4 {age, name}"] --> H2["隐藏类 C1<br/>→ age: 偏移 0<br/>→ name: 偏移 8"]
         B2["p5 {name}"] --> H3["隐藏类 C2<br/>→ name: 偏移 0"]
     end
@@ -325,7 +325,7 @@ arr5[0] = 1                    // 仍然是 holey
 ```mermaid
 flowchart LR
     A["[] 空数组"] --> B["[1, 2, 3]<br/>PACKED_SMI"] -->|push 4.5| C["[1, 2, 3, 4.5]<br/>PACKED_DOUBLE"] -->|push 'a'| D["[1, 2, 3, 4.5, 'a']<br/>PACKED_ELEMENTS"]
-    B -->|arr[10] = 5| E["[1, 2, 3, , ... , 5]<br/>HOLEY_SMI"] --> F["...更多 holey 类型"]
+    B -->|"arr[10] = 5"| E["[1, 2, 3, , ... , 5]<br/>HOLEY_SMI"] --> F["...更多 holey 类型"]
     
     style B fill:#86efac
     style C fill:#fef3c7
