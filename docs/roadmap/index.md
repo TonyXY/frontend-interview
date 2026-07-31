@@ -27,24 +27,24 @@ gantt
     axisFormat %a
     
     section 第1周
-    JS 核心机制           :a1, 7d
-    TS 类型系统           :a2, 3d
-    浏览器原理            :a3, 4d
+    JS 核心机制           :a1, 2026-08-03, 7d
+    TS 类型系统           :a2, after a1, 3d
+    浏览器原理            :a3, after a2, 4d
     
     section 第2周
-    React/Vue 核心        :b1, 4d
-    Hooks 与渲染优化      :b2, 3d
-    状态管理与组件模式    :b3, 3d
+    React/Vue 核心        :b1, 2026-08-10, 4d
+    Hooks 与渲染优化      :b2, after b1, 3d
+    状态管理与组件模式    :b3, after b2, 3d
     
     section 第3周
-    性能与构建            :c1, 3d
-    AI 编程工具           :c2, 2d
-    Prompt 工程           :c3, 2d
+    性能与构建            :c1, 2026-08-17, 3d
+    AI 编程工具           :c2, after c1, 2d
+    Prompt 工程           :c3, after c2, 2d
     
     section 第4周
-    手写代码              :d1, 2d
-    系统设计              :d2, 2d
-    简历与模拟面试        :d3, 3d
+    手写代码              :d1, 2026-08-24, 2d
+    系统设计              :d2, after d1, 2d
+    简历与模拟面试        :d3, after d2, 3d
 ```
 
 ---
