@@ -287,7 +287,7 @@ console.log(myInstanceof([], Function))  // false
 
 ```mermaid
 flowchart TD
-    A[[] 空数组] -->|__proto__| B[Array.prototype]
+    A["[] 空数组"] -->|__proto__| B[Array.prototype]
     B -->|__proto__| C[Object.prototype]
     C -->|__proto__| D[null]
     
@@ -391,6 +391,14 @@ fn()  // undefined — this 指向 window / undefined
 > 5. 为什么 foo instanceof Object 是 true？
 > 
 > 用箭头标注每一条关系，并给出文字解释。"
+
+### 🤖 AI 输出成果（基于上面这个 Prompt 生成）
+
+> 下面三件套就是 AI 基于上面这个 Prompt 实际生成的原型链学习资源，点击后在新窗口打开、可离线使用：
+
+- 📄 <a href="../prototype-chain-cheatsheet.pdf" target="_blank" rel="noopener">原型链全景速查 PDF</a> — A4 一页速查，面试前 30 秒扫一遍
+- 🎬 <a href="../prototype-chain-demo.html" target="_blank" rel="noopener">原型链交互式演示</a> — 一步步看 new / instanceof / constructor 的引擎内部机制
+- 📝 <a href="../prototype-chain-quiz.html" target="_blank" rel="noopener">原型链 mini Quiz</a> — 概念选择 + 手写 new / instanceof 自测
 
 ## 关联知识
 

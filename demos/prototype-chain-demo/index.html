@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JS 原型链 · 交互式原理剖析</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #172033;
+    --border: #334155;
+    --code-bg: #0b1120;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --accent: #3b82f6;
+    --accent-2: #60a5fa;
+    --ok: #22c55e;
+    --ok-2: #4ade80;
+    --warn: #f59e0b;
+    --warn-2: #fbbf24;
+    --err: #ef4444;
+    --kw: #c792ea;
+    --fn: #82aaff;
+    --str: #c3e88d;
+    --cmt: #546e7a;
+    --radius: 12px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    background-image:
+      radial-gradient(1100px 500px at 15% -10%, rgba(59,130,246,.12), transparent 60%),
+      radial-gradient(900px 480px at 110% 5%, rgba(34,197,94,.08), transparent 55%),
+      radial-gradient(700px 400px at 50% 115%, rgba(245,158,11,.06), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  header {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 26px 20px 10px;
+  }
+
+  .head-top {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    background: linear-gradient(90deg, #60a5fa, #4ade80 60%, #fbbf24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo small {
+    font-size: 13px;
+    font-weight: 600;
+    -webkit-text-fill-color: var(--muted);
+  }
+
+  .head-sub {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .tabbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .25s ease;
+  }
+
+  .tab:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(59,130,246,.22), rgba(34,197,94,.12));
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15), 0 4px 14px rgba(0,0,0,.35);
+  }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  .demo { display: none; animation: fadein .35s ease; }
+  .demo.active { display: block; }
+
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .demo-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .demo-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .demo-title .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    background: linear-gradient(90deg, var(--accent-2), var(--ok-2));
+    border-radius: 6px;
+    padding: 1px 8px;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+
+  .demo-desc { color: var(--muted); font-size: 13px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel-2);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 8px rgba(96,165,250,.8);
+    flex: none;
+  }
+
+  .dot.green { background: var(--ok-2); box-shadow: 0 0 8px rgba(74,222,128,.8); }
+  .dot.orange { background: var(--warn-2); box-shadow: 0 0 8px rgba(251,191,36,.8); }
+
+  /* ---- demo grid: code | chain ---- */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, .95fr) minmax(440px, 1.5fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 900px) { .demo-grid { grid-template-columns: 1fr; } }
+
+  .code-panel { display: flex; flex-direction: column; }
+  .code-panel .panel-head { color: var(--fn); }
+
+  .code-lines {
+    background: var(--code-bg);
+    padding: 12px 0 16px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-x: auto;
+    flex: 1;
+  }
+
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    padding: 0 14px 0 0;
+    border-left: 3px solid transparent;
+    transition: background .25s ease, border-color .25s ease;
+    white-space: pre;
+  }
+
+  .code-line .gutter {
+    flex: none;
+    width: 44px;
+    text-align: right;
+    padding-right: 14px;
+    color: #3d4b61;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .code-line .ct { color: var(--text); }
+
+  .code-line.active {
+    background: rgba(59,130,246,.12);
+    border-left-color: var(--accent-2);
+  }
+
+  .code-line.active .gutter { color: var(--accent-2); }
+
+  .tok-kw { color: var(--kw); }
+  .tok-fn { color: var(--fn); }
+  .tok-str { color: var(--str); }
+  .tok-cmt { color: var(--cmt); font-style: italic; }
+  .tok-num { color: var(--warn-2); }
+  .tok-op { color: #f7768e; }
+
+  /* ---- chain ---- */
+  .chain-panel { display: flex; flex-direction: column; }
+  .chain-box {
+    flex: 1;
+    min-height: 460px;
+    display: flex;
+    align-items: stretch;
+    background:
+      linear-gradient(rgba(30,41,59,.5) 1px, transparent 1px) 0 0 / 100% 34px,
+      linear-gradient(90deg, rgba(30,41,59,.5) 1px, transparent 1px) 0 0 / 34px 100%,
+      var(--panel-2);
+  }
+
+  .chain-box svg { width: 100%; height: auto; min-height: 100%; display: block; }
+
+  /* nodes */
+  .g-node { cursor: pointer; }
+  .g-node rect {
+    fill: var(--nf, #111a2e);
+    stroke: var(--nc, #64748b);
+    stroke-width: 1.6;
+    rx: 9;
+    transition: fill .3s ease, stroke .3s ease, stroke-width .3s ease, opacity .3s ease;
+  }
+  .g-node .n-main { fill: #f1f5f9; font-weight: 700; font-size: 14px; font-family: var(--mono); }
+  .g-node .n-sub { fill: #94a3b8; font-size: 11px; letter-spacing: .3px; }
+  .g-node .halo {
+    fill: none;
+    stroke: var(--nc, #64748b);
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .g-node.active rect {
+    stroke-width: 3;
+    fill: var(--nf-active, #16233f);
+    filter: drop-shadow(0 0 8px var(--nc, #64748b));
+  }
+  .g-node.active .halo { animation: halo 1.6s ease-out infinite; }
+  @keyframes halo {
+    0% { opacity: .9; transform: scale(.92); }
+    70% { opacity: 0; transform: scale(1.28); }
+    100% { opacity: 0; transform: scale(1.28); }
+  }
+  .g-node.dim rect { opacity: .28; }
+  .g-node.dim text { opacity: .28; }
+
+  .nt-instance { --nc: #3b82f6; --nf: rgba(59,130,246,.10); --nf-active: rgba(59,130,246,.20); }
+  .nt-proto { --nc: #22c55e; --nf: rgba(34,197,94,.10); --nf-active: rgba(34,197,94,.20); }
+  .nt-function { --nc: #f59e0b; --nf: rgba(245,158,11,.10); --nf-active: rgba(245,158,11,.20); }
+  .nt-null { --nc: #64748b; --nf: rgba(100,116,139,.10); --nf-active: rgba(100,116,139,.18); }
+
+  /* arrows */
+  .g-arrow { cursor: help; }
+  .g-arrow .arrow-path {
+    fill: none;
+    stroke: var(--ac, #60a5fa);
+    stroke-width: 2.2;
+    transition: stroke-width .3s ease, filter .3s ease, opacity .3s ease;
+  }
+  .g-arrow .arrow-label {
+    fill: var(--ac, #60a5fa);
+    font-size: 11.5px;
+    font-family: var(--mono);
+    font-weight: 600;
+    stroke: #0b1120;
+    stroke-width: 3.5px;
+    paint-order: stroke;
+  }
+  .g-arrow .arrow-flow {
+    stroke-dasharray: 5 7;
+    stroke-width: 2;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .g-arrow.active .arrow-path {
+    stroke-width: 3.6;
+    filter: drop-shadow(0 0 5px var(--ac, #60a5fa));
+  }
+  .g-arrow.active .arrow-label { filter: drop-shadow(0 0 4px var(--ac, #60a5fa)); }
+  .g-arrow.active .arrow-flow { opacity: 1; animation: dashmove .7s linear infinite; }
+  @keyframes dashmove { to { stroke-dashoffset: -24; } }
+
+  .g-arrow:hover .arrow-path { stroke-width: 3.4; }
+  .g-node:hover rect { stroke-width: 2.6; }
+
+  /* compare badges */
+  .compare { opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+  .compare.show { opacity: 1; pointer-events: auto; }
+  .compare .cm-badge {
+    fill: #0b1120;
+    stroke-width: 1.6;
+  }
+  .compare .cm-badge.bad { stroke: var(--err); fill: rgba(239,68,68,.10); }
+  .compare .cm-badge.ok { stroke: var(--ok); fill: rgba(34,197,94,.10); }
+  .compare .cm-q { fill: #94a3b8; font-size: 10px; font-family: var(--mono); }
+  .compare .cm-r { font-size: 15px; font-weight: 800; font-family: var(--mono); }
+  .compare .cm-r.bad { fill: var(--err); }
+  .compare .cm-r.ok { fill: var(--ok-2); }
+
+  /* ---- bottom: narrative + inspector ---- */
+  .demo-bottom {
+    display: grid;
+    grid-template-columns: 1.6fr minmax(300px, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+  }
+  @media (max-width: 900px) { .demo-bottom { grid-template-columns: 1fr; } }
+
+  .narrative-box .panel-head { color: var(--accent-2); }
+  .nar { padding: 16px 20px 18px; }
+  .nar-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+  }
+  .nar-title .n-step {
+    display: inline-block;
+    margin-right: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--ok));
+    color: #0b1120;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 5px;
+    padding: 1px 8px;
+    vertical-align: 1px;
+  }
+  .nar-text { color: #cbd5e1; font-size: 13.5px; line-height: 1.9; }
+  .nar-text b { color: #f8fafc; }
+  .nar-text code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 5px;
+    padding: 1px 6px;
+  }
+  .nar-text .em { color: var(--warn-2); font-weight: 700; }
+  .nar-text .ok { color: var(--ok-2); font-weight: 700; }
+  .nar-text .no { color: var(--err); font-weight: 700; }
+  .nar.pop { animation: popin .35s ease; }
+  @keyframes popin { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+
+  .inspector-box .panel-head { color: var(--ok-2); }
+  .ins { padding: 12px 16px 16px; }
+  .ins-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: .3px;
+    margin-bottom: 10px;
+  }
+  .ins-title .ins-var { color: #7dd3fc; font-family: var(--mono); font-size: 12.5px; }
+  .ins-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed rgba(51,65,85,.6);
+  }
+  .ins-row:last-child { border-bottom: none; }
+  .ins-k { color: var(--muted); font-size: 12.5px; font-family: var(--mono); flex: none; }
+  .ins-v {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: right;
+    word-break: break-all;
+  }
+  .c-blue { color: var(--accent-2); }
+  .c-green { color: var(--ok-2); }
+  .c-orange { color: var(--warn-2); }
+  .c-red { color: var(--err); }
+  .c-gray { color: var(--faint); }
+
+  /* ---- controls ---- */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .btn {
+    appearance: none;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.25); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn.primary {
+    background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(34,197,94,.18));
+    border-color: rgba(59,130,246,.55);
+  }
+  .btn.reset { background: transparent; }
+
+  .dots { display: flex; gap: 8px; align-items: center; }
+  .dot-i {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #334155;
+    transition: all .3s ease;
+  }
+  .dot-i.done { background: rgba(96,165,250,.55); }
+  .dot-i.cur { background: var(--accent-2); transform: scale(1.45); box-shadow: 0 0 8px rgba(96,165,250,.9); }
+
+  .sind {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 92px;
+    text-align: center;
+  }
+  .sind b { color: #f8fafc; font-size: 15px; }
+
+  .kbd-hint { color: var(--faint); font-size: 11.5px; font-family: var(--mono); }
+  .kbd-hint kbd {
+    background: #0b1120;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 0 5px;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  /* ---- demo 4: panorama ---- */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding: 10px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 12.5px;
+  }
+  .legend .lg-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+  .legend .lg-line { width: 30px; height: 3px; border-radius: 2px; }
+  .lg-blue { background: var(--accent-2); box-shadow: 0 0 6px rgba(96,165,250,.7); }
+  .lg-green { background: var(--ok-2); box-shadow: 0 0 6px rgba(74,222,128,.7); }
+  .lg-orange { background: var(--warn-2); box-shadow: 0 0 6px rgba(251,191,36,.7); }
+
+  .panorama-panel .chain-box { min-height: 620px; }
+
+  .rules { margin-top: 16px; }
+  .rules h3 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 10px;
+  }
+  .rules h3::before { content: '▸ '; color: var(--warn-2); }
+  .rule-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 900px) { .rule-cards { grid-template-columns: 1fr; } }
+  .rule-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: all .25s ease;
+  }
+  .rule-card:hover { transform: translateY(-3px); border-color: var(--accent-2); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+  .rule-card.r2 { border-top-color: var(--ok); }
+  .rule-card.r3 { border-top-color: var(--warn); }
+  .rule-card .rc-title { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+  .rule-card.r1 .rc-title { color: var(--accent-2); }
+  .rule-card.r2 .rc-title { color: var(--ok-2); }
+  .rule-card.r3 .rc-title { color: var(--warn-2); }
+  .rule-card .rc-text { color: #cbd5e1; font-size: 12.5px; line-height: 1.75; }
+  .rule-card .rc-text code { font-family: var(--mono); font-size: 11.5px; color: #7dd3fc; }
+
+  .facts {
+    margin-top: 14px;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .facts h4 { font-size: 12px; color: var(--muted); letter-spacing: .4px; margin-bottom: 10px; }
+  .facts .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px 16px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  @media (max-width: 900px) { .facts .fact-grid { grid-template-columns: 1fr; } }
+  .facts .fact-grid code { color: #7dd3fc; }
+
+  /* ---- tooltip ---- */
+  .tt {
+    position: fixed;
+    z-index: 999;
+    max-width: 320px;
+    background: #0b1120;
+    border: 1px solid rgba(96,165,250,.45);
+    border-radius: 9px;
+    padding: 9px 12px;
+    font-size: 12px;
+    line-height: 1.65;
+    color: #e2e8f0;
+    box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .tt.show { opacity: 1; transform: none; }
+  .tt .tt-h { color: #7dd3fc; font-family: var(--mono); font-weight: 700; font-size: 11.5px; margin-bottom: 3px; }
+  .tt .tt-b { color: #cbd5e1; }
+  .tt .tt-note { color: var(--warn-2); font-size: 11px; margin-top: 4px; }
+
+  footer {
+    text-align: center;
+    color: var(--faint);
+    font-size: 11.5px;
+    padding: 26px 20px 40px;
+    font-family: var(--mono);
+  }
+  footer .ft-note { color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-top">
+    <div class="logo">JavaScript 原型链 <small>· 一步步看懂 new / instanceof / constructor</small></div>
+  </div>
+  <div class="head-sub">中文面试考点 · 点击「下一步」逐步观察引擎内部机制 · 全程离线可用（file:// 双击即可打开）</div>
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-demo="1">① new Foo() 发生了什么</button>
+    <button class="tab" data-demo="2">② foo instanceof Object 怎么判断</button>
+    <button class="tab" data-demo="3">③ foo.constructor 为什么是 Foo</button>
+    <button class="tab" data-demo="4">④ 全景总览</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ Demo 1 ============ -->
+  <section class="demo active" id="demo-1">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ①</span>new Foo() 内部四步</div>
+      <div class="demo-desc">点击「下一步」观察 new 引擎一步一步执行</div>
+    </div>
+    <div class="demo-grid">
+      <div class="panel code-panel">
+        <div class="panel-head"><span class="dot"></span>代码 · code</div>
+        <div class="code-lines" id="code-1"></div>
+      </div>
+      <div class="panel chain-panel">
+        <div class="panel-head"><span class="dot green"></span>原型链可视化 · 对象关系</div>
+        <div class="chain-box" id="chain-1"></div>
+      </div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-1"></div>
+      </div>
+      <div class="panel inspector-box">
+        <div class="panel-head"><span class="dot green"></span>对象状态检查器 · inspector</div>
+        <div class="ins" id="inspector-1"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-1"></div>
+  </section>
+
+  <!-- ============ Demo 2 ============ -->
+  <section class="demo" id="demo-2">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ②</span>foo instanceof Object 怎么判断</div>
+      <div class="demo-desc">还原真实的 instanceof 算法，沿原型链一层一层走</div>
+    </div>
+    <div class="demo-grid">
+      <div class="panel code-panel">
+        <div class="panel-head"><span class="dot"></span>代码 · instanceof 的实现</div>
+        <div class="code-lines" id="code-2"></div>
+      </div>
+      <div class="panel chain-panel">
+        <div class="panel-head"><span class="dot orange"></span>原型链可视化 · 查找路径</div>
+        <div class="chain-box" id="chain-2"></div>
+      </div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-2"></div>
+      </div>
+      <div class="panel inspector-box">
+        <div class="panel-head"><span class="dot green"></span>对象状态检查器 · inspector</div>
+        <div class="ins" id="inspector-2"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-2"></div>
+  </section>
+
+  <!-- ============ Demo 3 ============ -->
+  <section class="demo" id="demo-3">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ③</span>foo.constructor 为什么是 Foo</div>
+      <div class="demo-desc">属性查找：自身没有，就沿 __proto__ 原型链向上找</div>
+    </div>
+    <div class="demo-grid">
+      <div class="panel code-panel">
+        <div class="panel-head"><span class="dot"></span>代码 · 属性查找过程</div>
+        <div class="code-lines" id="code-3"></div>
+      </div>
+      <div class="panel chain-panel">
+        <div class="panel-head"><span class="dot orange"></span>原型链可视化 · constructor 指向</div>
+        <div class="chain-box" id="chain-3"></div>
+      </div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-3"></div>
+      </div>
+      <div class="panel inspector-box">
+        <div class="panel-head"><span class="dot green"></span>对象状态检查器 · inspector</div>
+        <div class="ins" id="inspector-3"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-3"></div>
+  </section>
+
+  <!-- ============ Demo 4: panorama ============ -->
+  <section class="demo" id="demo-4">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ④</span>全景总览 · 完整关系图</div>
+      <div class="demo-desc">鼠标悬停任意箭头 / 节点，查看它表示的关系</div>
+    </div>
+    <div class="legend">
+      <div class="lg-item"><span class="lg-line lg-blue"></span>蓝色箭头 = __proto__（原型链连接）</div>
+      <div class="lg-item"><span class="lg-line lg-green"></span>绿色箭头 = prototype（函数 → 原型对象）</div>
+      <div class="lg-item"><span class="lg-line lg-orange"></span>橙色箭头 = constructor（原型对象 → 构造函数）</div>
+    </div>
+    <div class="panel panorama-panel">
+      <div class="panel-head"><span class="dot"></span>完整原型链全景 · hover 查看说明</div>
+      <div class="chain-box" id="chain-4"></div>
+    </div>
+    <div class="rules">
+      <h3>三条黄金规则</h3>
+      <div class="rule-cards">
+        <div class="rule-card r1">
+          <div class="rc-title">规则 ① · 每个对象都有 __proto__</div>
+          <div class="rc-text">每个对象（包括函数）都有 <code>__proto__</code>，指向<code>其构造函数.prototype</code>。沿着 <code>__proto__</code> 一路向上，就能走完整条原型链。实例 <code>foo</code> 找不到的属性，会顺着这条链逐层查找。</div>
+        </div>
+        <div class="rule-card r2">
+          <div class="rc-title">规则 ② · 函数都有 prototype 属性</div>
+          <div class="rc-text">每个函数都有 <code>prototype</code> 属性，指向它创建实例时使用的<code>原型对象</code>。所有普通函数的 <code>__proto__</code> 都指向 <code>Function.prototype</code>，所以函数也是“Function 的实例”。</div>
+        </div>
+        <div class="rule-card r3">
+          <div class="rc-title">规则 ③ · 原型的 constructor 指回函数</div>
+          <div class="rc-text"><code>Foo.prototype.constructor === Foo</code>。实例自身没有 <code>constructor</code>，是沿链读到原型对象上的 <code>constructor</code>，所以 <code>foo.constructor === Foo</code>。三者形成一个稳定的三角关系。</div>
+        </div>
+      </div>
+    </div>
+    <div class="facts">
+      <h4>已用 Node 逐条验证的事实（ground truth）</h4>
+      <div class="fact-grid">
+        <div><code>foo.__proto__ === Foo.prototype</code> → true</div>
+        <div><code>Foo.prototype.constructor === Foo</code> → true</div>
+        <div><code>foo.constructor === Foo</code> → true</div>
+        <div><code>Foo.__proto__ === Function.prototype</code> → true</div>
+        <div><code>Object.__proto__ === Function.prototype</code> → true</div>
+        <div><code>Function.__proto__ === Function.prototype</code> → true</div>
+        <div><code>Function.prototype.__proto__ === Object.prototype</code> → true</div>
+        <div><code>Object.prototype.__proto__ === null</code> → true</div>
+        <div><code>foo instanceof Object</code> → true</div>
+        <div><code>foo instanceof Foo</code> → true</div>
+        <div><code>foo.hasOwnProperty('constructor')</code> → false</div>
+        <div><code>Foo.prototype.hasOwnProperty('constructor')</code> → true</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>JavaScript 原型链 · 交互式原理剖析</div>
+  <div class="ft-note">实现为状态机：每个 demo 是一个 step 数组，render() 声明式重建界面 · 零依赖、完全离线</div>
+</footer>
+
+<div class="tt" id="tt"></div>
+
+<script>
+'use strict';
+
+/* =========================================================
+   主题色 & 通用常量
+   ========================================================= */
+var COLORS = {
+  instance: '#3b82f6',
+  proto: '#22c55e',
+  fn: '#f59e0b',
+  nullc: '#64748b',
+  arrowProto: '#60a5fa',
+  arrowPrototype: '#4ade80',
+  arrowConstructor: '#fbbf24'
+};
+
+function nodeTypeClass(t) {
+  return { instance: 'nt-instance', proto: 'nt-proto', function: 'nt-function', null: 'nt-null' }[t] || 'nt-instance';
+}
+
+/* =========================================================
+   图形定义（每个 demo 一张图：节点 + 箭头 + 比较徽章）
+   箭头 d 为 SVG path；kind 决定颜色：proto/prototype/constructor
+   ========================================================= */
+var GRAPHS = {
+  /* ---------- Demo 1 · new Foo() ---------- */
+  1: {
+    w: 580, h: 500,
+    nodes: [
+      { id: 'Foo', label: 'Foo', sub: '构造函数', type: 'function', x: 30, y: 110, w: 170, h: 52,
+        tip: { h: 'Foo（构造函数）', b: 'function Foo() {}。函数也是对象，它拥有 prototype 属性，指向下面的 Foo.prototype。' } },
+      { id: 'Foo.prototype', label: 'Foo.prototype', sub: '原型对象', type: 'proto', x: 340, y: 110, w: 190, h: 56,
+        tip: { h: 'Foo.prototype（原型对象）', b: 'new Foo() 创建出来的实例，其 __proto__ 都会指向这个对象。', note: 'Foo.prototype.constructor === Foo' } },
+      { id: 'obj', label: 'obj', sub: '空对象', type: 'instance', x: 150, y: 360, w: 130, h: 50,
+        tip: { h: 'obj（new 内部临时对象）', b: '第 1 步创建出来的空对象 {}，最后会作为结果返回并赋值给 foo。' } }
+    ],
+    arrows: [
+      { id: 'a-green', d: 'M 200 128 L 340 128', kind: 'prototype', label: 'prototype', lx: 270, ly: 116,
+        tip: { h: 'prototype（绿色箭头）', b: 'Foo.prototype 属性 → Foo.prototype 对象。构造函数用这个属性指定“实例的原型”。' } },
+      { id: 'a-proto', d: 'M 250 360 L 360 166', kind: 'proto', label: '__proto__', lx: 300, ly: 300,
+        tip: { h: '__proto__（蓝色箭头）', b: 'obj.__proto__ === Foo.prototype。第 2 步建立这条链接后，obj 才能沿链找到原型上的成员。' } }
+    ],
+    markers: [
+      { id: 'cm-this', x: 348, y: 246, w: 92, h: 30, q: 'this 绑定 →', r: 'obj', ok: true },
+      { id: 'cm-ret', x: 200, y: 300, w: 110, h: 30, q: '返回值 →', r: 'foo', ok: true }
+    ]
+  },
+
+  /* ---------- Demo 2 · instanceof ---------- */
+  2: {
+    w: 920, h: 300,
+    nodes: [
+      { id: 'foo', label: 'foo', sub: '实例', type: 'instance', x: 20, y: 125, w: 130, h: 50,
+        tip: { h: 'foo（实例）', b: '由 new Foo() 创建。foo.__proto__ === Foo.prototype。' } },
+      { id: 'Foo.prototype', label: 'Foo.prototype', sub: '原型对象（第 1 层）', type: 'proto', x: 260, y: 123, w: 180, h: 54,
+        tip: { h: 'Foo.prototype（第 1 层）', b: 'foo.__proto__ 指向它。它是 foo 原型链上的第 1 个节点。' } },
+      { id: 'Object.prototype', label: 'Object.prototype', sub: '原型对象（第 2 层）', type: 'proto', x: 530, y: 123, w: 200, h: 54,
+        tip: { h: 'Object.prototype（第 2 层）', b: 'Foo.prototype.__proto__ 指向它，是 foo 原型链上的第 2 个节点。' } },
+      { id: 'null', label: 'null', sub: '原型链终点', type: 'null', x: 850, y: 136, w: 60, h: 32,
+        tip: { h: 'null', b: 'Object.prototype.__proto__ === null。链走到 null 即结束。' } }
+    ],
+    arrows: [
+      { id: 'a1', d: 'M 150 150 L 260 150', kind: 'proto', label: '__proto__', lx: 205, ly: 140,
+        tip: { h: 'foo.__proto__', b: 'foo.__proto__ === Foo.prototype。instanceof 从这里开始沿链找。' } },
+      { id: 'a2', d: 'M 440 150 L 530 150', kind: 'proto', label: '__proto__', lx: 485, ly: 140,
+        tip: { h: 'Foo.prototype.__proto__', b: 'Foo.prototype.__proto__ === Object.prototype。第 2 层。' } },
+      { id: 'a3', d: 'M 730 150 L 850 150', kind: 'proto', label: '__proto__', lx: 790, ly: 140,
+        tip: { h: 'Object.prototype.__proto__', b: 'Object.prototype.__proto__ === null，链到此结束。' } }
+    ],
+    markers: [
+      { id: 'cm-ne', x: 330, y: 70, w: 180, h: 36, q: 'p === Object.prototype ?', r: '否 ≠', ok: false },
+      { id: 'cm-ok', x: 600, y: 70, w: 180, h: 36, q: 'p === Object.prototype ?', r: '是 =', ok: true }
+    ]
+  },
+
+  /* ---------- Demo 3 · constructor ---------- */
+  3: {
+    w: 620, h: 460,
+    nodes: [
+      { id: 'foo', label: 'foo', sub: '实例', type: 'instance', x: 40, y: 330, w: 120, h: 50,
+        tip: { h: 'foo（实例）', b: 'foo 自身没有 constructor 属性（hasOwnProperty === false）。' } },
+      { id: 'Foo.prototype', label: 'Foo.prototype', sub: '原型对象', type: 'proto', x: 350, y: 80, w: 190, h: 56,
+        tip: { h: 'Foo.prototype（原型对象）', b: '它上面有 constructor 属性，指回 Foo。', note: 'Foo.prototype.hasOwnProperty(\'constructor\') === true' } },
+      { id: 'Foo', label: 'Foo', sub: '构造函数', type: 'function', x: 360, y: 330, w: 160, h: 52,
+        tip: { h: 'Foo（构造函数）', b: '查找 constructor 的最终答案：foo.constructor === Foo。' } }
+    ],
+    arrows: [
+      { id: 'a-blue', d: 'M 160 330 L 380 136', kind: 'proto', label: '__proto__', lx: 246, ly: 258,
+        tip: { h: '__proto__（蓝色箭头）', b: 'foo.__proto__ === Foo.prototype。属性查找从这里走到原型对象。' } },
+      { id: 'a-green', d: 'M 420 330 L 430 136', kind: 'prototype', label: 'prototype', lx: 452, ly: 226,
+        tip: { h: 'prototype（绿色箭头）', b: 'Foo.prototype 属性 → Foo.prototype 对象。' } },
+      { id: 'a-constr', d: 'M 540 136 L 520 330', kind: 'constructor', label: 'constructor', lx: 574, ly: 240,
+        tip: { h: 'constructor（橙色箭头）', b: 'Foo.prototype.constructor === Foo。foo.constructor 最终读到的就是这个值。' } }
+    ],
+    markers: []
+  },
+
+  /* ---------- Demo 4 · 全景总览 ---------- */
+  4: {
+    w: 1040, h: 600,
+    nodes: [
+      { id: 'Function', label: 'Function', sub: '内置构造函数', type: 'function', x: 60, y: 60, w: 180, h: 52,
+        tip: { h: 'Function（内置构造函数）', b: '所有函数都由 Function 构造。', note: 'Function.__proto__ === Function.prototype' } },
+      { id: 'Function.prototype', label: 'Function.prototype', sub: '原型对象', type: 'proto', x: 800, y: 60, w: 190, h: 52,
+        tip: { h: 'Function.prototype', b: '所有普通函数（Foo / Object / Function）的 __proto__ 都指向它。', note: 'Function.prototype.__proto__ === Object.prototype' } },
+      { id: 'Object', label: 'Object', sub: '内置构造函数', type: 'function', x: 60, y: 215, w: 180, h: 52,
+        tip: { h: 'Object（内置构造函数）', b: '创建普通对象 { } 的构造函数。', note: 'Object.__proto__ === Function.prototype' } },
+      { id: 'Object.prototype', label: 'Object.prototype', sub: '原型对象', type: 'proto', x: 800, y: 215, w: 190, h: 52,
+        tip: { h: 'Object.prototype', b: '几乎所有对象原型链的“顶端”。', note: 'Object.prototype.__proto__ === null' } },
+      { id: 'Foo', label: 'Foo', sub: '构造函数', type: 'function', x: 60, y: 370, w: 180, h: 52,
+        tip: { h: 'Foo（构造函数）', b: 'function Foo() {}，由我们定义。', note: 'Foo.__proto__ === Function.prototype' } },
+      { id: 'Foo.prototype', label: 'Foo.prototype', sub: '原型对象', type: 'proto', x: 800, y: 370, w: 190, h: 52,
+        tip: { h: 'Foo.prototype', b: 'new Foo() 创建的实例的原型。', note: 'Foo.prototype.constructor === Foo' } },
+      { id: 'foo', label: 'foo', sub: '实例', type: 'instance', x: 150, y: 500, w: 130, h: 48,
+        tip: { h: 'foo（实例）', b: '由 new Foo() 创建。', note: 'foo.__proto__ === Foo.prototype' } },
+      { id: 'null', label: 'null', sub: '原型链终点', type: 'null', x: 800, y: 505, w: 110, h: 40,
+        tip: { h: 'null', b: '原型链的终点，没有任何属性。' } }
+    ],
+    arrows: [
+      /* ---- Function 行（绿 prototype / 蓝 __proto__ / 橙 constructor 三层）---- */
+      { id: 'g-F', d: 'M 240 86 L 800 86', kind: 'prototype', label: 'prototype', lx: 520, ly: 78,
+        tip: { h: 'prototype（绿色）', b: 'Function.prototype 属性 → Function.prototype 对象。' } },
+      { id: 'b-F', d: 'M 240 110 L 800 110', kind: 'proto', label: '__proto__', lx: 520, ly: 132,
+        tip: { h: '__proto__（蓝色）', b: 'Function.__proto__ === Function.prototype。函数也是 Function 的实例。' } },
+      { id: 'c-F', d: 'M 800 62 L 240 62', kind: 'constructor', label: 'constructor', lx: 520, ly: 54,
+        tip: { h: 'constructor（橙色）', b: 'Function.prototype.constructor === Function。' } },
+      /* ---- Object 行 ---- */
+      { id: 'g-O', d: 'M 240 241 L 800 241', kind: 'prototype', label: 'prototype', lx: 520, ly: 233,
+        tip: { h: 'prototype（绿色）', b: 'Object.prototype 属性 → Object.prototype 对象。' } },
+      { id: 'c-O', d: 'M 800 217 L 240 217', kind: 'constructor', label: 'constructor', lx: 520, ly: 209,
+        tip: { h: 'constructor（橙色）', b: 'Object.prototype.constructor === Object。' } },
+      /* ---- Foo 行 ---- */
+      { id: 'g-Foo', d: 'M 240 396 L 800 396', kind: 'prototype', label: 'prototype', lx: 520, ly: 388,
+        tip: { h: 'prototype（绿色）', b: 'Foo.prototype 属性 → Foo.prototype 对象，new Foo() 就用它。' } },
+      { id: 'c-Foo', d: 'M 800 372 L 240 372', kind: 'constructor', label: 'constructor', lx: 520, ly: 364,
+        tip: { h: 'constructor（橙色）', b: 'Foo.prototype.constructor === Foo，这就是 foo.constructor 的答案。' } },
+      /* ---- 各函数 __proto__ 汇聚到 Function.prototype（蓝色肘形箭头）---- */
+      { id: 'b-O', d: 'M 60 241 L 30 241 L 30 155 L 812 155 L 812 112', kind: 'proto', label: '__proto__', lx: 52, ly: 320,
+        tip: { h: '__proto__（蓝色）', b: 'Object.__proto__ === Function.prototype。Object 也是函数，由 Function 构造。' } },
+      { id: 'b-Foo', d: 'M 60 396 L 50 396 L 50 150 L 800 150 L 800 112', kind: 'proto', label: '__proto__', lx: 64, ly: 430,
+        tip: { h: '__proto__（蓝色）', b: 'Foo.__proto__ === Function.prototype。自定义函数同样由 Function 构造。' } },
+      /* ---- 原型对象的 __proto__ 链（右侧纵向）---- */
+      { id: 'b-FpOp', d: 'M 895 112 L 895 215', kind: 'proto', label: '__proto__', lx: 916, ly: 166,
+        tip: { h: '__proto__（蓝色）', b: 'Function.prototype.__proto__ === Object.prototype。' } },
+      { id: 'b-Foop', d: 'M 830 370 L 830 267', kind: 'proto', label: '__proto__', lx: 798, ly: 322,
+        tip: { h: '__proto__（蓝色）', b: 'Foo.prototype.__proto__ === Object.prototype。' } },
+      { id: 'b-Onull', d: 'M 870 267 L 870 505', kind: 'proto', label: '__proto__', lx: 856, ly: 392,
+        tip: { h: '__proto__（蓝色）', b: 'Object.prototype.__proto__ === null，链到此为止。' } },
+      /* ---- foo → Foo.prototype ---- */
+      { id: 'b-foo', d: 'M 250 500 L 830 422', kind: 'proto', label: '__proto__', lx: 540, ly: 446,
+        tip: { h: '__proto__（蓝色）', b: 'foo.__proto__ === Foo.prototype。instanceof 就是沿这条链找 Ctor.prototype。' } }
+    ],
+    markers: []
+  }
+};
+
+/* =========================================================
+   Demo 状态定义（状态机：step 数组）
+   step = {
+     hl: [代码行索引],
+     nodesActive: [...], nodesDim: [...],
+     arrowsActive: [...],
+     markersShow: [...],
+     title, text,               // 讲解
+     ins: { title, rows: [{k,v,cls}] }  // 检查器
+   }
+   ========================================================= */
+var DEMOS = {
+
+  1: {
+    code: [
+      { t: 'function Foo() {}' },
+      { t: '' },
+      { t: 'const foo = new Foo();' },
+      { t: '' },
+      { t: '// new 的内部四步：' },
+      { t: '// ① 创建空对象 obj = {}' },
+      { t: '// ② obj.__proto__ = Foo.prototype' },
+      { t: '// ③ Foo.call(obj)，this 绑定 obj' },
+      { t: '// ④ 返回 obj，赋值给 foo' }
+    ],
+    steps: [
+      {
+        hl: [2],
+        nodesActive: [], nodesDim: ['obj'],
+        arrowsActive: [],
+        markersShow: [],
+        title: '第 1 步 · 创建空对象',
+        text: '代码里你只写了 <code>const foo = new Foo()</code>，但它背后隐藏了 4 步操作。引擎先创建了一个全新的空对象 <code>obj = {}</code>——没有任何<em class="em">自有属性</em>，此时它还没有连上任何原型。',
+        ins: { title: 'obj（new 内部临时对象）', rows: [
+          { k: '自有属性', v: '{}（空）', cls: 'gray' },
+          { k: '__proto__', v: '尚未连接', cls: 'gray' },
+          { k: 'constructor（自有）', v: '无', cls: 'gray' }
+        ] }
+      },
+      {
+        hl: [2, 6],
+        nodesActive: ['obj', 'Foo.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a-proto'],
+        markersShow: [],
+        title: '第 2 步 · 连接原型链',
+        text: '引擎把 <code>obj</code> 的内部 <code>[[Prototype]]</code>（即 <code>obj.__proto__</code>）指向 <code>Foo.prototype</code>。蓝色箭头亮起：<code>obj.__proto__ === Foo.prototype</code>。从此 obj 找不到的属性，就会沿这条链到原型对象上找。',
+        ins: { title: 'obj 连接原型', rows: [
+          { k: '自有属性', v: '{}（空）', cls: 'gray' },
+          { k: '__proto__', v: '→ Foo.prototype', cls: 'blue' },
+          { k: 'obj.__proto__ === Foo.prototype', v: 'true', cls: 'green' }
+        ] }
+      },
+      {
+        hl: [0, 2, 7],
+        nodesActive: ['obj', 'Foo', 'Foo.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a-proto'],
+        markersShow: ['cm-this'],
+        title: '第 3 步 · 以 obj 为 this 调用 Foo',
+        text: '以 <code>obj</code> 作为 <code>this</code> 调用 <code>Foo.call(obj)</code>（代码上表现为执行函数体）。<code>Foo</code> 的函数体为空，所以没有向 obj 添加任何属性。若函数体里有 <code>this.x = ...</code>，属性就会写到 obj 上。',
+        ins: { title: 'Foo.call(obj)', rows: [
+          { k: 'this', v: '→ 指向 obj', cls: 'orange' },
+          { k: 'Foo 函数体', v: '为空 → 未添加属性', cls: 'gray' },
+          { k: 'obj 自有属性', v: '{}（仍为空）', cls: 'gray' }
+        ] }
+      },
+      {
+        hl: [2, 8],
+        nodesActive: ['obj', 'Foo', 'Foo.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a-proto', 'a-green'],
+        markersShow: ['cm-ret'],
+        title: '第 4 步 · 返回对象，赋值给 foo',
+        text: '构造函数没有显式返回对象时，<code>new</code> 会把 <code>obj</code> 返回并赋给 <code>foo</code>。注意：<code>foo</code> 自身<em class="no">没有</em> <code>constructor</code> 属性——<code>foo.hasOwnProperty(\'constructor\') === false</code>（已用 Node 验证）。它读到 constructor 的真相，请看 Demo ③。',
+        ins: { title: 'foo = 返回的 obj', rows: [
+          { k: 'foo 自有属性', v: '{}（空）', cls: 'gray' },
+          { k: 'foo.__proto__', v: '→ Foo.prototype', cls: 'blue' },
+          { k: 'foo.hasOwnProperty(\'constructor\')', v: 'false', cls: 'red' }
+        ] }
+      }
+    ]
+  },
+
+  2: {
+    code: [
+      { t: 'function myInstanceof(obj, Ctor) {' },
+      { t: '  let p = Object.getPrototypeOf(obj);' },
+      { t: '  while (p !== null) {' },
+      { t: '    if (p === Ctor.prototype) return true;' },
+      { t: '    p = Object.getPrototypeOf(p);' },
+      { t: '  }' },
+      { t: '  return false;' },
+      { t: '}' },
+      { t: '' },
+      { t: 'const result = myInstanceof(foo, Object);' }
+    ],
+    steps: [
+      {
+        hl: [9, 1, 3],
+        nodesActive: ['foo', 'Foo.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a1'],
+        markersShow: ['cm-ne'],
+        title: '第 1 轮循环 · 第 1 层原型',
+        text: '<code>p = foo.__proto__</code> → <code>Foo.prototype</code>。比较 <code>p === Object.prototype</code>？结果：<em class="no">否（≠）</em>，条件不成立，进入下一轮，p 沿原型链继续上移一层。<code>instanceof</code> 不关心“谁 new 了 foo”，只沿着 <code>__proto__</code> 链找 <code>Ctor.prototype</code>。',
+        ins: { title: '第 1 轮循环', rows: [
+          { k: 'p', v: '= foo.__proto__ = Foo.prototype', cls: 'blue' },
+          { k: 'p === Object.prototype ?', v: '否（≠）', cls: 'red' },
+          { k: '链上位置', v: '第 1 层原型', cls: 'gray' }
+        ] }
+      },
+      {
+        hl: [9, 4, 3],
+        nodesActive: ['foo', 'Foo.prototype', 'Object.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a1', 'a2'],
+        markersShow: ['cm-ok'],
+        title: '第 2 轮循环 · 第 2 层原型',
+        text: '<code>p = Foo.prototype.__proto__</code> → <code>Object.prototype</code>。比较 <code>p === Object.prototype</code>？结果：<em class="ok">是（=）</em>！命中 → <code>return true</code>，循环结束。整条链 <code>foo → Foo.prototype → Object.prototype</code> 全部亮起。',
+        ins: { title: '第 2 轮循环', rows: [
+          { k: 'p', v: '= Foo.prototype.__proto__ = Object.prototype', cls: 'blue' },
+          { k: 'p === Object.prototype ?', v: '是（=）', cls: 'green' },
+          { k: 'return', v: 'true → 循环结束', cls: 'green' }
+        ] }
+      },
+      {
+        hl: [9],
+        nodesActive: ['foo', 'Foo.prototype', 'Object.prototype', 'null'],
+        nodesDim: [],
+        arrowsActive: ['a1', 'a2', 'a3'],
+        markersShow: ['cm-ok'],
+        title: '结论',
+        text: '因为 <code>Object.prototype</code> 出现在 <code>foo</code> 的<em class="em">原型链</em>上，所以 <code>foo instanceof Object === true</code>。附注：<code>instanceof</code> 判断的是“链上是否存在 <code>Ctor.prototype</code>”，而不是“谁创建了 foo”。',
+        ins: { title: '结论', rows: [
+          { k: 'foo instanceof Object', v: 'true', cls: 'green' },
+          { k: '原因', v: 'Object.prototype 在原型链上', cls: 'blue' },
+          { k: '注意', v: '查链，不看“谁 new 的”', cls: 'orange' }
+        ] }
+      }
+    ]
+  },
+
+  3: {
+    code: [
+      { t: '// foo.constructor 是怎么找到的？' },
+      { t: 'const c = foo.constructor;' },
+      { t: '' },
+      { t: '// ① foo 自身有 constructor 吗？' },
+      { t: '//    foo.hasOwnProperty(\'constructor\') === false' },
+      { t: '// ② 沿 __proto__ 找到 Foo.prototype' },
+      { t: '//    Foo.prototype.hasOwnProperty(\'constructor\') === true' },
+      { t: '// ③ 命中 → foo.constructor === Foo' },
+      { t: 'console.log(c === Foo);   // true' }
+    ],
+    steps: [
+      {
+        hl: [1, 3, 4],
+        nodesActive: ['foo'],
+        nodesDim: [],
+        arrowsActive: [],
+        markersShow: [],
+        title: '第 1 步 · 自身查找',
+        text: '读取 <code>foo.constructor</code> 时，引擎先从 <code>foo</code> 自身找：<code>foo.hasOwnProperty(\'constructor\')</code> → <em class="no">false</em>。检查器里可以看到，foo 的自有属性是空的，于是沿 <code>__proto__</code> 继续向上查找。',
+        ins: { title: '自身查找失败', rows: [
+          { k: 'foo.hasOwnProperty(\'constructor\')', v: 'false', cls: 'red' },
+          { k: 'foo 自有属性', v: '{}（空）', cls: 'gray' },
+          { k: '下一步', v: '沿 __proto__ 找', cls: 'gray' }
+        ] }
+      },
+      {
+        hl: [1, 5, 6],
+        nodesActive: ['foo', 'Foo.prototype'],
+        nodesDim: [],
+        arrowsActive: ['a-blue', 'a-constr'],
+        markersShow: [],
+        title: '第 2 步 · 沿原型链查找',
+        text: '沿 <code>foo.__proto__</code> 到达 <code>Foo.prototype</code>。检查它：<code>Foo.prototype.hasOwnProperty(\'constructor\')</code> → <em class="ok">true</em>！原型对象上确实有一个 <code>constructor</code> 属性（橙色箭头亮起），它指向 <code>Foo</code>。',
+        ins: { title: '原型对象命中', rows: [
+          { k: 'Foo.prototype.hasOwnProperty(\'constructor\')', v: 'true', cls: 'green' },
+          { k: '属性位置', v: '第 1 层原型（Foo.prototype）', cls: 'blue' },
+          { k: 'constructor', v: '→ 指向 Foo', cls: 'orange' }
+        ] }
+      },
+      {
+        hl: [1, 7, 8],
+        nodesActive: ['foo', 'Foo.prototype', 'Foo'],
+        nodesDim: [],
+        arrowsActive: ['a-blue', 'a-green', 'a-constr'],
+        markersShow: [],
+        title: '第 3 步 · 命中',
+        text: '命中！<code>foo.constructor === Foo.prototype.constructor === Foo</code>（两者严格相等，已用 Node 验证）。这就是为什么 <code>foo.constructor</code> 是 <code>Foo</code>——它实际读到的，是<em class="em">原型对象</em>上的 <code>constructor</code>，而不是自身属性。',
+        ins: { title: '查找结束', rows: [
+          { k: 'foo.constructor', v: '=== Foo', cls: 'green' },
+          { k: 'foo.constructor === Foo.prototype.constructor', v: 'true（严格相等）', cls: 'green' },
+          { k: '结论', v: '读到的是原型上的 constructor', cls: 'blue' }
+        ] }
+      }
+    ]
+  }
+};
+
+/* =========================================================
+   工具：代码行语法高亮
+   ========================================================= */
+function escHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function tokenize(line) {
+  if (!line) return '';
+  var ci = line.indexOf('//');
+  var code = ci === -1 ? line : line.slice(0, ci);
+  var cmt = ci === -1 ? '' : line.slice(ci);
+  var html = '';
+  var re = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b(?:function|const|let|var|return|while|if|else|new|true|false|null|this|typeof)\b)|([A-Za-z_$][\w$]*)(?=\s*\()|(\b\d+(?:\.\d+)?\b)|([+\-*/%<>=!&|]+)/g;
+  var last = 0, m;
+  while ((m = re.exec(code))) {
+    if (m.index > last) html += escHtml(code.slice(last, m.index));
+    if (m[1]) html += '<span class="tok-str">' + escHtml(m[1]) + '</span>';
+    else if (m[2]) html += '<span class="tok-kw">' + escHtml(m[2]) + '</span>';
+    else if (m[3]) html += '<span class="tok-fn">' + escHtml(m[3]) + '</span>';
+    else if (m[4]) html += '<span class="tok-num">' + escHtml(m[4]) + '</span>';
+    else if (m[5]) html += '<span class="tok-op">' + escHtml(m[5]) + '</span>';
+    last = m.index + m[0].length;
+  }
+  if (last < code.length) html += escHtml(code.slice(last));
+  if (cmt) html += '<span class="tok-cmt">' + escHtml(cmt) + '</span>';
+  return html;
+}
+
+/* =========================================================
+   SVG 图形构建
+   ========================================================= */
+var NAMESPACE = 'http://www.w3.org/2000/svg';
+
+function svgEl(tag, attrs) {
+  var el = document.createElementNS(NAMESPACE, tag);
+  for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+var ARROW_KIND_COLOR = {
+  proto: '#60a5fa',
+  prototype: '#4ade80',
+  constructor: '#fbbf24'
+};
+
+var BUILT_GRAPHS = {};
+
+function buildGraph(demoId) {
+  var g = GRAPHS[demoId];
+  var svg = svgEl('svg', { viewBox: '0 0 ' + g.w + ' ' + g.h, 'aria-label': '原型链可视化' });
+
+  /* defs + markers */
+  var defs = svgEl('defs', {});
+  ['#60a5fa', '#4ade80', '#fbbf24'].forEach(function (color) {
+    var mid = color.slice(1);
+    var mk = svgEl('marker', {
+      id: 'mk-' + mid,
+      viewBox: '0 0 10 10',
+      refX: '9',
+      refY: '5',
+      markerWidth: '7',
+      markerHeight: '7',
+      orient: 'auto-start-reverse'
+    });
+    mk.appendChild(svgEl('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: color }));
+    defs.appendChild(mk);
+  });
+  svg.appendChild(defs);
+
+  /* arrows */
+  var arrowsG = svgEl('g', {});
+  g.arrows.forEach(function (a) {
+    var grp = svgEl('g', { class: 'g-arrow', 'data-id': a.id, 'data-tip': JSON.stringify(a.tip) });
+    var color = ARROW_KIND_COLOR[a.kind];
+    var flow = svgEl('path', { class: 'arrow-flow', d: a.d, stroke: color });
+    var path = svgEl('path', {
+      class: 'arrow-path', d: a.d,
+      stroke: color,
+      'marker-end': 'url(#mk-' + color.slice(1) + ')',
+      style: '--ac:' + color
+    });
+    var lbl = svgEl('text', {
+      class: 'arrow-label',
+      x: a.lx, y: a.ly, 'text-anchor': 'middle',
+      style: '--ac:' + color
+    });
+    lbl.textContent = a.label;
+    grp.appendChild(flow);
+    grp.appendChild(path);
+    grp.appendChild(lbl);
+    arrowsG.appendChild(grp);
+  });
+  svg.appendChild(arrowsG);
+
+  /* nodes */
+  var nodesG = svgEl('g', {});
+  g.nodes.forEach(function (n) {
+    var grp = svgEl('g', {
+      class: 'g-node ' + nodeTypeClass(n.type),
+      'data-id': n.id,
+      'data-tip': JSON.stringify(n.tip)
+    });
+    if (demoId === 1 && n.id === 'obj') grp.setAttribute('id', 'n-obj');
+
+    var cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+    var halo = svgEl('ellipse', {
+      class: 'halo', cx: cx, cy: cy,
+      rx: n.w / 2 + 7, ry: n.h / 2 + 7,
+      style: '--nc:' + COLORS[n.type === 'null' ? 'nullc' : n.type]
+    });
+    var rect = svgEl('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 9 });
+    var t1 = svgEl('text', { class: 'n-main', x: cx, y: cy - (n.sub ? 3 : 1), 'text-anchor': 'middle' });
+    t1.textContent = n.label;
+    grp.appendChild(halo);
+    grp.appendChild(rect);
+    grp.appendChild(t1);
+    if (n.sub) {
+      var t2 = svgEl('text', { class: 'n-sub', x: cx, y: cy + 15, 'text-anchor': 'middle' });
+      t2.textContent = n.sub;
+      grp.appendChild(t2);
+    }
+    nodesG.appendChild(grp);
+  });
+  svg.appendChild(nodesG);
+
+  /* compare markers */
+  var mkG = svgEl('g', {});
+  (g.markers || []).forEach(function (mk) {
+    var grp = svgEl('g', { class: 'compare', 'data-id': mk.id, 'data-mk': demoId });
+    var r = svgEl('rect', {
+      class: 'cm-badge ' + (mk.ok ? 'ok' : 'bad'),
+      x: mk.x, y: mk.y, width: mk.w, height: mk.h, rx: 8
+    });
+    var q = svgEl('text', { class: 'cm-q', x: mk.x + mk.w / 2, y: mk.y + 12, 'text-anchor': 'middle' });
+    q.textContent = mk.q;
+    var rT = svgEl('text', { class: 'cm-r ' + (mk.ok ? 'ok' : 'bad'), x: mk.x + mk.w / 2, y: mk.y + 29, 'text-anchor': 'middle' });
+    rT.textContent = mk.r;
+    grp.appendChild(r);
+    grp.appendChild(q);
+    grp.appendChild(rT);
+    mkG.appendChild(grp);
+  });
+  svg.appendChild(mkG);
+
+  return svg;
+}
+
+function getGraph(demoId) {
+  if (!BUILT_GRAPHS[demoId]) {
+    var host = document.getElementById('chain-' + demoId);
+    var svg = buildGraph(demoId);
+    host.appendChild(svg);
+    BUILT_GRAPHS[demoId] = svg;
+  }
+  return BUILT_GRAPHS[demoId];
+}
+
+/* =========================================================
+   状态管理
+   ========================================================= */
+var current = { demo: 1, idx: { 1: 0, 2: 0, 3: 0 } };
+
+function goto(demoId, idx) {
+  var D = DEMOS[demoId];
+  if (!D) return;
+  var n = D.steps.length;
+  idx = Math.max(0, Math.min(n - 1, idx));
+  current.idx[demoId] = idx;
+  renderStep(demoId);
+}
+
+function renderStep(demoId) {
+  var D = DEMOS[demoId];
+  var idx = current.idx[demoId];
+  var step = D.steps[idx];
+  var i, row;
+
+  /* 代码高亮 */
+  var lines = document.querySelectorAll('#code-' + demoId + ' .code-line');
+  for (i = 0; i < lines.length; i++) {
+    lines[i].classList.toggle('active', step.hl.indexOf(i) !== -1);
+  }
+
+  /* 图：节点 / 箭头 / 徽章 */
+  var svg = getGraph(demoId);
+  var nodes = svg.querySelectorAll('.g-node');
+  for (i = 0; i < nodes.length; i++) {
+    var id = nodes[i].getAttribute('data-id');
+    nodes[i].classList.toggle('active', step.nodesActive.indexOf(id) !== -1);
+    nodes[i].classList.toggle('dim', !!step.nodesDim && step.nodesDim.indexOf(id) !== -1);
+  }
+  var arrows = svg.querySelectorAll('.g-arrow');
+  for (i = 0; i < arrows.length; i++) {
+    var aid = arrows[i].getAttribute('data-id');
+    arrows[i].classList.toggle('active', step.arrowsActive.indexOf(aid) !== -1);
+  }
+  var marks = svg.querySelectorAll('.compare');
+  for (i = 0; i < marks.length; i++) {
+    var mid = marks[i].getAttribute('data-id');
+    marks[i].classList.toggle('show', !!step.markersShow && step.markersShow.indexOf(mid) !== -1);
+  }
+
+  /* Demo 1：第 4 步 obj 改名为 foo */
+  if (demoId === 1) {
+    var objG = document.getElementById('n-obj');
+    if (objG) {
+      var main = objG.querySelector('.n-main');
+      var sub = objG.querySelector('.n-sub');
+      if (idx >= 3) {
+        main.textContent = 'foo';
+        sub.textContent = '实例对象';
+      } else {
+        main.textContent = 'obj';
+        sub.textContent = '空对象';
+      }
+    }
+  }
+
+  /* 讲解 */
+  var nar = document.getElementById('narrative-' + demoId);
+  nar.innerHTML = '<div class="nar-title"><span class="n-step">' + (idx + 1) + '/' + D.steps.length + '</span>' + step.title + '</div>' +
+                  '<div class="nar-text">' + step.text + '</div>';
+  nar.classList.remove('pop');
+  void nar.offsetWidth;
+  nar.classList.add('pop');
+
+  /* 检查器 */
+  var ins = document.getElementById('inspector-' + demoId);
+  var html = '<div class="ins-title"><span class="ins-var">' + step.ins.title + '</span></div>';
+  for (i = 0; i < step.ins.rows.length; i++) {
+    row = step.ins.rows[i];
+    html += '<div class="ins-row"><span class="ins-k">' + row.k + '</span><span class="ins-v c-' + row.cls + '">' + row.v + '</span></div>';
+  }
+  ins.innerHTML = html;
+
+  /* 步进指示器 & 圆点 & 按钮 */
+  document.getElementById('sind-' + demoId).innerHTML = '第 <b>' + (idx + 1) + '</b> / ' + D.steps.length + ' 步';
+  var dots = document.getElementById('dots-' + demoId).children;
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = 'dot-i' + (i < idx ? ' done' : '') + (i === idx ? ' cur' : '');
+  }
+  document.querySelector('#controls-' + demoId + ' .prev').disabled = (idx <= 0);
+  document.querySelector('#controls-' + demoId + ' .next').disabled = (idx >= D.steps.length - 1);
+}
+
+/* =========================================================
+   初始化：代码面板 + 控制条 + 事件
+   ========================================================= */
+function buildCodePanel(demoId) {
+  var D = DEMOS[demoId];
+  var host = document.getElementById('code-' + demoId);
+  var html = '';
+  for (var i = 0; i < D.code.length; i++) {
+    html += '<div class="code-line" data-line="' + i + '">' +
+            '<span class="gutter">' + (i + 1) + '</span>' +
+            '<span class="ct">' + tokenize(D.code[i].t) + '</span></div>';
+  }
+  host.innerHTML = html;
+}
+
+function buildControls(demoId) {
+  var D = DEMOS[demoId];
+  var host = document.getElementById('controls-' + demoId);
+  var html =
+    '<button class="btn prev" data-act="prev">⬅️ 上一步</button>' +
+    '<div class="dots" id="dots-' + demoId + '"></div>' +
+    '<div class="sind" id="sind-' + demoId + '"></div>' +
+    '<button class="btn primary next" data-act="next">下一步 ➡️</button>' +
+    '<button class="btn reset" data-act="reset">🔄 重新开始</button>' +
+    '<span class="kbd-hint"><kbd>←</kbd> <kbd>→</kbd> 切换 · <kbd>R</kbd> 重来</span>';
+  host.innerHTML = html;
+
+  var dotsHtml = '';
+  for (var i = 0; i < D.steps.length; i++) dotsHtml += '<span class="dot-i"></span>';
+  document.getElementById('dots-' + demoId).innerHTML = dotsHtml;
+
+  host.querySelector('.prev').addEventListener('click', function () { goto(demoId, current.idx[demoId] - 1); });
+  host.querySelector('.next').addEventListener('click', function () { goto(demoId, current.idx[demoId] + 1); });
+  host.querySelector('.reset').addEventListener('click', function () { goto(demoId, 0); });
+}
+
+/* 标签页切换 */
+var tabs = document.querySelectorAll('.tab');
+for (var ti = 0; ti < tabs.length; ti++) {
+  tabs[ti].addEventListener('click', function () {
+    var d = parseInt(this.getAttribute('data-demo'), 10);
+    activateDemo(d);
+  });
+}
+
+function activateDemo(d) {
+  var i;
+  for (i = 0; i < tabs.length; i++) tabs[i].classList.toggle('active', parseInt(tabs[i].getAttribute('data-demo'), 10) === d);
+  var demos = document.querySelectorAll('.demo');
+  for (i = 0; i < demos.length; i++) demos[i].classList.toggle('active', demos[i].id === 'demo-' + d);
+  current.demo = d;
+  if (d <= 3) renderStep(d);
+  else getGraph(4);
+}
+
+/* =========================================================
+   Tooltip（所有图都可悬停查看；Demo 4 为重点）
+   ========================================================= */
+var tt = document.getElementById('tt');
+var ttTimer = null;
+
+function showTip(el) {
+  var raw = el.getAttribute('data-tip');
+  if (!raw) return;
+  var data;
+  try { data = JSON.parse(raw); } catch (e) { return; }
+  var html = '';
+  if (data.h) html += '<div class="tt-h">' + data.h + '</div>';
+  if (data.b) html += '<div class="tt-b">' + data.b + '</div>';
+  if (data.note) html += '<div class="tt-note">✔ ' + data.note + '</div>';
+  tt.innerHTML = html;
+  tt.classList.add('show');
+}
+
+function hideTip() {
+  tt.classList.remove('show');
+}
+
+function moveTip(e) {
+  var x = e.clientX + 16, y = e.clientY + 14;
+  var r = tt.getBoundingClientRect();
+  if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - 12;
+  if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - 12;
+  tt.style.left = Math.max(4, x) + 'px';
+  tt.style.top = Math.max(4, y) + 'px';
+}
+
+document.addEventListener('mouseover', function (e) {
+  var el = e.target.closest('.g-node, .g-arrow');
+  if (el && el.getAttribute('data-tip')) {
+    showTip(el);
+    ttTimer && clearTimeout(ttTimer);
+  }
+});
+document.addEventListener('mousemove', function (e) {
+  if (tt.classList.contains('show')) moveTip(e);
+});
+document.addEventListener('mouseout', function (e) {
+  var el = e.target.closest('.g-node, .g-arrow');
+  if (el) {
+    ttTimer = setTimeout(hideTip, 60);
+  }
+});
+
+/* 键盘快捷键 */
+document.addEventListener('keydown', function (e) {
+  if (current.demo > 3) return;
+  var d = current.demo;
+  if (e.key === 'ArrowRight') { goto(d, current.idx[d] + 1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { goto(d, current.idx[d] - 1); e.preventDefault(); }
+  else if (e.key === 'r' || e.key === 'R') { goto(d, 0); }
+});
+
+/* =========================================================
+   启动
+   ========================================================= */
+for (var dk in DEMOS) {
+  if (DEMOS.hasOwnProperty(dk)) {
+    dk = parseInt(dk, 10);
+    buildCodePanel(dk);
+    buildControls(dk);
+    getGraph(dk);
+    renderStep(dk);
+  }
+}
+getGraph(4);
+</script>
+</body>
+</html>

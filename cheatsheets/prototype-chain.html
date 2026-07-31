@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>原型链全景速查</title>
+<style>
+  :root{
+    --accent:#2563eb; --text:#1e293b; --bg:#f1f5f9; --red:#dc2626;
+    --blue:#2563eb; --green:#059669; --orange:#d97706; --border:#cbd5e1; --mut:#64748b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  @page{size:A4;margin:8mm;}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{
+    font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+    color:var(--text);font-size:11px;line-height:1.5;background:var(--bg);
+  }
+  code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .sheet{max-width:188mm;margin:0 auto;padding:1px;}
+  .sec,header,.cols{break-inside:avoid;}
+
+  header{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;border-top:4px solid var(--accent);margin-bottom:8px;}
+  header h1{font-size:18px;font-weight:800;color:var(--text);letter-spacing:.5px;}
+  header h1 span{color:var(--accent);}
+  .tagline{font-size:10.5px;color:#475569;margin-top:3px;}
+  .herocode{margin-top:5px;background:#f8fafc;border:1px solid var(--border);border-radius:5px;padding:4px 8px;display:inline-block;font-size:10px;color:#0f172a;}
+
+  .sec-h{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+  .sec-h::before{content:'';width:4px;height:13px;background:var(--accent);border-radius:2px;flex:none;}
+  .sec-h small{font-size:9px;font-weight:500;color:var(--mut);}
+  .card{background:#fff;border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:6px;}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .cols .card{margin-bottom:0;}
+
+  .rule{display:flex;gap:7px;margin:0 0 3px 0;}
+  .rule:last-child{margin-bottom:0;}
+  .rnum{flex:none;width:16px;height:16px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .rule b{font-weight:700;}
+  .rule .r{color:#334155;font-size:10.5px;}
+
+  .steps{list-style:none;margin-bottom:3px;}
+  .steps li{display:flex;gap:7px;margin-bottom:3px;font-size:10.5px;color:#334155;}
+  .steps li:last-child{margin-bottom:0;}
+  .steps i{flex:none;width:15px;height:15px;border-radius:4px;background:#eff6ff;color:var(--accent);font-style:normal;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .steps b{font-weight:700;color:var(--text);}
+
+  .code{background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:4px 8px;font-size:8.5px;line-height:1.5;color:#0f172a;overflow:hidden;}
+  .code .cm{color:#64748b;}
+  .code .kw{color:#2563eb;font-weight:700;}
+  .code .fn{color:#b45309;}
+
+  .inst-lines{margin-bottom:5px;font-size:10.5px;color:#334155;}
+  .inst-lines b{color:var(--accent);}
+  .walk{margin-top:5px;font-size:10px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:4px 8px;}
+  .walk b{color:#047857;}
+
+  table{width:100%;border-collapse:collapse;font-size:9px;}
+  th{background:#eff6ff;color:var(--accent);font-weight:700;text-align:left;padding:4px 6px;border:1px solid var(--border);}
+  td{padding:4px 6px;border:1px solid var(--border);vertical-align:top;color:#334155;}
+  td:first-child{font-weight:600;color:var(--text);}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .pit{display:flex;gap:7px;margin-bottom:4px;font-size:10.5px;color:#334155;}
+  .pit:last-child{margin-bottom:0;}
+  .pnum{flex:none;width:15px;height:15px;border-radius:4px;background:#fef2f2;color:var(--red);font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .pit b{color:var(--red);}
+  .pit code{background:#fef2f2;padding:0 3px;border-radius:3px;font-size:9px;color:#b91c1c;}
+
+  .diagram{position:relative;width:674px;height:208px;margin:2px auto 0;}
+  .node{position:absolute;width:100px;height:44px;border:1.5px solid var(--border);border-radius:6px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+  .node .n{font-size:9px;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#0f172a;}
+  .node .s{font-size:7.5px;color:var(--mut);}
+  .node.accent{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+  .node.null{border:1.5px dashed #94a3b8;background:#f8fafc;}
+  .node.null .n{color:#64748b;}
+  .rowcap{position:absolute;left:4px;width:24px;text-align:right;font-size:8px;color:#94a3b8;}
+
+  .ha{position:absolute;height:6px;color:var(--blue);}
+  .ha .lbl{position:absolute;top:-9px;left:0;right:0;text-align:center;font-size:8px;font-weight:600;white-space:nowrap;color:currentColor;background:#fff;padding:0 2px;}
+  .ha .line{position:absolute;top:0;left:0;right:0;height:6px;display:flex;align-items:center;}
+  .ha .ln{flex:1;height:0;border-top:1.6px solid currentColor;}
+  .ha .hd{width:0;height:0;border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;border-left:6px solid currentColor;}
+  .ha.green{color:var(--green);}
+  .ha.orange{color:var(--orange);}
+
+  .va{position:absolute;width:0;color:var(--green);}
+  .va .vline{position:absolute;top:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;}
+  .va .ln{width:0;border-left:1.6px solid currentColor;flex:1;}
+  .va .hd-up{width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-bottom:6px solid currentColor;}
+  .va .hd-dn{width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-top:6px solid currentColor;}
+  .va .lbl{position:absolute;top:50%;transform:translateY(-50%);font-size:8px;font-weight:600;white-space:nowrap;color:currentColor;background:#fff;padding:0 2px;}
+  .va.up .vline{flex-direction:column-reverse;}
+  .va.down .vline{flex-direction:column;}
+  .va.orange{color:var(--orange);}
+  .va.blue{color:var(--blue);}
+  .lbl-l .lbl{right:5px;text-align:right;}
+  .lbl-r .lbl{left:5px;}
+
+  .legend{display:flex;justify-content:center;gap:16px;margin-top:2px;font-size:9px;color:#475569;flex-wrap:wrap;}
+  .lg{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+  .lg i{display:inline-block;width:20px;height:0;border-top:2px solid;}
+  .lg i.blue{border-color:var(--blue);}
+  .lg i.green{border-color:var(--green);}
+  .lg i.orange{border-color:var(--orange);}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <h1>原型链全景速查</h1>
+    <div class="tagline">一切皆对象：属性查找沿 <code>__proto__</code> 逐级向上直到 <code>null</code>；只有函数拥有 <code>prototype</code>，所有对象都有 <code>__proto__</code>。</div>
+    <div class="herocode"><code>function Foo() {}</code>　·　<code>const foo = new Foo()</code></div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">全景图 <small>实例链 / 函数链 / 构造器三层，箭头颜色见下方图例</small></div>
+    <div class="card">
+      <div class="diagram">
+        <span class="rowcap" style="top:16px;">实例层</span>
+        <span class="rowcap" style="top:102px;">函数层</span>
+        <span class="rowcap" style="top:180px;">构造器</span>
+
+        <div class="node" style="left:30px;top:0;">
+          <span class="n">foo</span><span class="s">new Foo() 实例</span>
+        </div>
+        <div class="node accent" style="left:166px;top:0;">
+          <span class="n">Foo.prototype</span><span class="s">原型对象</span>
+        </div>
+        <div class="node" style="left:302px;top:0;">
+          <span class="n">Object.prototype</span><span class="s">所有对象的根</span>
+        </div>
+        <div class="node null" style="left:438px;top:0;">
+          <span class="n">null</span><span class="s">终点</span>
+        </div>
+
+        <div class="node accent" style="left:166px;top:86px;">
+          <span class="n">Foo</span><span class="s">构造函数</span>
+        </div>
+        <div class="node" style="left:302px;top:86px;">
+          <span class="n">Function.prototype</span><span class="s">函数的原型</span>
+        </div>
+        <div class="node" style="left:438px;top:86px;">
+          <span class="n">Object.prototype</span><span class="s">所有对象的根</span>
+        </div>
+        <div class="node null" style="left:574px;top:86px;">
+          <span class="n">null</span><span class="s">终点</span>
+        </div>
+
+        <div class="node" style="left:302px;top:164px;">
+          <span class="n">Function</span><span class="s">内置构造器</span>
+        </div>
+        <div class="node" style="left:438px;top:164px;">
+          <span class="n">Object</span><span class="s">内置构造器</span>
+        </div>
+
+        <div class="ha blue" style="left:130px;top:18px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+        <div class="ha blue" style="left:266px;top:18px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+        <div class="ha blue" style="left:402px;top:18px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+
+        <div class="ha blue" style="left:266px;top:104px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+        <div class="ha blue" style="left:402px;top:104px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+        <div class="ha blue" style="left:538px;top:104px;width:36px;">
+          <span class="lbl">__proto__</span><span class="line"><i class="ln"></i><i class="hd"></i></span>
+        </div>
+
+        <div class="va up lbl-l" style="left:204px;top:44px;height:42px;">
+          <span class="vline"><i class="ln"></i><i class="hd-up"></i></span><span class="lbl">prototype</span>
+        </div>
+        <div class="va down orange lbl-r" style="left:228px;top:44px;height:42px;">
+          <span class="vline"><i class="ln"></i><i class="hd-dn"></i></span><span class="lbl">constructor</span>
+        </div>
+
+        <div class="va up lbl-l" style="left:340px;top:130px;height:34px;">
+          <span class="vline"><i class="ln"></i><i class="hd-up"></i></span><span class="lbl">prototype</span>
+        </div>
+        <div class="va down orange lbl-r" style="left:364px;top:130px;height:34px;">
+          <span class="vline"><i class="ln"></i><i class="hd-dn"></i></span><span class="lbl">constructor</span>
+        </div>
+        <div class="va down orange lbl-l" style="left:488px;top:130px;height:34px;">
+          <span class="vline"><i class="ln"></i><i class="hd-dn"></i></span><span class="lbl">constructor</span>
+        </div>
+      </div>
+      <div class="legend">
+        <span class="lg"><i class="blue"></i>__proto__：实例 → 原型对象（继承链）</span>
+        <span class="lg"><i class="green"></i>prototype：构造函数 → 原型对象</span>
+        <span class="lg"><i class="orange"></i>constructor：原型对象 → 构造函数</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="sec">
+      <div class="sec-h">三条黄金规则</div>
+      <div class="card">
+        <div class="rule"><span class="rnum">1</span><div class="r"><b>实例.__proto__ === 构造函数.prototype</b> —— 实例通过 <code>__proto__</code> 指向其构造函数的 <code>prototype</code></div></div>
+        <div class="rule"><span class="rnum">2</span><div class="r"><b>构造函数.prototype.constructor === 构造函数</b> —— 原型对象自带 <code>constructor</code> 反向引用</div></div>
+        <div class="rule"><span class="rnum">3</span><div class="r"><b>一切函数（含 Object）的 __proto__ 都是 Function.prototype</b>；所有链的终点都是 <code>Object.prototype → null</code></div></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h">new 做了 4 步</div>
+      <div class="card">
+        <ul class="steps">
+          <li><i>1</i><div><b>创建空对象</b> obj</div></li>
+          <li><i>2</i><div><b>连接原型</b> obj.__proto__ = Foo.prototype</div></li>
+          <li><i>3</i><div><b>绑定 this</b> Foo.call(obj) 并执行函数体</div></li>
+          <li><i>4</i><div><b>返回</b> obj；若 Foo 显式 return 对象则返回该对象</div></li>
+        </ul>
+        <pre class="code"><span class="kw">function</span> <span class="fn">myNew</span>(Ctor, ...args) {
+  <span class="kw">const</span> obj = Object.<span class="fn">create</span>(Ctor.prototype) <span class="cm">// ① ②</span>
+  <span class="kw">const</span> ret = Ctor.<span class="fn">apply</span>(obj, args)          <span class="cm">// ③ this → obj</span>
+  <span class="kw">return</span> ret && <span class="kw">typeof</span> ret === <span class="cm">'object'</span> ? ret : obj <span class="cm">// ④</span></pre>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec">
+    <div class="sec-h">instanceof 原理</div>
+    <div class="card">
+      <div class="inst-lines">语义：<b>右侧 Ctor.prototype</b> 是否在<b>左侧 obj</b> 的原型链上 —— 沿 <code>__proto__</code> 逐级比较，直到 <code>null</code>。</div>
+      <pre class="code"><span class="kw">function</span> <span class="fn">myInstanceof</span>(obj, Ctor) {
+  <span class="kw">let</span> p = Object.<span class="fn">getPrototypeOf</span>(obj)
+  <span class="kw">while</span> (p !== <span class="kw">null</span>) {
+    <span class="kw">if</span> (p === Ctor.prototype) <span class="kw">return</span> <span class="kw">true</span>
+    p = Object.<span class="fn">getPrototypeOf</span>(p)
+  }
+  <span class="kw">return</span> <span class="kw">false</span>
+}</pre>
+      <div class="walk">走一遍：<code>foo instanceof Object</code> → foo → <code>Foo.prototype</code> → <code>Object.prototype</code> 命中 → <b>true</b> ✓</div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="sec">
+      <div class="sec-h">面试快问快答</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th style="width:34%;">问题</th><th>答案</th></tr>
+          <tr><td>foo.constructor 为什么是 Foo？</td><td>自身无 constructor，沿 __proto__ 在 Foo.prototype 上找到（Foo.prototype.constructor === Foo）</td></tr>
+          <tr><td>为什么 foo instanceof Object 是 true？</td><td>Object.prototype 在 foo 的原型链上（foo → Foo.prototype → Object.prototype）</td></tr>
+          <tr><td>Function.__proto__ 为什么 === Function.prototype？</td><td>Function 由引擎自举（bootstrapped），特殊规则</td></tr>
+          <tr><td>Object.__proto__ 是什么？</td><td>Function.prototype —— Object 也是函数</td></tr>
+          <tr><td>foo.prototype 是什么？</td><td>undefined —— 只有函数才有 prototype 属性</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h">高频坑位</div>
+      <div class="card">
+        <div class="pit"><span class="pnum">1</span><div><b>prototype 与 __proto__ 混淆</b>：<code>prototype</code> 只有函数有（放共享方法）；<code>__proto__</code> 每个对象都有（指向构造函数的 prototype）</div></div>
+        <div class="pit"><span class="pnum">2</span><div><b>Object.create(null)</b> 无任何原型链，连 <code>toString</code> / <code>hasOwnProperty</code> 都没有</div></div>
+        <div class="pit"><span class="pnum">3</span><div><b>构造函数显式 return 对象</b>时，new 返回该对象；return 基本类型则被忽略，仍返回新对象</div></div>
+        <div class="pit"><span class="pnum">4</span><div><b>重写 Foo.prototype 后</b>，旧实例仍指向旧原型；新原型丢失 <code>constructor</code>，需手动补回</div></div>
+      </div>
+    </section>
+  </div>
+
+</div>
+</body>
+</html>
