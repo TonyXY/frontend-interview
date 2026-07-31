@@ -18,7 +18,7 @@ frequency: high
 ```mermaid
 flowchart TD
     subgraph React[React: 库而非框架]
-        A1[UI = fn(state)] --> A2[纯 JS 灵活度高]
+        A1["UI = fn(state)"] --> A2[纯 JS 灵活度高]
         A2 --> A3[选型成本在开发者]
         A3 --> A4[你需要自己搭路由/状态管理/构建]
     end
@@ -98,7 +98,7 @@ flowchart LR
         B2 --> C2[父子组件自动同步]
     end
     subgraph Angular
-        A3[双向绑定 + RxJS] --> B3[( ) 输入 / 事件输出]
+        A3[双向绑定 + RxJS] --> B3["( ) 输入 / 事件输出"]
         B3 --> C3[可观察数据流]
     end
 ```

@@ -24,7 +24,7 @@ flowchart LR
     subgraph Effect[副作用]
         D[useEffect] -->|依赖数组| E[控制执行时机]
         E -->|空数组| F[仅 mount]
-        E -->|[依赖]| G[依赖变化时]
+        E -->|"依赖"| G[依赖变化时]
         E -->|无| H[每次渲染]
     end
     subgraph Ref[引用]

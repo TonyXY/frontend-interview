@@ -113,8 +113,8 @@ interface Fiber {
 ```mermaid
 flowchart TD
     A[div root] -->|child| B[div container]
-    B -->|child| C[p "Hello"]
-    B -->|sibling| D[button "Click"]
+    B -->|child| C["p 'Hello'"]
+    B -->|sibling| D["button 'Click'"]
     C -->|return| B
     D -->|return| B
     B -->|return| A
