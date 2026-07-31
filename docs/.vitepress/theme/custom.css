@@ -141,3 +141,19 @@
   background: #e0e7ff;
   color: #3730a3;
 }
+
+/* ===== Mermaid 流程图：修复节点文字被裁剪 =====
+ * Mermaid 计算 foreignObject 高度时假设 line-height: 1.5（16px × 1.5 = 24px/行），
+ * 但 foreignObject 内的 <p> 是 XHTML，会继承 VitePress 全局 .vp-doc 的 line-height
+ * （约 28px/行），导致多行节点文字实际高度超过 foreignObject 高度，下半部分被裁剪。
+ * 此处将 .mermaid 作用域内的行高恢复为与 Mermaid 计算一致的值。
+ */
+.mermaid foreignObject p {
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mermaid foreignObject div {
+  line-height: 1.5 !important;
+}
