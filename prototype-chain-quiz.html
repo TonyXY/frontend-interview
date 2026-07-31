@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>原型链 mini Quiz · 概念选择 + 手写题</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #172033;
+    --border: #334155;
+    --code-bg: #0b1120;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --accent: #3b82f6;
+    --accent-2: #60a5fa;
+    --ok: #22c55e;
+    --ok-2: #4ade80;
+    --warn: #f59e0b;
+    --warn-2: #fbbf24;
+    --err: #ef4444;
+    --kw: #c792ea;
+    --fn: #82aaff;
+    --str: #c3e88d;
+    --cmt: #546e7a;
+    --radius: 12px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    background-image:
+      radial-gradient(1100px 500px at 15% -10%, rgba(59,130,246,.12), transparent 60%),
+      radial-gradient(900px 480px at 110% 5%, rgba(34,197,94,.08), transparent 55%),
+      radial-gradient(700px 400px at 50% 115%, rgba(245,158,11,.06), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  header {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 26px 20px 10px;
+  }
+
+  .head-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    background: linear-gradient(90deg, #60a5fa, #4ade80 60%, #fbbf24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo small {
+    font-size: 13px;
+    font-weight: 600;
+    -webkit-text-fill-color: var(--muted);
+  }
+
+  .score-pill {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    box-shadow: 0 4px 14px rgba(0,0,0,.3);
+  }
+
+  .score-pill .sp-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--ok-2);
+    box-shadow: 0 0 8px rgba(74,222,128,.8);
+  }
+
+  .score-pill b {
+    color: var(--ok-2);
+    font-family: var(--mono);
+    font-size: 15px;
+  }
+
+  .head-sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .tabbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .25s ease;
+  }
+
+  .tab .tab-n {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    opacity: .7;
+    margin-left: 4px;
+  }
+
+  .tab:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(59,130,246,.22), rgba(34,197,94,.12));
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15), 0 4px 14px rgba(0,0,0,.35);
+  }
+
+  main { max-width: 900px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  .demo { display: none; animation: fadein .35s ease; }
+  .demo.active { display: block; }
+
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .quiz-top {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .demo-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .demo-title .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    background: linear-gradient(90deg, var(--accent-2), var(--ok-2));
+    border-radius: 6px;
+    padding: 1px 8px;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+
+  .demo-desc { color: var(--muted); font-size: 13px; }
+
+  /* ---- progress ---- */
+  .progress-wrap {
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .prog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+
+  .prog-meta b { color: #f8fafc; }
+
+  .pbar {
+    height: 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .pbar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--ok));
+    border-radius: 999px;
+    transition: width .4s ease;
+  }
+
+  /* ---- panel ---- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel-2);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 8px rgba(96,165,250,.8);
+    flex: none;
+  }
+
+  .dot.green { background: var(--ok-2); box-shadow: 0 0 8px rgba(74,222,128,.8); }
+  .dot.orange { background: var(--warn-2); box-shadow: 0 0 8px rgba(251,191,36,.8); }
+
+  /* ---- question card ---- */
+  .q-card .panel-head { color: var(--accent-2); }
+
+  .q-text {
+    padding: 16px 20px 6px;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1.7;
+  }
+
+  .q-text code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 5px;
+    padding: 1px 6px;
+  }
+
+  .opts {
+    padding: 8px 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text);
+    transition: all .2s ease;
+  }
+
+  .opt:hover:not(:disabled) { border-color: var(--accent); transform: translateX(2px); box-shadow: 0 6px 16px rgba(59,130,246,.18); }
+  .opt:active:not(:disabled) { transform: translateX(0); }
+
+  .opt-tag {
+    flex: none;
+    min-width: 44px;
+    text-align: center;
+    padding: 3px 8px;
+    background: rgba(59,130,246,.12);
+    border: 1px solid rgba(59,130,246,.35);
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--accent-2);
+    font-family: var(--mono);
+  }
+
+  .opt-txt { flex: 1; line-height: 1.6; }
+  .opt-txt code { font-family: var(--mono); font-size: 12.5px; color: #7dd3fc; }
+
+  .opt-mark {
+    flex: none;
+    width: 22px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .opt.correct {
+    border-color: var(--ok);
+    background: rgba(34,197,94,.10);
+  }
+  .opt.correct .opt-tag { background: rgba(34,197,94,.16); border-color: var(--ok); color: var(--ok-2); }
+  .opt.correct .opt-mark { color: var(--ok-2); }
+  .opt.wrong {
+    border-color: var(--err);
+    background: rgba(239,68,68,.10);
+  }
+  .opt.wrong .opt-tag { background: rgba(239,68,68,.16); border-color: var(--err); color: var(--err); }
+  .opt.wrong .opt-mark { color: var(--err); }
+  .opt.dim { opacity: .4; }
+  .opt:disabled { cursor: default; }
+
+  /* ---- explanation (slide in) ---- */
+  .explain {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin: 0 16px;
+    transition: max-height .4s ease, opacity .3s ease, margin .3s ease;
+    border-radius: 9px;
+  }
+
+  .explain.show {
+    max-height: 460px;
+    opacity: 1;
+    margin: 0 16px 16px;
+    border: 1px solid var(--border);
+  }
+
+  .ex-head {
+    padding: 10px 14px;
+    font-weight: 800;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ex-head.ok { color: var(--ok-2); background: rgba(34,197,94,.08); }
+  .ex-head.bad { color: #f87171; background: rgba(239,68,68,.08); }
+
+  .ex-body { padding: 12px 14px 14px; }
+
+  .ex-ans {
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .ex-ans b { color: #7dd3fc; font-family: var(--mono); font-weight: 800; }
+
+  .ex-txt {
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .ex-txt code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 4px;
+    padding: 0 5px;
+  }
+
+  .ex-note {
+    margin-top: 9px;
+    color: var(--warn-2);
+    font-size: 12.5px;
+    line-height: 1.7;
+    background: rgba(245,158,11,.08);
+    border: 1px solid rgba(245,158,11,.3);
+    border-radius: 7px;
+    padding: 8px 10px;
+  }
+
+  /* ---- controls ---- */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .btn {
+    appearance: none;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.25); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn.primary {
+    background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(34,197,94,.18));
+    border-color: rgba(59,130,246,.55);
+  }
+  .btn.reset { background: transparent; color: var(--muted); border-color: transparent; }
+  .btn.reset:hover:not(:disabled) { color: var(--err); border-color: var(--err); box-shadow: none; }
+
+  .dots { display: flex; gap: 8px; align-items: center; }
+  .dot-i {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #334155;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all .3s ease;
+  }
+  .dot-i.done { background: rgba(96,165,250,.55); }
+  .dot-i.cur { background: var(--accent-2); transform: scale(1.5); box-shadow: 0 0 8px rgba(96,165,250,.9); }
+
+  /* ---- hand-write cards ---- */
+  .hw-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .hw-card { overflow: hidden; }
+  .hw-card .panel-head { color: var(--warn-2); }
+
+  .hw-title {
+    padding: 14px 18px 4px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .hw-title .hw-no {
+    display: inline-block;
+    margin-right: 8px;
+    background: linear-gradient(90deg, var(--warn), var(--err));
+    color: #0b1120;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 5px;
+    padding: 1px 8px;
+    vertical-align: 1px;
+  }
+
+  .hw-prompt {
+    padding: 6px 18px 12px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .hw-prompt code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 4px;
+    padding: 0 5px;
+  }
+
+  .hw-prompt .em { color: var(--warn-2); font-weight: 700; }
+
+  .hw-answer { display: none; }
+  .hw-answer.show { display: block; animation: fadein .3s ease; }
+
+  .code-lines {
+    background: var(--code-bg);
+    padding: 10px 0 14px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    padding: 0 14px 0 0;
+    white-space: pre;
+  }
+
+  .code-line .gutter {
+    flex: none;
+    width: 44px;
+    text-align: right;
+    padding-right: 14px;
+    color: #3d4b61;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .code-line .ct { color: var(--text); }
+
+  .tok-kw { color: var(--kw); }
+  .tok-fn { color: var(--fn); }
+  .tok-str { color: var(--str); }
+  .tok-cmt { color: var(--cmt); font-style: italic; }
+  .tok-num { color: var(--warn-2); }
+  .tok-op { color: #f7768e; }
+
+  .hw-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hw-foot .btn.primary { margin-left: auto; }
+
+  .hw-tip {
+    color: var(--faint);
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--faint);
+    font-size: 11.5px;
+    padding: 26px 20px 40px;
+    font-family: var(--mono);
+  }
+  footer .ft-note { color: var(--muted); margin-top: 4px; }
+
+  @media (max-width: 600px) {
+    .score-pill { margin-left: 0; }
+    .controls { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-top">
+    <div class="logo">原型链 mini Quiz <small>· 概念选择 + 手写 new/instanceof</small></div>
+    <div class="score-pill"><span class="sp-dot"></span>答对 <b id="score-num">0</b> / 7</div>
+  </div>
+  <div class="head-sub">中文面试自测 · 概念选择题 7 道 + 手写题 2 道 · 双击即可打开，全程离线可用</div>
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="mcq">① 概念选择 <span class="tab-n">7 题</span></button>
+    <button class="tab" data-tab="code">② 手写题 <span class="tab-n">2 题</span></button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ Section 1 · MCQ ============ -->
+  <section class="demo active" id="sec-mcq">
+    <div class="quiz-top">
+      <div class="demo-title"><span class="badge">①</span>概念选择</div>
+      <div class="demo-desc">点击选项即时判分 · 首次答对计分 · 可反复练习</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="prog-meta">
+        <span>第 <b id="cur-pos">1</b> / 7 题</span>
+        <span>已答 <b id="done-count">0</b> / 7 · 正确 <b id="ok-count">0</b> / 7</span>
+      </div>
+      <div class="pbar"><div class="pbar-fill" id="pbar-fill"></div></div>
+    </div>
+    <div class="panel q-card">
+      <div class="panel-head"><span class="dot"></span>第 <span id="q-no">1</span> 题</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="opts" id="q-opts"></div>
+      <div class="explain" id="q-explain"></div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btn-prev">‹ 上一题</button>
+      <div class="dots" id="q-dots"></div>
+      <button class="btn" id="btn-next">下一题 ›</button>
+      <button class="btn reset" id="btn-reset">重新开始</button>
+    </div>
+  </section>
+
+  <!-- ============ Section 2 · Hand-write ============ -->
+  <section class="demo" id="sec-code">
+    <div class="quiz-top">
+      <div class="demo-title"><span class="badge">②</span>手写题</div>
+      <div class="demo-desc">先自己写，再点「显示答案」对照 · 答案带逐行中文注释</div>
+    </div>
+    <div class="hw-list" id="hw-list"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div>JavaScript 原型链 · 交互式自测</div>
+  <div class="ft-note">数据驱动渲染：题目 / 手写题为数组数据，render() 声明式重建 · 零依赖、完全离线</div>
+</footer>
+
+<script>
+'use strict';
+
+/* =========================================================
+   数据：7 道概念选择题（单题单正确项，已用 Node 验证 ground truth）
+   label = 选项标签；text = 选项文字；correct = 是否为正确项；why = 选错时的解释
+   ========================================================= */
+var QUESTIONS = [
+  {
+    q: '`foo.constructor` 最终返回什么？',
+    explain: '属性查找规则：先从 `foo` 自身找，没有就沿 `__proto__` 逐层向上。`foo` 没有自有属性（`foo.hasOwnProperty(\'constructor\') === false`），于是走到 `foo.__proto__ === Foo.prototype`，而 `Foo.prototype` 上有 `constructor` 且 `Foo.prototype.constructor === Foo`，命中即停。所以答案是 `Foo`。',
+    options: [
+      { label: 'A', text: 'Object', correct: false, why: 'Object.prototype.constructor 确实指向 Object，但属性查找在 `Foo.prototype` 这一层就已经命中并停止，根本不会继续爬到 `Object.prototype`。' },
+      { label: 'B', text: 'Foo', correct: true, why: 'foo 自身没有 constructor 属性，沿 __proto__ 在 Foo.prototype 上找到，即 Foo.prototype.constructor === Foo。' },
+      { label: 'C', text: 'Function', correct: false, why: 'Function.prototype 不在 foo 的原型链上——foo 的链是 `foo → Foo.prototype → Object.prototype → null`，没有 Function.prototype。' },
+      { label: 'D', text: 'undefined', correct: false, why: '沿链一定能命中 `Foo.prototype.constructor`，所以不会得到 undefined。' }
+    ]
+  },
+  {
+    q: '下列哪些表达式为 true？（单选最强答案）',
+    explain: 'instanceof 判断的是右侧构造函数的 `prototype` 是否出现在左侧对象沿 `__proto__` 的链上。`foo` 的链是 `foo → Foo.prototype → Object.prototype → null`：`Foo.prototype` 在第 1 层、`Object.prototype` 在第 2 层，两者都在链上。所以 `foo instanceof Foo` 与 `foo instanceof Object` 都为 true。',
+    options: [
+      { label: 'A 和 B 都正确', text: 'A. foo instanceof Foo 和 B. foo instanceof Object 都为 true', correct: true, why: 'Foo.prototype 与 Object.prototype 都在 foo 的原型链上，两个表达式都为 true。' },
+      { label: 'C', text: 'foo instanceof Function 也为 true', correct: false, why: 'Function.prototype 不在 foo 的原型链上（链是 foo → Foo.prototype → Object.prototype → null），instanceof 只沿 __proto__ 链查找，所以为 false。' },
+      { label: 'D', text: 'foo instanceof Array 也为 true', correct: false, why: 'Array.prototype 也不在链上（链上只有 Foo.prototype 与 Object.prototype），所以为 false。' },
+      { label: 'E', text: '只有 foo instanceof Foo 为 true，foo instanceof Object 为 false', correct: false, why: 'Object.prototype 在第 2 层原型上，foo instanceof Object 同样为 true，所以“只有 Foo 为 true”的说法是错的。' }
+    ]
+  },
+  {
+    q: '`Function.__proto__ === ?`',
+    explain: 'Function 是引擎自举（bootstrapped）的构造函数：规范把它的 `__proto__` 显式设为 `Function.prototype`，形成 `Function.__proto__ === Function.prototype` 的特殊自指规则。这是整个原型体系里唯一的特殊之处。',
+    options: [
+      { label: 'A', text: 'Function.prototype', correct: true, why: 'Function 由引擎自举（bootstrapped），特殊规则：Function.__proto__ === Function.prototype。' },
+      { label: 'B', text: 'Object.prototype', correct: false, why: 'Object.prototype 是对象链的顶端，不是函数 __proto__ 的目标——所有函数的 __proto__ 都指向 Function.prototype。' },
+      { label: 'C', text: 'null', correct: false, why: '只有 Object.prototype.__proto__ 才是 null。Function.__proto__ 有值（Function.prototype），不是 null。' },
+      { label: 'D', text: 'Object', correct: false, why: '__proto__ 存的是原型对象（对象引用），不是构造函数 Object 本身。' }
+    ]
+  },
+  {
+    q: '`Object.__proto__ === ?`',
+    explain: 'Object 本身也是一个函数，所以和所有普通函数一样：`Object.__proto__ === Function.prototype`。函数（无论内置还是自定义）的 `__proto__` 一律指向 `Function.prototype`，它们都是“Function 的实例”。',
+    options: [
+      { label: 'A', text: 'Function.prototype', correct: true, why: 'Object 本身也是函数，函数的 __proto__ 都是 Function.prototype。' },
+      { label: 'B', text: 'Object.prototype', correct: false, why: 'Object.prototype 是 Object 的 prototype 属性指向的原型对象，不是 Object.__proto__ 的值。' },
+      { label: 'C', text: 'null', correct: false, why: '只有 Object.prototype.__proto__ 才是 null。Object 作为函数，__proto__ 指向 Function.prototype。' },
+      { label: 'D', text: 'undefined', correct: false, why: 'Object.__proto__ 存在且指向 Function.prototype，不是 undefined。' }
+    ]
+  },
+  {
+    q: '`Object.prototype.__proto__ === ?`',
+    explain: 'Object.prototype 是原型链的顶端对象，它的 `__proto__` 是 `null`，原型链到这里终止。任何普通对象链到 `Object.prototype` 之后就无法再往上走——这也是 Object.create(null) 的对象链更短的对比基础。',
+    options: [
+      { label: 'A', text: 'null', correct: true, why: '原型链的终点：Object.prototype.__proto__ === null。' },
+      { label: 'B', text: 'Function.prototype', correct: false, why: 'Function.prototype 是函数对象，不可能成为 Object.prototype 的原型——Object.prototype 之上就是 null。' },
+      { label: 'C', text: 'Object', correct: false, why: '__proto__ 存的是原型对象引用，不是构造函数；且 Object.prototype.__proto__ 是 null。' },
+      { label: 'D', text: 'undefined', correct: false, why: '它不是 undefined，而是显式的 null（约定好的原型链终点）。' }
+    ]
+  },
+  {
+    q: '执行 `Foo.prototype.constructor = function Bar() {}` 之后，`foo.constructor` 是？',
+    explain: '`foo` 自身没有 `constructor`，读到的就是原型对象上的 `Foo.prototype.constructor`。把它改写为 `Bar` 之后，`foo.constructor` 跟着变成 `Bar`——实例的 `constructor` 本质是原型对象上的属性，改原型它就变。',
+    options: [
+      { label: 'A', text: 'Foo', correct: false, why: 'Foo.prototype.constructor 已被覆盖为 Bar，foo.constructor 读的是原型上的这个属性，所以不再是 Foo。' },
+      { label: 'B', text: 'Bar', correct: true, why: 'foo.constructor 读取的就是 Foo.prototype.constructor，修改后跟着变。' },
+      { label: 'C', text: 'undefined', correct: false, why: 'Foo.prototype.constructor 被赋值为 Bar 后有值，读取不会得到 undefined。' },
+      { label: 'D', text: '报错', correct: false, why: '给 prototype.constructor 重新赋值是合法操作，不会抛错。' }
+    ]
+  },
+  {
+    q: '哪种方式创建的对象原型链最短？',
+    explain: 'Object.create(null) 创建的对象内部 [[Prototype]] 直接是 null，完全没有 `__proto__` 链，连 toString、hasOwnProperty 都没有。`{}` 的链是 `{} → Object.prototype → null`（2 段），都比它长。',
+    options: [
+      { label: 'A', text: 'Object.create(null)', correct: true, why: '完全没有 __proto__ 链，连 toString / hasOwnProperty 都没有，原型链最短。' },
+      { label: 'B', text: '{}', correct: false, why: '{} 的链是 {} → Object.prototype → null，至少还有一层 Object.prototype。' },
+      { label: 'C', text: 'new Foo()', correct: false, why: 'new Foo() 的链是 foo → Foo.prototype → Object.prototype → null，更长。' },
+      { label: 'D', text: '[]', correct: false, why: '[] 的链是 [] → Array.prototype → Object.prototype → null，更长。' }
+    ]
+  }
+];
+
+/* =========================================================
+   数据：2 道手写题（code 为逐行模型答案，// 注释即逐行讲解）
+   ========================================================= */
+var HANDWRITES = [
+  {
+    no: 1,
+    title: '手写 myNew',
+    prompt: '实现 `new` 操作符的内部流程：<span class="em">① 创建空对象 → ② 连上 Ctor.prototype → ③ 以该对象为 this 执行构造函数 → ④ 构造函数显式返回对象则用它，否则返回新对象</span>。',
+    code: [
+      'function myNew(Ctor, ...args) {',
+      '  // ① 创建空对象，并让它的 __proto__ 指向 Ctor.prototype',
+      '  const obj = Object.create(Ctor.prototype)',
+      '  // ② 以 obj 为 this 执行构造函数',
+      '  const ret = Ctor.apply(obj, args)',
+      '  // ③ 构造函数返回对象则用它，否则返回 obj',
+      '  return (typeof ret === \'object\' && ret !== null) ? ret : obj',
+      '}'
+    ]
+  },
+  {
+    no: 2,
+    title: '手写 myInstanceof',
+    prompt: '实现 `instanceof` 的判断逻辑：<span class="em">右侧 Ctor.prototype 是否出现在左侧 obj 沿 __proto__ 的原型链上</span>。建议用 `Object.getPrototypeOf` 逐级上移，走到 null 还没命中就返回 false。注意比较对象是“链上的每一层”与 `Ctor.prototype`。',
+    code: [
+      'function myInstanceof(obj, Ctor) {',
+      '  // ① 从 obj 的原型开始，沿 __proto__ 逐级向上',
+      '  let p = Object.getPrototypeOf(obj)',
+      '  while (p !== null) {',
+      '    // ② 链上某层等于 Ctor.prototype → true',
+      '    if (p === Ctor.prototype) return true',
+      '    p = Object.getPrototypeOf(p)',
+      '  }',
+      '  // ③ 走到 null 都没找到 → false',
+      '  return false',
+      '}'
+    ]
+  }
+];
+
+/* =========================================================
+   状态
+   ========================================================= */
+var state = {
+  tab: 'mcq',        // 'mcq' | 'code'
+  current: 0,        // 当前第几题（0-based）
+  score: 0,          // 首次答对计 1 分
+  answered: [],      // 每题的 answered[0..6]：null | 所选选项索引
+  chosen: [],        // 记录每题所选选项索引（展示用）
+  revealed: [false, false] // 手写题是否显示答案
+};
+QUESTIONS.forEach(function () { state.answered.push(null); state.chosen.push(-1); });
+
+/* =========================================================
+   工具函数
+   ========================================================= */
+function escHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* 反引号 → <code> 内联代码，先转义再包 */
+function fmt(s) {
+  return escHtml(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+function $(id) { return document.getElementById(id); }
+
+/* =========================================================
+   代码语法高亮（与 companion demo 同一套 tokenizer）
+   ========================================================= */
+function tokenize(line) {
+  if (!line) return '';
+  var ci = line.indexOf('//');
+  var code = ci === -1 ? line : line.slice(0, ci);
+  var cmt = ci === -1 ? '' : line.slice(ci);
+  var html = '';
+  var re = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b(?:function|const|let|var|return|while|if|else|new|true|false|null|this|typeof)\b)|([A-Za-z_$][\w$]*)(?=\s*\()|(\b\d+(?:\.\d+)?\b)|([+\-*/%<>=!&|]+)/g;
+  var last = 0, m;
+  while ((m = re.exec(code))) {
+    if (m.index > last) html += escHtml(code.slice(last, m.index));
+    if (m[1]) html += '<span class="tok-str">' + escHtml(m[1]) + '</span>';
+    else if (m[2]) html += '<span class="tok-kw">' + escHtml(m[2]) + '</span>';
+    else if (m[3]) html += '<span class="tok-fn">' + escHtml(m[3]) + '</span>';
+    else if (m[4]) html += '<span class="tok-num">' + escHtml(m[4]) + '</span>';
+    else if (m[5]) html += '<span class="tok-op">' + escHtml(m[5]) + '</span>';
+    last = m.index + m[0].length;
+  }
+  if (last < code.length) html += escHtml(code.slice(last));
+  if (cmt) html += '<span class="tok-cmt">' + escHtml(cmt) + '</span>';
+  return html;
+}
+
+function renderCodeLines(lines, el) {
+  var html = '';
+  for (var i = 0; i < lines.length; i++) {
+    html += '<div class="code-line"><span class="gutter">' + (i + 1) + '</span><span class="ct">' + tokenize(lines[i]) + '</span></div>';
+  }
+  el.innerHTML = html;
+}
+
+/* =========================================================
+   渲染：Section 1 · MCQ
+   ========================================================= */
+function renderHeader() {
+  $('score-num').textContent = state.score;
+}
+
+function renderMcq() {
+  var q = QUESTIONS[state.current];
+
+  $('q-no').textContent = state.current + 1;
+  $('q-text').innerHTML = fmt(q.q);
+
+  /* 选项 */
+  var optsEl = $('q-opts');
+  optsEl.innerHTML = '';
+  var answered = state.answered[state.current] !== null;
+  q.options.forEach(function (opt, idx) {
+    var btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.type = 'button';
+
+    var tag = document.createElement('span');
+    tag.className = 'opt-tag';
+    tag.textContent = opt.label;
+
+    var txt = document.createElement('span');
+    txt.className = 'opt-txt';
+    txt.innerHTML = fmt(opt.text);
+
+    var mark = document.createElement('span');
+    mark.className = 'opt-mark';
+
+    btn.appendChild(tag);
+    btn.appendChild(txt);
+    btn.appendChild(mark);
+
+    if (answered) {
+      btn.disabled = true;
+      if (opt.correct) {
+        btn.classList.add('correct');
+        mark.textContent = '✓';
+      } else if (state.chosen[state.current] === idx) {
+        btn.classList.add('wrong');
+        mark.textContent = '✗';
+      } else {
+        btn.classList.add('dim');
+      }
+    } else {
+      btn.addEventListener('click', function () { onAnswer(idx); });
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  /* 答案讲解（已答题才展示） */
+  var ex = $('q-explain');
+  if (answered) {
+    var chosen = state.chosen[state.current];
+    var isCorrect = q.options[chosen].correct;
+    var correctOpt = q.options.filter(function (o) { return o.correct; })[0];
+    var wrongOpt = isCorrect ? null : q.options[chosen];
+
+    var html = '';
+    html += '<div class="ex-head ' + (isCorrect ? 'ok' : 'bad') + '">' +
+      (isCorrect ? '✓ 回答正确 · +1 分' : '✗ 回答错误 · 本题不得分') + '</div>';
+    html += '<div class="ex-body">';
+    html += '<div class="ex-ans">正确答案：<b>' + escHtml(correctOpt.label) + ' · ' + escHtml(correctOpt.text) + '</b></div>';
+    html += '<div class="ex-txt">' + fmt(q.explain) + '</div>';
+    if (wrongOpt) {
+      html += '<div class="ex-note">你的选择：' + escHtml(wrongOpt.label) + ' · ' + escHtml(wrongOpt.text) + ' —— ' + fmt(wrongOpt.why) + '</div>';
+    }
+    html += '</div>';
+    ex.innerHTML = html;
+    ex.classList.add('show');
+  } else {
+    ex.innerHTML = '';
+    ex.classList.remove('show');
+  }
+
+  /* 进度 */
+  var done = state.answered.filter(function (a) { return a !== null; }).length;
+  var correct = 0;
+  state.answered.forEach(function (a, i) {
+    if (a !== null && QUESTIONS[i].options[a].correct) correct++;
+  });
+  $('cur-pos').textContent = state.current + 1;
+  $('done-count').textContent = done;
+  $('ok-count').textContent = correct;
+  $('pbar-fill').style.width = Math.round(done / QUESTIONS.length * 100) + '%';
+
+  /* 底部导航 */
+  $('btn-prev').disabled = state.current === 0;
+  $('btn-next').disabled = state.current === QUESTIONS.length - 1;
+
+  /* 圆点 */
+  var dotsEl = $('q-dots');
+  dotsEl.innerHTML = '';
+  QUESTIONS.forEach(function (_, i) {
+    var d = document.createElement('button');
+    d.className = 'dot-i';
+    d.type = 'button';
+    if (state.answered[i] !== null) d.classList.add('done');
+    if (i === state.current) d.classList.add('cur');
+    d.title = '第 ' + (i + 1) + ' 题';
+    d.addEventListener('click', function () { goTo(i); });
+    dotsEl.appendChild(d);
+  });
+}
+
+function onAnswer(idx) {
+  if (state.answered[state.current] !== null) return; /* 防连点 */
+  state.answered[state.current] = idx;
+  state.chosen[state.current] = idx;
+  if (QUESTIONS[state.current].options[idx].correct) state.score++;
+  renderMcq();
+  renderHeader();
+}
+
+function goTo(i) {
+  state.current = i;
+  renderMcq();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =========================================================
+   渲染：Section 2 · 手写题
+   ========================================================= */
+function renderHandwrites() {
+  var list = $('hw-list');
+  list.innerHTML = '';
+
+  HANDWRITES.forEach(function (task, i) {
+    var card = document.createElement('div');
+    card.className = 'panel hw-card';
+
+    var head = document.createElement('div');
+    head.className = 'panel-head';
+    head.innerHTML = '<span class="dot orange"></span>手写题 ' + task.no + ' · 先写再看答案';
+
+    var title = document.createElement('div');
+    title.className = 'hw-title';
+    title.innerHTML = '<span class="hw-no">手写 ' + task.no + '</span>' + escHtml(task.title);
+
+    var prompt = document.createElement('div');
+    prompt.className = 'hw-prompt';
+    prompt.innerHTML = fmt(task.prompt);
+
+    var ans = document.createElement('div');
+    ans.className = 'hw-answer' + (state.revealed[i] ? ' show' : '');
+
+    var code = document.createElement('div');
+    code.className = 'code-lines';
+    renderCodeLines(task.code, code);
+
+    var foot = document.createElement('div');
+    foot.className = 'hw-foot';
+    var tip = document.createElement('span');
+    tip.className = 'hw-tip';
+    tip.textContent = state.revealed[i] ? '注释 ①②③ 即考察要点' : '答案含逐行中文注释';
+    var btn = document.createElement('button');
+    btn.className = 'btn primary';
+    btn.type = 'button';
+    btn.textContent = state.revealed[i] ? '隐藏答案' : '显示答案';
+    btn.addEventListener('click', function () {
+      state.revealed[i] = !state.revealed[i];
+      renderHandwrites();
+    });
+    foot.appendChild(tip);
+    foot.appendChild(btn);
+
+    ans.appendChild(code);
+    card.appendChild(head);
+    card.appendChild(title);
+    card.appendChild(prompt);
+    card.appendChild(ans);
+    card.appendChild(foot);
+    list.appendChild(card);
+  });
+}
+
+/* =========================================================
+   渲染：整体
+   ========================================================= */
+function render() {
+  renderHeader();
+  renderMcq();
+  renderHandwrites();
+
+  var tabs = document.querySelectorAll('#tabbar .tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === state.tab);
+  }
+  $('sec-mcq').classList.toggle('active', state.tab === 'mcq');
+  $('sec-code').classList.toggle('active', state.tab === 'code');
+}
+
+function switchTab(tab) {
+  state.tab = tab;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetAll() {
+  state.score = 0;
+  state.current = 0;
+  state.revealed = [false, false];
+  state.answered = [];
+  state.chosen = [];
+  QUESTIONS.forEach(function () { state.answered.push(null); state.chosen.push(-1); });
+  render();
+}
+
+/* =========================================================
+   事件绑定
+   ========================================================= */
+$('btn-prev').addEventListener('click', function () { if (state.current > 0) goTo(state.current - 1); });
+$('btn-next').addEventListener('click', function () { if (state.current < QUESTIONS.length - 1) goTo(state.current + 1); });
+$('btn-reset').addEventListener('click', resetAll);
+
+var tabButtons = document.querySelectorAll('#tabbar .tab');
+for (var t = 0; t < tabButtons.length; t++) {
+  (function (btn) {
+    btn.addEventListener('click', function () { switchTab(btn.getAttribute('data-tab')); });
+  })(tabButtons[t]);
+}
+
+document.addEventListener('keydown', function (e) {
+  if (state.tab !== 'mcq') return;
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+    if (e.target.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
+  }
+  if (e.key === 'ArrowLeft' && state.current > 0) goTo(state.current - 1);
+  else if (e.key === 'ArrowRight' && state.current < QUESTIONS.length - 1) goTo(state.current + 1);
+});
+
+/* 初始渲染 */
+render();
+</script>
+</body>
+</html>
