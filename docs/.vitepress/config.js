@@ -26,6 +26,7 @@ export default withMermaid(defineConfig({
       { text: '📖 核心基础', link: '/fundamentals/' },
       { text: '⚛️ 框架深入', link: '/frameworks/' },
       { text: '🏗️ 工程架构', link: '/engineering/' },
+      { text: '🧪 测试', link: '/testing/' },
       { text: '🤖 AI 开发', link: '/ai-dev/' },
       { text: '🎯 面试实战', link: '/interview/' },
       { text: '🧭 学习路线', link: '/roadmap/' },
@@ -204,6 +205,55 @@ export default withMermaid(defineConfig({
             { text: 'AI 对话界面工程', link: '/ai-dev/ai-chat-ui' },
             { text: 'MCP 协议深度', link: '/ai-dev/mcp-protocol' },
             { text: '前端 AI 安全', link: '/ai-dev/ai-security' }
+          ]
+        }
+      ],
+
+      '/testing/': [
+        {
+          text: '🧪 测试（转岗 QA）',
+          items: [
+            { text: '总览与转岗路线', link: '/testing/' }
+          ]
+        },
+        {
+          text: '🟢 入门 · 测试理论',
+          items: [
+            { text: '软件测试基础', link: '/testing/test-basics' },
+            { text: '测试用例设计', link: '/testing/test-case-design' },
+            { text: '缺陷管理', link: '/testing/defect-management' }
+          ]
+        },
+        {
+          text: '🟡 进阶 · 核心技能',
+          items: [
+            { text: '接口测试', link: '/testing/interface-testing' },
+            { text: '数据库与测试', link: '/testing/database-testing' },
+            { text: 'Python 自动化基础', link: '/testing/automation-basics' },
+            { text: 'UI 自动化测试', link: '/testing/ui-automation' }
+          ]
+        },
+        {
+          text: '🔴 高级 · 进阶面试',
+          items: [
+            { text: '性能测试入门', link: '/testing/performance-testing' },
+            { text: '测试策略与 CI/CD', link: '/testing/test-ci-strategy' },
+            { text: '转岗测试面试专题', link: '/testing/test-interview' }
+          ]
+        },
+        {
+          text: '🟣 深度专题',
+          items: [
+            { text: '覆盖率与 TDD/BDD', link: '/testing/coverage-tdd' },
+            { text: 'E2E 与 Playwright 精讲', link: '/testing/e2e-playwright' },
+            { text: 'Mock 与测试替身', link: '/testing/mock-strategy' }
+          ]
+        },
+        {
+          text: '🤖 AI 与测试',
+          items: [
+            { text: 'AI 辅助测试', link: '/testing/ai-testing' },
+            { text: 'AI 产品测试', link: '/testing/ai-product-testing' }
           ]
         }
       ],

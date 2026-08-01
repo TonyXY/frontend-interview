@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>转岗测试（QA）速查表</title>
+<style>
+  :root{
+    --accent:#059669; --text:#1e293b; --bg:#e5e7eb; --red:#dc2626;
+    --blue:#2563eb; --green:#059669; --orange:#d97706; --border:#cbd5e1; --mut:#64748b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  @page{size:A4;margin:8mm;}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{
+    font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+    color:var(--text);font-size:10px;line-height:1.5;background:var(--bg);
+  }
+  code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .sheet{max-width:188mm;margin:0 auto;padding:1px;}
+  .sec,header,.cols,footer{break-inside:avoid;}
+
+  header{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;border-top:4px solid var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+  header h1{font-size:15px;font-weight:800;color:var(--text);letter-spacing:.5px;}
+  header h1 span{color:var(--accent);}
+  .tagline{font-size:10px;color:#475569;margin-top:2px;}
+  .pill{display:inline-block;background:#ecfdf5;color:var(--accent);border:1px solid #a7f3d0;border-radius:10px;padding:1px 8px;font-size:9px;font-weight:600;margin-left:8px;}
+
+  .sec-h{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:5px;}
+  .sec-h::before{content:'';width:4px;height:13px;background:var(--accent);border-radius:2px;flex:none;}
+  .sec-h small{font-size:9px;font-weight:500;color:var(--mut);}
+  .card{background:#fff;border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:6px;}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .cols .card{margin-bottom:0;}
+
+  table{width:100%;border-collapse:collapse;font-size:9px;}
+  th{background:#eff6ff;color:var(--accent);font-weight:700;text-align:left;padding:4px 6px;border:1px solid var(--border);}
+  td{padding:4px 6px;border:1px solid var(--border);vertical-align:top;color:#334155;}
+  td:first-child{font-weight:600;color:var(--text);}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .code{background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:5px 8px;font-size:8.5px;line-height:1.5;color:#0f172a;overflow:hidden;white-space:pre;}
+  .code .cm{color:#64748b;}
+  .code .kw{color:#2563eb;font-weight:700;}
+  .code .fn{color:#b45309;}
+
+  .sev{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+  .s{flex:1;min-width:76px;border-radius:4px;padding:2px 5px;font-size:8.5px;text-align:center;font-weight:600;}
+  .s b{display:block;font-size:9px;}
+  .s.fatal{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+  .s.crit{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+  .s.norm{background:#fffbeb;color:#b45309;border:1px solid #fde68a;}
+  .s.minor{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+
+  .tags{display:flex;gap:5px;flex-wrap:wrap;}
+  .tag{display:inline-block;border-radius:4px;padding:1px 6px;font-size:8.5px;border:1px solid;background:#fff;}
+  .tag b{font-weight:700;}
+  .tag.g2{color:#15803d;border-color:#a7f3d0;background:#f0fdf4;}
+  .tag.g3{color:#1d4ed8;border-color:#bfdbfe;background:#eff6ff;}
+  .tag.g4{color:#b45309;border-color:#fde68a;background:#fffbeb;}
+  .tag.g5{color:#b91c1c;border-color:#fecaca;background:#fef2f2;}
+
+  .metric{display:flex;gap:5px;margin-bottom:3px;font-size:9.5px;color:#334155;}
+  .metric:last-child{margin-bottom:0;}
+  .metric b{flex:none;min-width:54px;font-weight:700;color:var(--accent);}
+  .note{font-size:9px;color:#64748b;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:4px;padding:3px 8px;margin-top:5px;}
+  .note b{color:#047857;}
+
+  footer{background:#fff;border:1px solid var(--border);border-radius:7px;padding:6px 11px;margin-top:6px;font-size:9.5px;color:#334155;display:flex;gap:14px;align-items:center;}
+  footer .ft{font-weight:700;color:var(--accent);white-space:nowrap;}
+  footer .sale{display:flex;gap:10px;flex-wrap:wrap;}
+  footer .sale span{white-space:nowrap;}
+  footer .sale i{font-style:normal;color:var(--accent);font-weight:700;margin-right:2px;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div>
+      <h1>🧪 转岗测试（QA）速查表 <span class="pill">A4 一页</span></h1>
+      <div class="tagline">前端转测试 · 面试高频 —— 用例设计 / Bug 报告 / 接口 / SQL / pytest / 性能，10 分钟过一遍。</div>
+    </div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">测试用例设计四法 <small>口述框架：选哪个方法 → 覆盖了哪些场景</small></div>
+    <div class="card">
+      <table>
+        <tr><th style="width:18%;">方法</th><th style="width:42%;">定义</th><th>一句话例子</th></tr>
+        <tr><td>等价类划分</td><td>把输入按有效性分组，每组取一个代表值即可，分<code>有效</code>与<code>无效</code>等价类</td><td>年龄 18~65 合法 → 有效：30；无效：17、66、-1、abc</td></tr>
+        <tr><td>边界值分析</td><td>取边界及边界两侧值重点测，Bug 多藏在临界点</td><td>上限 65 → 测 64 / 65 / 66；下限 18 → 测 17 / 18 / 19</td></tr>
+        <tr><td>因果图 / 判定表</td><td>梳理条件组合与动作结果，用判定表列出所有组合</td><td>会员 &amp; 满 100 → 打 9 折：4 种组合穷举成表逐一验证</td></tr>
+        <tr><td>场景法</td><td>按用户真实操作流（主流程+备选+异常流）设计用例</td><td>登录：正确→成功；错密码→提示；连续 5 次→锁定</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="sec">
+      <div class="sec-h">Bug 报告十要素 <small>缺一不可，尤其复现步骤与证据</small></div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th style="width:30%;">要素</th><th>要点</th></tr>
+          <tr><td>标题</td><td>模块 + 现象一句话，如「订单页支付按钮点击无响应」</td></tr>
+          <tr><td>前置条件</td><td>测试账号、测试数据、初始化状态</td></tr>
+          <tr><td>复现步骤</td><td>编号 1. 2. 3. 最小可复现路径</td></tr>
+          <tr><td>预期结果</td><td>按需求/文档本应发生的行为</td></tr>
+          <tr><td>实际结果</td><td>真实发生的现象，附证据</td></tr>
+          <tr><td>环境</td><td>OS / 浏览器 / 设备 / 网络</td></tr>
+          <tr><td>版本</td><td>被测应用版本 + 接口 / commit</td></tr>
+          <tr><td>日志</td><td>后端日志、控制台报错栈</td></tr>
+          <tr><td>截图</td><td>截图 / 录屏 / 接口报文</td></tr>
+          <tr><td>严重+优先级</td><td>严重程度（致命→轻微）× 紧急程度（立即→后续）</td></tr>
+        </table>
+        <div class="sev">
+          <span class="s fatal"><b>致命</b>崩溃/数据丢失</span>
+          <span class="s crit"><b>严重</b>主功能不可用</span>
+          <span class="s norm"><b>一般</b>功能异常有绕行</span>
+          <span class="s minor"><b>轻微</b>界面/文案问题</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h">HTTP 接口速查 <small>方法 / 状态码 / 鉴权</small></div>
+      <div class="card">
+        <table>
+          <tr><th style="width:20%;">方法</th><th style="width:52%;">用途</th><th>幂等</th></tr>
+          <tr><td>GET</td><td>获取资源，无 body</td><td>是</td></tr>
+          <tr><td>POST</td><td>创建资源，非幂等</td><td>否</td></tr>
+          <tr><td>PUT</td><td>整体替换/更新</td><td>是</td></tr>
+          <tr><td>DELETE</td><td>删除资源</td><td>是</td></tr>
+        </table>
+        <div class="tags" style="margin-top:5px;">
+          <span class="tag g2"><b>200</b> 成功</span>
+          <span class="tag g2"><b>201</b> 已创建</span>
+          <span class="tag g2"><b>204</b> 无内容</span>
+          <span class="tag g3"><b>301</b> 永久跳转</span>
+          <span class="tag g4"><b>400</b> 参数错</span>
+          <span class="tag g4"><b>401</b> 未认证</span>
+          <span class="tag g4"><b>403</b> 无权限</span>
+          <span class="tag g4"><b>404</b> 不存在</span>
+          <span class="tag g5"><b>500</b> 服务器错</span>
+          <span class="tag g5"><b>502</b> 网关错</span>
+          <span class="tag g5"><b>503</b> 不可用</span>
+        </div>
+        <div class="note">鉴权：请求头携带 <code>Authorization: Bearer &lt;token&gt;</code>；401 缺凭证，403 有凭证无权限。</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="cols">
+    <section class="sec">
+      <div class="sec-h">SQL 必会 <small>SELECT / JOIN / GROUP BY / WHERE</small></div>
+      <div class="card">
+        <pre class="code">SELECT u.name, COUNT(o.id) AS cnt   <span class="cm">-- 用户及其订单数</span>
+FROM   users u
+LEFT JOIN orders o                <span class="cm">-- 联表，LEFT 保留左侧全量</span>
+  ON   u.id = o.user_id
+WHERE  u.status = 'active'        <span class="cm">-- 过滤（WHERE 先于分组）</span>
+GROUP BY u.id, u.name             <span class="cm">-- 分组聚合</span>
+ORDER BY cnt DESC                 <span class="cm">-- 排序取前 N</span></pre>
+        <div class="note">执行顺序：<code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>ORDER BY</code>。</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h">Python / pytest 速查 <small>接口自动化最小闭环</small></div>
+      <div class="card">
+        <pre class="code"><span class="kw">import</span> requests, pytest
+
+@pytest.fixture                <span class="cm"># 夹具：复用基地址</span>
+<span class="kw">def</span> <span class="fn">base</span>():
+    <span class="kw">return</span> <span class="cm">'http://api.test'</span>
+
+@pytest.mark.parametrize(<span class="cm">'n,exp'</span>, [(18,True),(17,False)])
+<span class="kw">def</span> <span class="fn">test_age</span>(base, n, exp):
+    r = requests.<span class="fn">get</span>(f<span class="cm">'{base}/check'</span>, params={<span class="cm">'age'</span>:n})
+    <span class="kw">assert</span> r.status_code == 200
+    <span class="kw">assert</span> r.json()[<span class="cm">'ok'</span>] <span class="kw">is</span> exp</pre>
+        <div class="note">一句话：<code>requests.get/post</code> 发请求 → <code>assert</code> 断言 → <code>fixture</code> 提共用 → <code>parametrize</code> 铺数据。</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec">
+    <div class="sec-h">性能测试指标 <small>压测关注点 + JMeter 关键词</small></div>
+    <div class="card">
+      <div class="metric"><b>响应时间</b>请求发出到返回的耗时，关注 avg / p95 / p99 而非单点</div>
+      <div class="metric"><b>TPS</b>每秒事务数（事务=完整业务动作）；<b>QPS</b>每秒查询/请求数</div>
+      <div class="metric"><b>并发数</b>同时处理请求的用户/连接数，与 TPS·响应时间互相影响</div>
+      <div class="metric"><b>错误率</b>失败请求占比，一般要求 &lt; 1%</div>
+      <div class="note">JMeter：<b>线程组</b>（模拟并发）→ Sampler（请求）→ 断言 → 监听器·聚合报告（读 Throughput / 错误率 / 响应时间）→ 定时器、参数化 CSV 扩展。</div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="ft">前端转测试 · 三大卖点</span>
+    <div class="sale">
+      <span><i>①</i>质量意识：先想边界/异常，用例更全</span>
+      <span><i>②</i>自动化能力：会写脚本，接口/UI 自动化上手快</span>
+      <span><i>③</i>沟通无障碍：懂代码逻辑，定位 Bug 更准</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

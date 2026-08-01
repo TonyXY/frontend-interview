@@ -42,6 +42,11 @@ features:
     details: 构建工具、性能优化、测试 CI/CD、微前端、Monorepo、架构设计 — 大厂面试必考
     link: /engineering/
 
+  - icon: 🧪
+    title: 测试（转岗 QA）
+    details: 软件测试理论、用例设计、缺陷管理、接口测试、SQL、Python 自动化、UI 自动化、性能测试 — 前端转测试岗的完整知识路线
+    link: /testing/
+
   - icon: 🤖
     title: AI 辅助开发
     details: AI 编程工具、Prompt 工程、Agent 使用、AI 工作流 — 让 AI 成为你的面试加分项

@@ -87,6 +87,16 @@ const PAGE_DEFS = {
       { slug: 'error-monitoring', label: '错误监控' }, { slug: 'refactoring-strategy', label: '重构策略' }
     ]
   },
+  testing: { icon: '🧪', label: '测试·QA',
+    pages: [
+      { slug: 'test-basics', label: '软件测试基础' }, { slug: 'test-case-design', label: '用例设计' },
+      { slug: 'defect-management', label: '缺陷管理' }, { slug: 'interface-testing', label: '接口测试' },
+      { slug: 'database-testing', label: '数据库测试' }, { slug: 'automation-basics', label: 'Python 自动化' },
+      { slug: 'ui-automation', label: 'UI 自动化' }, { slug: 'performance-testing', label: '性能测试' },
+      { slug: 'test-ci-strategy', label: '策略与CI/CD' }, { slug: 'test-interview', label: '转岗面试' },
+      { slug: 'ai-testing', label: 'AI 辅助测试' }, { slug: 'ai-product-testing', label: 'AI 产品测试' }
+    ]
+  },
   'ai-dev': { icon: '🤖', label: 'AI 开发',
     pages: [
       { slug: 'ai-tools-overview', label: 'AI 工具对比' }, { slug: 'prompt-basics', label: 'Prompt 基础' },
