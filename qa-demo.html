@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>转岗 QA · 测试思维交互演示</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #172033;
+    --border: #334155;
+    --code-bg: #0b1120;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --accent: #3b82f6;
+    --accent-2: #60a5fa;
+    --ok: #22c55e;
+    --ok-2: #4ade80;
+    --warn: #f59e0b;
+    --warn-2: #fbbf24;
+    --err: #ef4444;
+    --radius: 12px;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    background-image:
+      radial-gradient(1100px 500px at 15% -10%, rgba(59,130,246,.12), transparent 60%),
+      radial-gradient(900px 480px at 110% 5%, rgba(34,197,94,.08), transparent 55%),
+      radial-gradient(700px 400px at 50% 115%, rgba(245,158,11,.06), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  header {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 26px 20px 10px;
+  }
+
+  .head-top {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    background: linear-gradient(90deg, #60a5fa, #4ade80 60%, #fbbf24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo small {
+    font-size: 13px;
+    font-weight: 600;
+    -webkit-text-fill-color: var(--muted);
+  }
+
+  .head-sub {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .tabbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .25s ease;
+  }
+
+  .tab:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(59,130,246,.22), rgba(34,197,94,.12));
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15), 0 4px 14px rgba(0,0,0,.35);
+  }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  .demo { display: none; animation: fadein .35s ease; }
+  .demo.active { display: block; }
+
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .demo-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .demo-title { font-size: 18px; font-weight: 800; color: #f1f5f9; }
+
+  .demo-title .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    background: linear-gradient(90deg, var(--accent-2), var(--ok-2));
+    border-radius: 6px;
+    padding: 1px 8px;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+
+  .demo-desc { color: var(--muted); font-size: 13px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel-2);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .3px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 8px rgba(96,165,250,.8);
+    flex: none;
+  }
+
+  .dot.green { background: var(--ok-2); box-shadow: 0 0 8px rgba(74,222,128,.8); }
+  .dot.orange { background: var(--warn-2); box-shadow: 0 0 8px rgba(251,191,36,.8); }
+
+  /* ---- stage ---- */
+  .stage { padding: 18px 20px; min-height: 250px; }
+
+  .demo-bottom {
+    display: grid;
+    grid-template-columns: 1.6fr minmax(280px, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+  }
+  @media (max-width: 900px) { .demo-bottom { grid-template-columns: 1fr; } }
+
+  .narrative-box .panel-head { color: var(--accent-2); }
+  .nar { padding: 16px 20px 18px; }
+  .nar-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+  }
+  .nar-title .n-step {
+    display: inline-block;
+    margin-right: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--ok));
+    color: #0b1120;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 5px;
+    padding: 1px 8px;
+    vertical-align: 1px;
+  }
+  .nar-text { color: #cbd5e1; font-size: 13.5px; line-height: 1.9; }
+  .nar-text b { color: #f8fafc; }
+  .nar-text code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 5px;
+    padding: 1px 6px;
+  }
+  .nar-text .em { color: var(--warn-2); font-weight: 700; }
+  .nar-text .ok { color: var(--ok-2); font-weight: 700; }
+  .nar-text .no { color: var(--err); font-weight: 700; }
+  .nar.pop { animation: popin .35s ease; }
+  @keyframes popin { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+
+  .tips-box .panel-head { color: var(--ok-2); }
+  .tips { padding: 12px 16px 14px; }
+  .tips ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .tips li {
+    color: #cbd5e1;
+    font-size: 12.5px;
+    line-height: 1.7;
+    padding-left: 16px;
+    position: relative;
+  }
+  .tips li::before { content: '▸'; position: absolute; left: 0; color: var(--ok-2); font-weight: 800; }
+  .tips li b { color: #f8fafc; }
+
+  /* ---- chips / badges ---- */
+  .chip {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 2px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--panel-2);
+    white-space: nowrap;
+  }
+  .chip-red   { color: #fca5a5; border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.12); }
+  .chip-green { color: #86efac; border-color: rgba(34,197,94,.5); background: rgba(34,197,94,.12); }
+  .chip-blue  { color: #93c5fd; border-color: rgba(59,130,246,.5); background: rgba(59,130,246,.12); }
+  .chip-orange{ color: #fcd34d; border-color: rgba(245,158,11,.5); background: rgba(245,158,11,.12); }
+  .chip-gray  { color: #cbd5e1; border-color: rgba(100,116,139,.5); background: rgba(100,116,139,.15); }
+
+  /* ---- card grid (demo 1) ---- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border-top: 3px solid var(--faint);
+    transition: all .25s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.3); }
+  .card.ok { border-top-color: var(--ok); }
+  .card.bad { border-top-color: var(--err); }
+  .card.blue { border-top-color: var(--accent); }
+  .card.warn { border-top-color: var(--warn); }
+
+  .card-tag { font-family: var(--mono); font-size: 11px; color: var(--faint); font-weight: 800; }
+  .card-title { font-size: 13.5px; font-weight: 800; color: #f1f5f9; margin-top: 2px; }
+  .card-in { margin-top: 6px; }
+  .card-in code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 5px;
+    padding: 1px 7px;
+    word-break: break-all;
+  }
+  .card-text { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+  .cls-group { margin-bottom: 16px; }
+  .cls-group:last-child { margin-bottom: 0; }
+  .group-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .g-ok, .g-bad { font-weight: 800; font-size: 13px; padding: 2px 12px; border-radius: 999px; color: #0b1120; }
+  .g-ok { background: var(--ok-2); }
+  .g-bad { background: #f87171; }
+  .g-sub { color: var(--muted); font-size: 12px; }
+
+  /* ---- boundary value (demo 1 s2) ---- */
+  .bv { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .bv-title { font-size: 13px; color: #cbd5e1; margin-bottom: 14px; }
+  .bv-title b { color: var(--warn-2); font-family: var(--mono); }
+  .bv-line { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bv-tick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: 58px;
+    height: 56px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 14px;
+    padding-bottom: 4px;
+  }
+  .bv-tick em { font-style: normal; font-size: 10px; font-family: var(--sans); font-weight: 600; color: var(--faint); }
+  .bv-tick.bv-ok { border-color: var(--ok); color: var(--ok-2); background: rgba(34,197,94,.08); }
+  .bv-tick.bv-ok em { color: var(--ok-2); }
+  .bv-tick.bv-bad { border-color: var(--err); color: #f87171; background: rgba(239,68,68,.08); }
+  .bv-tick.bv-bad em { color: #f87171; }
+  .bv-tick.bv-mid { border-color: var(--accent); color: var(--accent-2); background: rgba(59,130,246,.08); }
+  .bv-tick.bv-mid em { color: var(--accent-2); }
+  .bv-note { margin-top: 10px; font-size: 11.5px; color: var(--muted); }
+
+  /* ---- scenario (demo 1 s3) ---- */
+  .scn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .scn-grid { grid-template-columns: 1fr; } }
+  .scn { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .scn-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .scn-title { font-weight: 800; font-size: 13px; color: #f1f5f9; }
+  .scn-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .sf { font-size: 12px; color: #cbd5e1; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; }
+  .sf.ok { border-color: rgba(34,197,94,.5); color: var(--ok-2); background: rgba(34,197,94,.08); }
+  .sf.bad { border-color: rgba(239,68,68,.5); color: #fca5a5; background: rgba(239,68,68,.08); }
+  .scn-flow i { color: var(--faint); font-style: normal; }
+
+  /* ---- summary table (demo 1 s4) ---- */
+  .tbl-wrap { overflow-x: auto; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+  .tbl th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .tbl td { padding: 8px 12px; border-bottom: 1px solid rgba(51,65,85,.6); color: #cbd5e1; }
+  .tbl tr:hover td { background: rgba(59,130,246,.05); }
+  .tbl .m-meth { font-family: var(--mono); color: var(--accent-2); font-weight: 700; white-space: nowrap; }
+  .tbl .t-ok { color: var(--ok-2); }
+  .tbl .t-bad { color: #f87171; }
+
+  /* ---- bug lifecycle (demo 2) ---- */
+  .flow { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .flow-node {
+    flex: 1;
+    min-width: 92px;
+    text-align: center;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 6px;
+    opacity: .5;
+    transition: all .3s ease;
+  }
+  .flow-node .fn-name { font-family: var(--mono); font-weight: 800; font-size: 13px; color: #e2e8f0; }
+  .flow-node .fn-zh { font-size: 11px; color: var(--faint); margin-top: 2px; }
+  .flow-node.on {
+    opacity: 1;
+    border-color: var(--accent);
+    background: rgba(59,130,246,.14);
+    box-shadow: 0 0 14px rgba(59,130,246,.3);
+    transform: translateY(-2px);
+  }
+  .flow-node.on .fn-name { color: var(--accent-2); }
+  .flow-node.on .fn-zh { color: #cbd5e1; }
+  .flow-arrow { align-self: center; color: var(--faint); font-size: 15px; flex: none; }
+  .flow-branch {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 8px 10px;
+    background: var(--panel-2);
+    border: 1px dashed var(--border);
+    border-radius: 9px;
+    margin-top: 10px;
+  }
+  .flow-branch .fb-label { color: var(--warn-2); font-weight: 800; margin-right: 6px; }
+  .flow-branch .chip.on { transform: scale(1.06); box-shadow: 0 0 12px rgba(239,68,68,.4); }
+
+  .bug-card { margin-top: 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .bc-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .who { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); }
+  .who-tester { color: #93c5fd; border-color: rgba(59,130,246,.45); background: rgba(59,130,246,.1); }
+  .who-dev { color: #86efac; border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.1); }
+  .who-lead { color: #fcd34d; border-color: rgba(245,158,11,.45); background: rgba(245,158,11,.1); }
+  .bc-body { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .bc-step { color: #cbd5e1; font-size: 12.5px; line-height: 1.7; padding-left: 14px; position: relative; }
+  .bc-step::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .55em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-2);
+  }
+  .bc-step b { color: #f8fafc; }
+
+  /* ---- api test (demo 3) ---- */
+  .cols2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
+  .cols3 { display: grid; grid-template-columns: 1.1fr 1.1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .cols2, .cols3 { grid-template-columns: 1fr; } }
+  .mini { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .mini-head { padding: 8px 12px; font-size: 11.5px; font-weight: 800; letter-spacing: .3px; border-bottom: 1px solid var(--border); }
+  .mini.req .mini-head { color: var(--accent-2); background: rgba(59,130,246,.08); }
+  .mini.res .mini-head { color: var(--warn-2); background: rgba(245,158,11,.08); }
+  .mini.as .mini-head { color: var(--ok-2); background: rgba(34,197,94,.08); }
+  .kv { padding: 10px 12px 12px; }
+  .kv-row { display: flex; gap: 10px; padding: 5px 0; border-bottom: 1px dashed rgba(51,65,85,.55); align-items: baseline; }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .k { flex: none; width: 78px; color: var(--muted); font-size: 12px; }
+  .kv-row .v { color: #cbd5e1; font-size: 12px; word-break: break-all; }
+  .mono { font-family: var(--mono); }
+  .m-method { color: #0b1120; background: var(--accent-2); font-weight: 800; font-size: 11px; border-radius: 4px; padding: 1px 7px; }
+  .res-code { padding: 10px 12px 2px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #e2e8f0; flex-wrap: wrap; }
+  .m-code { font-family: var(--mono); font-weight: 800; border-radius: 5px; padding: 1px 8px; }
+  .m-code.bad { color: #0b1120; background: #f87171; }
+  .m-code.ok { color: #0b1120; background: var(--ok-2); }
+  .m-code.warn { color: #0b1120; background: var(--warn-2); }
+  .note-body { padding: 12px 14px; color: #cbd5e1; font-size: 13px; line-height: 1.85; }
+  .note-body b { color: #f8fafc; }
+  .note-body code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #7dd3fc;
+    background: rgba(125,211,252,.08);
+    border: 1px solid rgba(125,211,252,.18);
+    border-radius: 4px;
+    padding: 0 5px;
+  }
+  .assert-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 7px; }
+  .al { font-size: 12.5px; color: #cbd5e1; padding: 6px 10px; border-radius: 7px; background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.3); }
+  .al b { color: var(--ok-2); margin-right: 6px; }
+  .al.bad { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.3); }
+  .al.bad b { color: #f87171; }
+  .al.mid { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); }
+  .al.mid b { color: var(--warn-2); }
+  .assert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 900px) { .assert-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .assert-grid { grid-template-columns: 1fr; } }
+  .al-card { background: var(--panel-2); border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 10px; padding: 12px 14px; }
+  .al-card .ac-t { font-weight: 800; font-size: 13px; color: var(--accent-2); margin-bottom: 5px; }
+  .al-card .ac-d { color: #cbd5e1; font-size: 12px; line-height: 1.7; }
+
+  /* ---- pyramid (demo 4) ---- */
+  .pyr-wrap { display: flex; justify-content: center; padding: 6px 0 4px; }
+  .pyr { display: flex; flex-direction: column; align-items: center; gap: 8px; width: min(520px, 100%); }
+  .pyr-layer {
+    width: 100%;
+    text-align: center;
+    padding: 14px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--muted);
+    font-weight: 800;
+    font-size: 14px;
+    transition: all .3s ease;
+  }
+  .pyr-layer.base { width: 100%; }
+  .pyr-layer.mid { width: 74%; }
+  .pyr-layer.top { width: 50%; }
+  .pyr-layer .pl-sub { display: block; font-size: 11.5px; font-weight: 600; color: var(--faint); margin-top: 3px; }
+  .pyr-layer.on {
+    border-color: var(--accent);
+    background: rgba(59,130,246,.14);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(59,130,246,.35);
+    transform: scale(1.02);
+  }
+  .pyr-layer.on .pl-sub { color: var(--accent-2); }
+
+  .layer-info { margin-top: 16px; }
+  .li-title { font-size: 14px; font-weight: 800; color: #f1f5f9; margin-bottom: 8px; }
+  .li-metrics { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .li-m { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; }
+  .lm-k { color: var(--muted); font-size: 12px; }
+  .lm-v { font-family: var(--mono); font-weight: 800; }
+  .lm-v.ok { color: var(--ok-2); }
+  .lm-v.mid { color: var(--warn-2); }
+  .lm-v.bad { color: #f87171; }
+  .li-app { color: #cbd5e1; font-size: 12.5px; line-height: 1.8; background: var(--panel-2); border: 1px dashed var(--border); border-radius: 8px; padding: 10px 12px; }
+
+  .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  @media (max-width: 900px) { .sum-grid { grid-template-columns: 1fr; } }
+  .sum-card { border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); background: var(--panel-2); border-top: 3px solid var(--accent); }
+  .sum-card.green { border-top-color: var(--ok); }
+  .sc-t { font-weight: 800; font-size: 13.5px; margin-bottom: 6px; }
+  .sum-card.blue .sc-t { color: var(--accent-2); }
+  .sum-card.green .sc-t { color: var(--ok-2); }
+  .sc-d { color: #cbd5e1; font-size: 12.5px; line-height: 1.8; }
+
+  /* ---- controls ---- */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  .btn {
+    appearance: none;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.25); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn.primary {
+    background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(34,197,94,.18));
+    border-color: rgba(59,130,246,.55);
+  }
+  .btn.reset { background: transparent; }
+
+  .dots { display: flex; gap: 8px; align-items: center; }
+  .dot-i {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #334155;
+    transition: all .3s ease;
+  }
+  .dot-i.done { background: rgba(96,165,250,.55); }
+  .dot-i.cur { background: var(--accent-2); transform: scale(1.45); box-shadow: 0 0 8px rgba(96,165,250,.9); }
+
+  .sind {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 92px;
+    text-align: center;
+  }
+  .sind b { color: #f8fafc; font-size: 15px; }
+
+  .kbd-hint { color: var(--faint); font-size: 11.5px; font-family: var(--mono); }
+  .kbd-hint kbd {
+    background: #0b1120;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 0 5px;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--faint);
+    font-size: 11.5px;
+    padding: 26px 20px 40px;
+    font-family: var(--mono);
+  }
+  footer .ft-note { color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-top">
+    <div class="logo">转岗测试工程师 (QA) <small>· 测试思维交互演示</small></div>
+  </div>
+  <div class="head-sub">前端 → 测试岗 · 点击「下一步」逐步理解测试思维 · 全程离线可用（file:// 双击即可打开）</div>
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-demo="1">① 用例设计</button>
+    <button class="tab" data-demo="2">② Bug 生命周期</button>
+    <button class="tab" data-demo="3">③ 接口测试</button>
+    <button class="tab" data-demo="4">④ 测试金字塔·测试岗版</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ Demo 1 · 用例设计 ============ -->
+  <section class="demo active" id="demo-1">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ①</span>用例设计 · 测一个登录框</div>
+      <div class="demo-desc">需求：邮箱 + 密码 + 登录；邮箱须合法格式；密码 6~16 位（仅字母数字）</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span>可视化 · 测试方法演示</div>
+      <div class="stage" id="stage-1"></div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-1"></div>
+      </div>
+      <div class="panel tips-box">
+        <div class="panel-head"><span class="dot green"></span>测试要点 · key points</div>
+        <div class="tips" id="tips-1"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-1"></div>
+  </section>
+
+  <!-- ============ Demo 2 · Bug 生命周期 ============ -->
+  <section class="demo" id="demo-2">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ②</span>Bug 生命周期 · 从发现到关闭</div>
+      <div class="demo-desc">new → open → fix → verify → close；验证失败会进入 reopened 分支</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot orange"></span>可视化 · 状态流转</div>
+      <div class="stage" id="stage-2"></div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-2"></div>
+      </div>
+      <div class="panel tips-box">
+        <div class="panel-head"><span class="dot green"></span>测试要点 · key points</div>
+        <div class="tips" id="tips-2"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-2"></div>
+  </section>
+
+  <!-- ============ Demo 3 · 接口测试 ============ -->
+  <section class="demo" id="demo-3">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ③</span>接口测试 · 测一个登录接口</div>
+      <div class="demo-desc">POST /api/login · 参数校验 → 鉴权 → 成功 → 断言检查点</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span>可视化 · 请求 → 响应 → 断言</div>
+      <div class="stage" id="stage-3"></div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-3"></div>
+      </div>
+      <div class="panel tips-box">
+        <div class="panel-head"><span class="dot green"></span>测试要点 · key points</div>
+        <div class="tips" id="tips-3"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-3"></div>
+  </section>
+
+  <!-- ============ Demo 4 · 测试金字塔 ============ -->
+  <section class="demo" id="demo-4">
+    <div class="demo-head">
+      <div class="demo-title"><span class="badge">Demo ④</span>测试金字塔 · 测试岗版</div>
+      <div class="demo-desc">接口测试 → UI 自动化 → 手工探索 · 为什么接口测试是性价比之王</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot orange"></span>可视化 · 金字塔分层</div>
+      <div class="stage" id="stage-4"></div>
+    </div>
+    <div class="demo-bottom">
+      <div class="panel narrative-box">
+        <div class="panel-head"><span class="dot"></span>当前步骤讲解 · narrative</div>
+        <div class="nar" id="narrative-4"></div>
+      </div>
+      <div class="panel tips-box">
+        <div class="panel-head"><span class="dot green"></span>测试要点 · key points</div>
+        <div class="tips" id="tips-4"></div>
+      </div>
+    </div>
+    <div class="controls" id="controls-4"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div>转岗 QA · 测试思维交互演示</div>
+  <div class="ft-note">实现为状态机：每个 Tab 是 step 数组，render() 声明式重建界面 · 零依赖、完全离线</div>
+</footer>
+
+<script>
+'use strict';
+
+/* =========================================================
+   Demo 1 · 用例设计（4 步）
+   stage 为预编译的 HTML，直接注入演示区
+   ========================================================= */
+var STEPS1 = [
+  {
+    title: '第 1 步 · 等价类划分（邮箱字段）',
+    text: '邮箱的输入有无数种，但程序对它们的处理只有「合法」与「不合法」两类。<b>等价类划分</b>：按「程序处理方式是否相同」把无穷输入归并成若干等价类，<b>每个等价类取一个代表</b>测试即可。10 万种邮箱输入，归纳成 2 个有效类 + 5 个无效类，就覆盖了全部行为。',
+    tips: ['每个等价类至少 1 条用例', '无效类<b>必须</b>覆盖，用来验证异常提示', '先划分、再取代表，避免逐个试输入'],
+    stage:
+      '<div class="cls-group">' +
+        '<div class="group-h"><span class="g-ok">有效等价类</span><span class="g-sub">同一类内任一输入，程序处理方式相同 → 每类挑 1 个代表</span></div>' +
+        '<div class="card-grid">' +
+          '<div class="card ok"><div class="card-tag">EC-1</div><div class="card-title">标准邮箱</div><div class="card-in"><code>user@example.com</code></div><div class="card-text">用户名 + @ + 域名，最常见</div></div>' +
+          '<div class="card ok"><div class="card-tag">EC-2</div><div class="card-title">复杂合法邮箱</div><div class="card-in"><code>a.b@sub.example.cn</code></div><div class="card-text">含点号、多级子域名，仍属合法</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cls-group">' +
+        '<div class="group-h"><span class="g-bad">无效等价类</span><span class="g-sub">每类必须各测 1 条，用于验证异常提示</span></div>' +
+        '<div class="card-grid">' +
+          '<div class="card bad"><div class="card-tag">EC-3</div><div class="card-title">缺少 @</div><div class="card-in"><code>userexample.com</code></div><div class="card-text">预期：提示「邮箱格式不正确」</div></div>' +
+          '<div class="card bad"><div class="card-tag">EC-4</div><div class="card-title">缺少域名</div><div class="card-in"><code>user@</code></div><div class="card-text">预期：提示「邮箱格式不正确」</div></div>' +
+          '<div class="card bad"><div class="card-tag">EC-5</div><div class="card-title">缺少用户名</div><div class="card-in"><code>@example.com</code></div><div class="card-text">预期：提示「邮箱格式不正确」</div></div>' +
+          '<div class="card bad"><div class="card-tag">EC-6</div><div class="card-title">含非法字符</div><div class="card-in"><code>user name@x.com</code></div><div class="card-text">预期：提示「邮箱格式不正确」</div></div>' +
+          '<div class="card bad"><div class="card-tag">EC-7</div><div class="card-title">空值</div><div class="card-in"><code>""</code></div><div class="card-text">预期：提示「请输入邮箱」</div></div>' +
+        '</div>' +
+      '</div>'
+  },
+  {
+    title: '第 2 步 · 边界值分析（密码 6~16 位）',
+    text: '缺陷<b>最容易发生在边界上</b>。密码长度规定 6~16 位，那么 <code>min=6</code>、<code>max=16</code> 以及紧邻的 <code>min-1=5</code>、<code>max+1=17</code> 是<b>必测点</b>：6 位、16 位应通过，5 位、17 位应被拒绝。7 位（min+1）作为下边界旁路，回归时一起验证。',
+    tips: ['必测四点：min、max、min-1、max+1', '边界缺陷比例最高，优先设计', '与等价类配合：边界点单独成用例'],
+    stage:
+      '<div class="bv">' +
+        '<div class="bv-title">密码长度范围 <b>6 ~ 16 位</b> · 边界点全部标出</div>' +
+        '<div class="bv-line">' +
+          '<span class="bv-tick bv-bad">5<em>min-1</em></span>' +
+          '<span class="bv-tick bv-ok">6<em>min</em></span>' +
+          '<span class="bv-tick bv-ok">7<em>min+1</em></span>' +
+          '<span class="bv-tick">8</span>' +
+          '<span class="bv-tick bv-mid">15<em>max-1</em></span>' +
+          '<span class="bv-tick bv-ok">16<em>max</em></span>' +
+          '<span class="bv-tick bv-bad">17<em>max+1</em></span>' +
+        '</div>' +
+        '<div class="bv-note">绿 = 应通过 · 红 = 应拒绝 · 蓝 = 常规回归点 · 灰 = 范围内部</div>' +
+      '</div>' +
+      '<div class="card-grid">' +
+        '<div class="card bad"><div class="card-tag">BV-1</div><div class="card-title">5 位（min-1）</div><div class="card-in"><code>abc12</code></div><div class="card-text">预期：提示「密码需 6~16 位」</div></div>' +
+        '<div class="card ok"><div class="card-tag">BV-2</div><div class="card-title">6 位（min）</div><div class="card-in"><code>abc123</code></div><div class="card-text">预期：通过（下边界）</div></div>' +
+        '<div class="card blue"><div class="card-tag">BV-3</div><div class="card-title">7 位（min+1）</div><div class="card-in"><code>abc1234</code></div><div class="card-text">下边界旁路，回归必测</div></div>' +
+        '<div class="card ok"><div class="card-tag">BV-4</div><div class="card-title">16 位（max）</div><div class="card-in"><code>a1b2c3d4e5f6g7h8</code></div><div class="card-text">预期：通过（上边界）</div></div>' +
+        '<div class="card bad"><div class="card-tag">BV-5</div><div class="card-title">17 位（max+1）</div><div class="card-in"><code>a1b2c3d4e5f6g7h8x</code></div><div class="card-text">预期：拒绝（超上限）</div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 3 步 · 场景法（真实业务路径）',
+    text: '<b>场景法</b>从用户真实操作出发：基本流（正常登录）+ 备选流（忘记密码、密码错误）+ 异常流（连续输错锁定）。一个登录功能不能只测「成功」，还要覆盖用户真实使用中的每一条路径。',
+    tips: ['基本流 = 主路径，备选流 = 分支路径', '异常流验证系统容错能力', '每条场景都要有明确起点与终点'],
+    stage:
+      '<div class="scn-grid">' +
+        '<div class="scn"><div class="scn-head"><span class="chip-blue">基本流</span><div class="scn-title">场景 1 · 正常登录</div></div>' +
+          '<div class="scn-flow"><span class="sf">输入邮箱密码</span><i>→</i><span class="sf">点击登录</span><i>→</i><span class="sf ok">登录成功进首页</span></div></div>' +
+        '<div class="scn"><div class="scn-head"><span class="chip-orange">备选流</span><div class="scn-title">场景 2 · 忘记密码</div></div>' +
+          '<div class="scn-flow"><span class="sf">点击「忘记密码」</span><i>→</i><span class="sf">跳转找回页</span><i>→</i><span class="sf">邮箱验证</span><i>→</i><span class="sf ok">重置后重新登录</span></div></div>' +
+        '<div class="scn"><div class="scn-head"><span class="chip-orange">备选流</span><div class="scn-title">场景 3 · 密码错误提示</div></div>' +
+          '<div class="scn-flow"><span class="sf">输入错误密码</span><i>→</i><span class="sf">点击登录</span><i>→</i><span class="sf bad">提示「邮箱或密码错误」</span><i>→</i><span class="sf">停留在登录页</span></div></div>' +
+        '<div class="scn"><div class="scn-head"><span class="chip-red">异常流</span><div class="scn-title">场景 4 · 连续失败锁定</div></div>' +
+          '<div class="scn-flow"><span class="sf">连续 5 次输错</span><i>→</i><span class="sf bad">账号锁定 30 分钟</span><i>→</i><span class="sf">提示稍后再试</span></div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 4 步 · 汇总用例表',
+    text: '把三种方法的结果汇总成<b>用例表</b>：编号唯一、方法标注、输入明确、预期可判定。评审时看「有没有缺口」，执行时看「每一条是否可判定」——这就是交付给开发评审、归档、回归执行的标准产物。',
+    tips: ['编号唯一，可追踪到需求', '输入与预期必须<b>可判定</b>', '覆盖失败路径才能防回归'],
+    stage:
+      '<div class="tbl-wrap"><table class="tbl">' +
+        '<thead><tr><th>用例编号</th><th>方法</th><th>输入</th><th>预期结果</th></tr></thead>' +
+        '<tbody>' +
+          '<tr><td class="m-meth">TC-01</td><td>等价类</td><td>user@example.com + abc123</td><td class="t-ok">登录成功</td></tr>' +
+          '<tr><td class="m-meth">TC-02</td><td>等价类</td><td>userexample.com（缺 @）</td><td class="t-bad">提示「邮箱格式不正确」</td></tr>' +
+          '<tr><td class="m-meth">TC-03</td><td>等价类</td><td>邮箱为空</td><td class="t-bad">提示「请输入邮箱」</td></tr>' +
+          '<tr><td class="m-meth">TC-04</td><td>边界值</td><td>密码 5 位</td><td class="t-bad">提示「密码需 6~16 位」</td></tr>' +
+          '<tr><td class="m-meth">TC-05</td><td>边界值</td><td>密码 6 位（min）</td><td class="t-ok">通过</td></tr>' +
+          '<tr><td class="m-meth">TC-06</td><td>边界值</td><td>密码 16 位（max）</td><td class="t-ok">通过</td></tr>' +
+          '<tr><td class="m-meth">TC-07</td><td>边界值</td><td>密码 17 位（max+1）</td><td class="t-bad">拒绝</td></tr>' +
+          '<tr><td class="m-meth">TC-08</td><td>场景法</td><td>正确凭据 → 登录</td><td class="t-ok">成功进入首页</td></tr>' +
+          '<tr><td class="m-meth">TC-09</td><td>场景法</td><td>连续 5 次输错</td><td class="t-bad">账号锁定 30 分钟</td></tr>' +
+        '</tbody>' +
+      '</table></div>'
+  }
+];
+
+/* =========================================================
+   Demo 2 · Bug 生命周期（6 步，含 reopened 分支）
+   ========================================================= */
+var STEPS2 = [
+  {
+    title: '第 1 步 · 测试提交 Bug（new）',
+    text: '测试发现一个 Bug 后，不是口头说一句，而是<b>提交缺陷单</b>：标题、环境版本、复现步骤、期望与实际结果、截图日志。此时状态为 <code>new</code>（新提交），<b>责任人在测试侧</b>。',
+    tips: ['Bug 单要素：标题 / 版本环境 / 复现步骤 / 期望 vs 实际 / 截图日志', '复现步骤越清晰，开发定位越快'],
+    active: ['new'], branch: false,
+    chip: 'new · 新提交', chipCls: 'chip-red',
+    owner: '测试', whoCls: 'tester',
+    ops: ['复现问题，确认可稳定出现', '填写缺陷单：标题 / 环境版本 / 复现步骤 / 期望·实际结果 / 截图日志', '提交到 Bug 管理系统，状态 new']
+  },
+  {
+    title: '第 2 步 · 评审并指派（open）',
+    text: '测试负责人/组长<b>评审确认</b>这是有效 Bug 后，<b>指派</b>给对应模块的开发，并设置严重程度与优先级。状态变为 <code>open</code>（已打开）。',
+    tips: ['先确认有效性再指派，避免无效 Bug 浪费开发时间', '严重程度（影响）与优先级（顺序）分开设定'],
+    active: ['open'], branch: false,
+    chip: 'open · 已打开', chipCls: 'chip-blue',
+    owner: '测试负责人', whoCls: 'lead',
+    ops: ['评审确认是有效 Bug', '设置严重程度（影响大小）与优先级（处理顺序）', '指派给对应模块的开发']
+  },
+  {
+    title: '第 3 步 · 开发修复（fix）',
+    text: '开发<b>定位原因 → 修复代码 → 提交</b>，并在缺陷单上标注修复版本。状态变为 <code>fix</code>（已修复 / 待验证）。',
+    tips: ['开发标注「修复版本」，便于测试定位回归版本', '修复后要自测通过再转交验证'],
+    active: ['fix'], branch: false,
+    chip: 'fix · 已修复', chipCls: 'chip-green',
+    owner: '开发', whoCls: 'dev',
+    ops: ['定位根因，复现并确认问题点', '修复代码并自测通过', '提交并标注「已修复 + 修复版本」']
+  },
+  {
+    title: '第 4 步 · 测试验证（verify）',
+    text: '测试拉取修复版本，按<b>原复现步骤</b>回归验证，同时检查相邻功能是否被引入新问题。状态 <code>verify</code>（验证中）。',
+    tips: ['验证不只点一遍：按复现步骤走 + 检查相邻功能', '验证通过才有资格进入关闭环节'],
+    active: ['verify'], branch: false,
+    chip: 'verify · 验证中', chipCls: 'chip-blue',
+    owner: '测试', whoCls: 'tester',
+    ops: ['拉取修复版本，按原复现步骤回归', '检查相邻功能是否被引入新问题', '通过 → 等待关闭；失败 → 进入 reopened']
+  },
+  {
+    title: '第 5 步 · 验证失败（reopened）',
+    text: '验证<b>失败</b>：问题仍可复现，或引入了新的回归 → Bug 打回，状态变为 <code>reopened</code>（重新打开），重新回到开发修复。<b>这是生命周期的正常分支</b>，不是异常流程。',
+    tips: ['reopened 说明修复不彻底或引入回归', '重新打开后责任人回到开发，测试重新跟进'],
+    active: ['reopened'], branch: true,
+    chip: 'reopened · 重新打开', chipCls: 'chip-red',
+    owner: '开发', whoCls: 'dev',
+    ops: ['验证失败：问题仍复现，或引入新回归', 'Bug 打回，状态变为 reopened', '回到 fix 重新修复，修复后再交验证']
+  },
+  {
+    title: '第 6 步 · 修复通过并关闭（close）',
+    text: '开发再次修复后，测试再次验证<b>通过</b> → 关闭 Bug，记录验证环境与版本。<code>close</code>。一个 Bug 从发现到关闭形成完整闭环。',
+    tips: ['关闭前记录验证环境 / 版本 / 结论', '闭环数据是版本质量评估的依据'],
+    active: ['close'], branch: false,
+    chip: 'close · 已关闭', chipCls: 'chip-green',
+    owner: '测试', whoCls: 'tester',
+    ops: ['开发修复后再验证，通过', '记录验证环境 / 版本 / 结论', '关闭 Bug，生命周期闭环']
+  }
+];
+
+function flowHtml(active, branch) {
+  var nodes = [['new', '新提交'], ['open', '已打开'], ['fix', '已修复'], ['verify', '验证中'], ['close', '已关闭']];
+  var h = '<div class="flow">';
+  nodes.forEach(function (n, i) {
+    if (i > 0) h += '<div class="flow-arrow">→</div>';
+    var on = active.indexOf(n[0]) !== -1 ? ' on' : '';
+    h += '<div class="flow-node' + on + '"><div class="fn-name">' + n[0] + '</div><div class="fn-zh">' + n[1] + '</div></div>';
+  });
+  h += '</div>';
+  var reb = active.indexOf('reopened') !== -1 ? ' on' : '';
+  h += '<div class="flow-branch"><span class="fb-label">分支</span>验证失败 → <span class="chip chip-red' + reb + '">reopened · 重新打开</span> → 打回 fix 重新修复</div>';
+  return h;
+}
+
+function bugStage(s) {
+  var h = flowHtml(s.active, s.branch);
+  h += '<div class="bug-card">';
+  h += '<div class="bc-top"><span class="chip ' + s.chipCls + '">' + s.chip + '</span><span class="who who-' + s.whoCls + '">责任人：' + s.owner + '</span></div>';
+  h += '<div class="bc-body">';
+  s.ops.forEach(function (op, i) { h += '<div class="bc-step">' + (i + 1) + '. ' + op + '</div>'; });
+  h += '</div></div>';
+  return h;
+}
+
+/* =========================================================
+   Demo 3 · 接口测试（5 步）
+   ========================================================= */
+var STEPS3 = [
+  {
+    title: '第 1 步 · 构造请求',
+    text: '接口测试第一件事是<b>构造请求</b>：Method + URL + Headers + Body 四要素。登录接口是 <code>POST /api/login</code>，JSON 携带 <code>username</code> 与 <code>password</code>。',
+    tips: ['任何接口用例先写清四要素：Method / URL / Headers / Body', '把用例翻译成一条真实 HTTP 请求'],
+    stage:
+      '<div class="cols2">' +
+        '<div class="mini req"><div class="mini-head">① 构造请求 · REQUEST</div><div class="kv">' +
+          '<div class="kv-row"><span class="k">Method</span><span class="v"><span class="m-method">POST</span></span></div>' +
+          '<div class="kv-row"><span class="k">URL</span><span class="v mono">/api/login</span></div>' +
+          '<div class="kv-row"><span class="k">Headers</span><span class="v mono">Content-Type: application/json</span></div>' +
+          '<div class="kv-row"><span class="k">Body</span><span class="v mono">{"username":"tom@qq.com","password":"abc123"}</span></div>' +
+        '</div></div>' +
+        '<div class="mini res"><div class="mini-head">② 这一步的意义</div><div class="note-body">接口测试的第一步是把用例翻译成一条真实 HTTP 请求。确定 Method / URL / Header / Body 四要素后，<b>「我要发什么」</b>就完全确定了，后续所有分支都基于这个模板构造。</div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 2 步 · 参数校验（缺失字段 → 400）',
+    text: '<b>参数校验层</b>：只传 <code>username</code>、缺 <code>password</code> → 服务端返回 <code>400</code>「password 不能为空」。断言：状态码 400 + 错误信息指向缺失字段。',
+    tips: ['缺字段 → 400 属于参数校验层，是接口第一道防线', '校验错误信息是否<b>准确指向</b>缺失字段'],
+    stage:
+      '<div class="cols3">' +
+        '<div class="mini req"><div class="mini-head">请求 · REQUEST</div><div class="kv">' +
+          '<div class="kv-row"><span class="k">Method</span><span class="v"><span class="m-method">POST</span> /api/login</span></div>' +
+          '<div class="kv-row"><span class="k">Body</span><span class="v mono">{"username":"tom@qq.com"}</span></div>' +
+          '<div class="kv-row"><span class="k">说明</span><span class="v">缺少 password 字段</span></div>' +
+        '</div></div>' +
+        '<div class="mini res"><div class="mini-head">响应 · RESPONSE</div>' +
+          '<div class="res-code"><span class="m-code bad">400</span> Bad Request</div>' +
+          '<div class="kv"><div class="kv-row"><span class="k">Body</span><span class="v mono">{"code":400,"msg":"password 不能为空"}</span></div></div>' +
+        '</div>' +
+        '<div class="mini as"><div class="mini-head">断言 · ASSERT</div><div class="assert-list">' +
+          '<div class="al"><b>✓</b> status == 400</div>' +
+          '<div class="al"><b>✓</b> json.msg 包含 "password"</div>' +
+        '</div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 3 步 · 鉴权（错误密码 → 401）',
+    text: '<b>鉴权层</b>：密码错误 → <code>401 Unauthorized</code>「邮箱或密码错误」。断言：状态码 401 + 错误信息匹配。安全相关，<b>必测</b>。',
+    tips: ['错误密码 → 401 属于鉴权层', '安全相关：密码错误<b>不应</b>返回 token'],
+    stage:
+      '<div class="cols3">' +
+        '<div class="mini req"><div class="mini-head">请求 · REQUEST</div><div class="kv">' +
+          '<div class="kv-row"><span class="k">Method</span><span class="v"><span class="m-method">POST</span> /api/login</span></div>' +
+          '<div class="kv-row"><span class="k">Body</span><span class="v mono">{"username":"tom@qq.com","password":"wrong123"}</span></div>' +
+          '<div class="kv-row"><span class="k">说明</span><span class="v">密码错误</span></div>' +
+        '</div></div>' +
+        '<div class="mini res"><div class="mini-head">响应 · RESPONSE</div>' +
+          '<div class="res-code"><span class="m-code warn">401</span> Unauthorized</div>' +
+          '<div class="kv"><div class="kv-row"><span class="k">Body</span><span class="v mono">{"code":401,"msg":"邮箱或密码错误"}</span></div></div>' +
+        '</div>' +
+        '<div class="mini as"><div class="mini-head">断言 · ASSERT</div><div class="assert-list">' +
+          '<div class="al"><b>✓</b> status == 401</div>' +
+          '<div class="al"><b>✓</b> json.msg == "邮箱或密码错误"</div>' +
+          '<div class="al bad"><b>✗</b> 响应体不应出现 token</div>' +
+        '</div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 4 步 · 成功（200 + token）',
+    text: '<b>成功分支</b>：正确凭据 → <code>200 OK</code>，业务码 <code>0</code>，并返回 <code>token</code>。断言三件套：状态码 200 + 业务码 0 + <code>token</code> 存在且非空。',
+    tips: ['成功分支断言三件套：状态码 + 业务码 + token 非空', 'token 用于后续带鉴权的接口调用'],
+    stage:
+      '<div class="cols3">' +
+        '<div class="mini req"><div class="mini-head">请求 · REQUEST</div><div class="kv">' +
+          '<div class="kv-row"><span class="k">Method</span><span class="v"><span class="m-method">POST</span> /api/login</span></div>' +
+          '<div class="kv-row"><span class="k">Body</span><span class="v mono">{"username":"tom@qq.com","password":"abc123"}</span></div>' +
+          '<div class="kv-row"><span class="k">说明</span><span class="v">正确凭据</span></div>' +
+        '</div></div>' +
+        '<div class="mini res"><div class="mini-head">响应 · RESPONSE</div>' +
+          '<div class="res-code"><span class="m-code ok">200</span> OK</div>' +
+          '<div class="kv"><div class="kv-row"><span class="k">Body</span><span class="v mono">{"code":0,"data":{"token":"eyJhbGciOiJIUzI1NiIs...","expires_in":7200}}</span></div></div>' +
+        '</div>' +
+        '<div class="mini as"><div class="mini-head">断言 · ASSERT</div><div class="assert-list">' +
+          '<div class="al"><b>✓</b> status == 200</div>' +
+          '<div class="al"><b>✓</b> json.code == 0</div>' +
+          '<div class="al"><b>✓</b> data.token 存在且非空</div>' +
+        '</div></div>' +
+      '</div>'
+  },
+  {
+    title: '第 5 步 · 断言检查点汇总',
+    text: '一个接口的断言是<b>分层递进</b>的：状态码 → 响应结构/Schema → 业务码 → 安全 → 性能 → 异常。接口测的不是「通不通」，而是「每个约定都被验证过」。',
+    tips: ['从状态码 → 结构 → 业务码 → 安全 → 性能 → 异常逐层加深', '每一条断言都要能独立判定对错'],
+    stage:
+      '<div class="assert-grid">' +
+        '<div class="al-card"><div class="ac-t">状态码精确断言</div><div class="ac-d">400 / 401 / 200 每个分支都精确匹配，不能只验成功</div></div>' +
+        '<div class="al-card"><div class="ac-t">响应结构 / Schema</div><div class="ac-d">校验 JSON 结构与字段类型，防止字段丢失或类型变化</div></div>' +
+        '<div class="al-card"><div class="ac-t">业务码约定</div><div class="ac-d">code：0 成功 / 400 参数 / 401 鉴权，前后端统一口径</div></div>' +
+        '<div class="al-card"><div class="ac-t">安全</div><div class="ac-d">密码错误不返回 token；错误信息不泄露敏感细节</div></div>' +
+        '<div class="al-card"><div class="ac-t">性能</div><div class="ac-d">响应时间 &lt; 1s；并发压测下不出现 500</div></div>' +
+        '<div class="al-card"><div class="ac-t">异常 / 幂等</div><div class="ac-d">超时、重复请求、服务器异常时的表现都要有断言</div></div>' +
+      '</div>'
+  }
+];
+
+/* =========================================================
+   Demo 4 · 测试金字塔（5 步）
+   ========================================================= */
+var STEPS4 = [
+  {
+    title: '第 1 步 · 三层结构全景',
+    text: '<b>测试金字塔</b>：底层接口测试最多最便宜，中层 UI 自动化适量，顶层手工探索最少最贵。测试岗视角：把预算投到底层，用最少的成本覆盖最多的核心逻辑。',
+    tips: ['越往下用例越多、越便宜', '金字塔是「策略」，不是「形式」'],
+    stage:
+      '<div class="pyr-wrap"><div class="pyr">' +
+        '<div class="pyr-layer top">手工探索<span class="pl-sub">最少 · 成本最高</span></div>' +
+        '<div class="pyr-layer mid">UI 自动化<span class="pl-sub">适量 · 成本中等</span></div>' +
+        '<div class="pyr-layer base">接口测试<span class="pl-sub">最多 · 成本最低</span></div>' +
+      '</div></div>' +
+      '<div class="layer-info"><div class="li-title">先看结论</div>' +
+        '<div class="li-app">三层各有分工：<b>接口测试</b>兜住业务逻辑、<b>UI 自动化</b>守住核心路径、<b>手工探索</b>处理体验与复杂场景。测试岗的精力应主要投在底层。</div>' +
+      '</div>'
+  },
+  {
+    title: '第 2 步 · 底层 · 接口测试（性价比之王）',
+    text: '底层·<b>接口测试</b>：成本<b>低</b>（脚本快、不依赖 UI）、覆盖<b>高</b>（业务逻辑、参数、鉴权都在这一层）。这就是测试岗的<b>性价比之王</b>——转岗首选切入点。',
+    tips: ['毫秒级执行，不依赖 UI 渲染与选择器', '业务逻辑 / 参数边界 / 鉴权都在这一层'],
+    stage:
+      '<div class="pyr-wrap"><div class="pyr">' +
+        '<div class="pyr-layer top">手工探索<span class="pl-sub">成本最高</span></div>' +
+        '<div class="pyr-layer mid">UI 自动化<span class="pl-sub">成本中等</span></div>' +
+        '<div class="pyr-layer base on">接口测试<span class="pl-sub">成本最低 · 覆盖最高</span></div>' +
+      '</div></div>' +
+      '<div class="layer-info"><div class="li-title">底层 · 接口测试</div>' +
+        '<div class="li-metrics">' +
+          '<div class="li-m"><span class="lm-k">成本</span><span class="lm-v ok">低</span></div>' +
+          '<div class="li-m"><span class="lm-k">覆盖</span><span class="lm-v ok">高</span></div>' +
+          '<div class="li-m"><span class="lm-k">速度</span><span class="lm-v ok">毫秒级</span></div>' +
+        '</div>' +
+        '<div class="li-app">适用：业务逻辑校验 · 参数边界 · 鉴权/权限 · 异常处理 · 第三方对接 · 回归 &amp; CI</div>' +
+      '</div>'
+  },
+  {
+    title: '第 3 步 · 中层 · UI 自动化',
+    text: '中层·<b>UI 自动化</b>：成本<b>中</b>（选择器易受前端改动影响）、覆盖<b>中</b>。适合核心路径冒烟（登录 → 下单 → 支付）与主路径回归，<b>别贪多</b>。',
+    tips: ['UI 选择器易变，维护成本随用例数量上涨', '只测核心路径冒烟与关键回归'],
+    stage:
+      '<div class="pyr-wrap"><div class="pyr">' +
+        '<div class="pyr-layer top">手工探索<span class="pl-sub">成本最高</span></div>' +
+        '<div class="pyr-layer mid on">UI 自动化<span class="pl-sub">成本中等 · 覆盖中等</span></div>' +
+        '<div class="pyr-layer base">接口测试<span class="pl-sub">成本最低 · 覆盖最高</span></div>' +
+      '</div></div>' +
+      '<div class="layer-info"><div class="li-title">中层 · UI 自动化</div>' +
+        '<div class="li-metrics">' +
+          '<div class="li-m"><span class="lm-k">成本</span><span class="lm-v mid">中</span></div>' +
+          '<div class="li-m"><span class="lm-k">覆盖</span><span class="lm-v mid">中</span></div>' +
+          '<div class="li-m"><span class="lm-k">速度</span><span class="lm-v mid">秒级</span></div>' +
+        '</div>' +
+        '<div class="li-app">适用：核心流程冒烟（登录 → 下单 → 支付）· 主路径回归 · 与接口自动化互为补充</div>' +
+      '</div>'
+  },
+  {
+    title: '第 4 步 · 顶层 · 手工探索',
+    text: '顶层·<b>手工探索</b>：成本<b>高</b>、覆盖<b>低</b>，但<b>不可替代</b>——探索性测试、视觉/交互体验、复杂场景、一次性验收都靠它。',
+    tips: ['交给探索性、视觉与复杂交互', '测试岗要做的是「少而精」的手工用例'],
+    stage:
+      '<div class="pyr-wrap"><div class="pyr">' +
+        '<div class="pyr-layer top on">手工探索<span class="pl-sub">成本最高 · 覆盖最低</span></div>' +
+        '<div class="pyr-layer mid">UI 自动化<span class="pl-sub">成本中等</span></div>' +
+        '<div class="pyr-layer base">接口测试<span class="pl-sub">成本最低</span></div>' +
+      '</div></div>' +
+      '<div class="layer-info"><div class="li-title">顶层 · 手工探索</div>' +
+        '<div class="li-metrics">' +
+          '<div class="li-m"><span class="lm-k">成本</span><span class="lm-v bad">高</span></div>' +
+          '<div class="li-m"><span class="lm-k">覆盖</span><span class="lm-v bad">低</span></div>' +
+          '<div class="li-m"><span class="lm-k">速度</span><span class="lm-v bad">分钟级</span></div>' +
+        '</div>' +
+        '<div class="li-app">适用：探索性测试 · 视觉与交互体验 · 复杂真实场景 · 一次性验收</div>' +
+      '</div>'
+  },
+  {
+    title: '第 5 步 · 测试岗视角总结',
+    text: '转岗测试的<b>最佳切入点</b>：前端背景 → 看得懂请求/响应/错误边界 → <b>接口测试 + 前后端联调</b>顺手；再加上 pytest / Postman 落地，就是面试时最强的组合拳。',
+    tips: ['把前端功底用在接口 + 联调，是最大加分项', '接口测试是测试岗「性价比之王」'],
+    stage:
+      '<div class="pyr-wrap"><div class="pyr">' +
+        '<div class="pyr-layer top">手工探索<span class="pl-sub">体验兜底</span></div>' +
+        '<div class="pyr-layer mid">UI 自动化<span class="pl-sub">路径冒烟</span></div>' +
+        '<div class="pyr-layer base on">接口测试<span class="pl-sub">性价比之王</span></div>' +
+      '</div></div>' +
+      '<div class="sum-grid">' +
+        '<div class="sum-card blue"><div class="sc-t">为什么接口测试是性价比之王</div><div class="sc-d">① 快：毫秒级，无需启动 UI　② 稳：不依赖渲染与选择器　③ 覆盖核心业务逻辑　④ 易并行、易接入 CI 回归</div></div>' +
+        '<div class="sum-card green"><div class="sc-t">前端转岗者的优势</div><div class="sc-d">看得懂请求 / 响应与错误边界 → 接口用例、前后端联调测试、Bug 定位都更顺手</div></div>' +
+      '</div>'
+  }
+];
+
+/* =========================================================
+   状态机与渲染
+   ========================================================= */
+var DEMOS = {
+  1: { steps: STEPS1 },
+  2: { steps: STEPS2 },
+  3: { steps: STEPS3 },
+  4: { steps: STEPS4 }
+};
+
+var cur = { idx: { 1: 0, 2: 0, 3: 0, 4: 0 } };
+
+function setStage(id, html) { document.getElementById('stage-' + id).innerHTML = html; }
+
+function setNar(id, title, text) {
+  var el = document.getElementById('narrative-' + id);
+  el.innerHTML = '<div class="nar-title"><span class="n-step">' + (cur.idx[id] + 1) + '/' + DEMOS[id].steps.length + '</span>' + title + '</div>' +
+                 '<div class="nar-text">' + text + '</div>';
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+
+function setTips(id, tips) {
+  var h = '<ul>';
+  tips.forEach(function (t) { h += '<li>' + t + '</li>'; });
+  h += '</ul>';
+  document.getElementById('tips-' + id).innerHTML = h;
+}
+
+function renderDemo(id) {
+  var idx = cur.idx[id];
+  var s = DEMOS[id].steps[idx];
+  var stage = (id === 2) ? bugStage(s) : s.stage;
+  setStage(id, stage);
+  setNar(id, s.title, s.text);
+  setTips(id, s.tips);
+  renderMeta(id);
+}
+
+function renderMeta(id) {
+  var D = DEMOS[id];
+  var idx = cur.idx[id];
+  document.getElementById('sind-' + id).innerHTML = '第 <b>' + (idx + 1) + '</b> / ' + D.steps.length + ' 步';
+  var dots = document.getElementById('dots-' + id).children;
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].className = 'dot-i' + (i < idx ? ' done' : '') + (i === idx ? ' cur' : '');
+  }
+  document.querySelector('#controls-' + id + ' .prev').disabled = (idx <= 0);
+  document.querySelector('#controls-' + id + ' .next').disabled = (idx >= D.steps.length - 1);
+}
+
+function goto(id, idx) {
+  var D = DEMOS[id];
+  idx = Math.max(0, Math.min(D.steps.length - 1, idx));
+  cur.idx[id] = idx;
+  renderDemo(id);
+}
+
+function buildControls(id) {
+  var D = DEMOS[id];
+  var host = document.getElementById('controls-' + id);
+  var html =
+    '<button class="btn prev" data-act="prev">⬅️ 上一步</button>' +
+    '<div class="dots" id="dots-' + id + '"></div>' +
+    '<div class="sind" id="sind-' + id + '"></div>' +
+    '<button class="btn primary next" data-act="next">下一步 ➡️</button>' +
+    '<button class="btn reset" data-act="reset">🔄 重新开始</button>' +
+    '<span class="kbd-hint"><kbd>←</kbd> <kbd>→</kbd> 切换 · <kbd>R</kbd> 重来</span>';
+  host.innerHTML = html;
+
+  var dotsHtml = '';
+  for (var i = 0; i < D.steps.length; i++) dotsHtml += '<span class="dot-i"></span>';
+  document.getElementById('dots-' + id).innerHTML = dotsHtml;
+
+  host.querySelector('.prev').addEventListener('click', function () { goto(id, cur.idx[id] - 1); });
+  host.querySelector('.next').addEventListener('click', function () { goto(id, cur.idx[id] + 1); });
+  host.querySelector('.reset').addEventListener('click', function () { goto(id, 0); });
+}
+
+/* 标签页切换：切换后重置该 Tab 的步进状态 */
+var tabs = document.querySelectorAll('.tab');
+for (var ti = 0; ti < tabs.length; ti++) {
+  tabs[ti].addEventListener('click', function () {
+    activateDemo(parseInt(this.getAttribute('data-demo'), 10));
+  });
+}
+
+function activateDemo(d) {
+  var i;
+  for (i = 0; i < tabs.length; i++) tabs[i].classList.toggle('active', parseInt(tabs[i].getAttribute('data-demo'), 10) === d);
+  var demos = document.querySelectorAll('.demo');
+  for (i = 0; i < demos.length; i++) demos[i].classList.toggle('active', demos[i].id === 'demo-' + d);
+  cur.idx[d] = 0;
+  renderDemo(d);
+}
+
+/* 键盘快捷键 */
+document.addEventListener('keydown', function (e) {
+  var activeDemo = 1;
+  for (var i = 0; i < tabs.length; i++) {
+    if (tabs[i].classList.contains('active')) activeDemo = parseInt(tabs[i].getAttribute('data-demo'), 10);
+  }
+  var d = activeDemo;
+  if (e.key === 'ArrowRight') { goto(d, cur.idx[d] + 1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { goto(d, cur.idx[d] - 1); e.preventDefault(); }
+  else if (e.key === 'r' || e.key === 'R') { goto(d, 0); }
+});
+
+/* 启动 */
+for (var dk in DEMOS) {
+  if (DEMOS.hasOwnProperty(dk)) {
+    buildControls(parseInt(dk, 10));
+    renderDemo(parseInt(dk, 10));
+  }
+}
+</script>
+</body>
+</html>

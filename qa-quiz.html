@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>转岗 QA mini Quiz · 概念选择 + 手写题</title>
+<style>
+:root {
+--bg: #0f172a;
+--panel: #1e293b;
+--panel-2: #172033;
+--border: #334155;
+--code-bg: #0b1120;
+--text: #e2e8f0;
+--muted: #94a3b8;
+--faint: #64748b;
+--accent: #3b82f6;
+--accent-2: #60a5fa;
+--ok: #22c55e;
+--ok-2: #4ade80;
+--warn: #f59e0b;
+--warn-2: #fbbf24;
+--err: #ef4444;
+--radius: 12px;
+--mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+--sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+background: var(--bg);
+color: var(--text);
+font-family: var(--sans);
+font-size: 14px;
+line-height: 1.6;
+background-image:
+radial-gradient(1100px 500px at 15% -10%, rgba(59,130,246,.12), transparent 60%),
+radial-gradient(900px 480px at 110% 5%, rgba(34,197,94,.08), transparent 55%),
+radial-gradient(700px 400px at 50% 115%, rgba(245,158,11,.06), transparent 60%);
+background-attachment: fixed;
+min-height: 100vh;
+}
+header {
+max-width: 900px;
+margin: 0 auto;
+padding: 26px 20px 10px;
+}
+.head-top {
+display: flex;
+align-items: center;
+gap: 14px;
+flex-wrap: wrap;
+}
+.logo {
+font-size: 22px;
+font-weight: 800;
+letter-spacing: .5px;
+background: linear-gradient(90deg, #60a5fa, #4ade80 60%, #fbbf24);
+-webkit-background-clip: text;
+background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.logo small {
+font-size: 13px;
+font-weight: 600;
+-webkit-text-fill-color: var(--muted);
+}
+.score-pill {
+margin-left: auto;
+display: flex;
+align-items: center;
+gap: 8px;
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: 999px;
+padding: 6px 14px;
+font-size: 12px;
+color: var(--muted);
+box-shadow: 0 4px 14px rgba(0,0,0,.3);
+}
+.score-pill .sp-dot {
+width: 8px; height: 8px;
+border-radius: 50%;
+background: var(--ok-2);
+box-shadow: 0 0 8px rgba(74,222,128,.8);
+}
+.score-pill b {
+color: var(--ok-2);
+font-family: var(--mono);
+font-size: 15px;
+}
+.head-sub {
+color: var(--muted);
+font-size: 13px;
+margin-top: 4px;
+}
+.tabbar {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+margin-top: 16px;
+padding-bottom: 10px;
+border-bottom: 1px solid var(--border);
+}
+.tab {
+appearance: none;
+border: 1px solid var(--border);
+background: var(--panel);
+color: var(--muted);
+padding: 9px 16px;
+border-radius: 999px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+font-family: var(--sans);
+transition: all .25s ease;
+}
+.tab .tab-n {
+font-family: var(--mono);
+font-size: 10.5px;
+opacity: .7;
+margin-left: 4px;
+}
+.tab:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+.tab.active {
+background: linear-gradient(135deg, rgba(59,130,246,.22), rgba(34,197,94,.12));
+color: #fff;
+border-color: var(--accent);
+box-shadow: 0 0 0 3px rgba(59,130,246,.15), 0 4px 14px rgba(0,0,0,.35);
+}
+main { max-width: 900px; margin: 0 auto; padding: 18px 20px 60px; }
+.demo { display: none; animation: fadein .35s ease; }
+.demo.active { display: block; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.quiz-top {
+display: flex;
+align-items: baseline;
+gap: 12px;
+flex-wrap: wrap;
+margin-bottom: 14px;
+}
+.demo-title { font-size: 18px; font-weight: 800; color: #f1f5f9; }
+.demo-title .badge {
+display: inline-block;
+font-size: 12px;
+font-weight: 700;
+color: #0f172a;
+background: linear-gradient(90deg, var(--accent-2), var(--ok-2));
+border-radius: 6px;
+padding: 1px 8px;
+margin-right: 8px;
+vertical-align: 2px;
+}
+.demo-desc { color: var(--muted); font-size: 13px; }
+/* ---- progress ---- */
+.progress-wrap {
+padding: 14px 16px;
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+margin-bottom: 14px;
+box-shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+.prog-meta {
+display: flex;
+justify-content: space-between;
+align-items: baseline;
+gap: 10px;
+color: var(--muted);
+font-size: 12.5px;
+font-family: var(--mono);
+margin-bottom: 8px;
+}
+.prog-meta b { color: #f8fafc; }
+.pbar {
+height: 8px;
+background: var(--panel-2);
+border: 1px solid var(--border);
+border-radius: 999px;
+overflow: hidden;
+}
+.pbar-fill {
+height: 100%;
+width: 0%;
+background: linear-gradient(90deg, var(--accent), var(--ok));
+border-radius: 999px;
+transition: width .4s ease;
+}
+/* ---- result ---- */
+.result-wrap {
+display: none;
+margin-bottom: 14px;
+padding: 18px 20px;
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+box-shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+.result-wrap.show { display: block; animation: fadein .4s ease; }
+.result-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.res-score {
+font-family: var(--mono);
+font-size: 34px;
+font-weight: 800;
+color: var(--accent-2);
+line-height: 1;
+}
+.res-score em { font-style: normal; font-size: 15px; color: var(--muted); }
+.res-title { font-size: 17px; font-weight: 800; }
+.res-title.t-ok { color: var(--ok-2); }
+.res-title.t-warn { color: var(--warn-2); }
+.res-title.t-bad { color: #f87171; }
+.res-txt { margin-top: 8px; color: #cbd5e1; font-size: 13px; line-height: 1.8; }
+code {
+font-family: var(--mono);
+font-size: 12.5px;
+color: #7dd3fc;
+background: rgba(125,211,252,.08);
+border: 1px solid rgba(125,211,252,.18);
+border-radius: 4px;
+padding: 0 5px;
+}
+.res-actions { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.res-tip { color: var(--faint); font-size: 12px; font-family: var(--mono); }
+/* ---- panel ---- */
+.panel {
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+overflow: hidden;
+box-shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+.panel-head {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 10px 16px;
+border-bottom: 1px solid var(--border);
+background: var(--panel-2);
+font-size: 12px;
+font-weight: 700;
+color: var(--muted);
+letter-spacing: .3px;
+}
+.dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: var(--accent-2);
+box-shadow: 0 0 8px rgba(96,165,250,.8);
+flex: none;
+}
+.dot.green { background: var(--ok-2); box-shadow: 0 0 8px rgba(74,222,128,.8); }
+.dot.orange { background: var(--warn-2); box-shadow: 0 0 8px rgba(251,191,36,.8); }
+/* ---- question card ---- */
+.q-card .panel-head { color: var(--accent-2); }
+.q-text {
+padding: 16px 20px 6px;
+font-size: 15.5px;
+font-weight: 700;
+color: #f1f5f9;
+line-height: 1.7;
+}
+.opts {
+padding: 8px 16px 10px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.opt {
+display: flex;
+align-items: center;
+gap: 10px;
+width: 100%;
+text-align: left;
+background: var(--panel-2);
+border: 1px solid var(--border);
+border-radius: 9px;
+padding: 10px 12px;
+cursor: pointer;
+font-family: var(--sans);
+font-size: 13.5px;
+color: var(--text);
+transition: all .2s ease;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); transform: translateX(2px); box-shadow: 0 6px 16px rgba(59,130,246,.18); }
+.opt-tag {
+flex: none;
+min-width: 44px;
+text-align: center;
+padding: 3px 8px;
+background: rgba(59,130,246,.12);
+border: 1px solid rgba(59,130,246,.35);
+border-radius: 6px;
+font-weight: 800;
+font-size: 12px;
+color: var(--accent-2);
+font-family: var(--mono);
+}
+.opt-txt { flex: 1; line-height: 1.6; }
+.opt-mark {
+flex: none;
+width: 22px;
+text-align: center;
+font-weight: 800;
+font-size: 16px;
+}
+.opt.correct {
+border-color: var(--ok);
+background: rgba(34,197,94,.10);
+}
+.opt.correct .opt-tag { background: rgba(34,197,94,.16); border-color: var(--ok); color: var(--ok-2); }
+.opt.correct .opt-mark { color: var(--ok-2); }
+.opt.wrong {
+border-color: var(--err);
+background: rgba(239,68,68,.10);
+}
+.opt.wrong .opt-tag { background: rgba(239,68,68,.16); border-color: var(--err); color: var(--err); }
+.opt.wrong .opt-mark { color: var(--err); }
+.opt.dim { opacity: .4; }
+.opt:disabled { cursor: default; }
+/* ---- explanation ---- */
+.explain {
+max-height: 0;
+opacity: 0;
+overflow: hidden;
+margin: 0 16px;
+transition: max-height .4s ease, opacity .3s ease, margin .3s ease;
+border-radius: 9px;
+}
+.explain.show {
+max-height: 520px;
+opacity: 1;
+margin: 0 16px 16px;
+border: 1px solid var(--border);
+}
+.ex-head {
+padding: 10px 14px;
+font-weight: 800;
+font-size: 13px;
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.ex-head.ok { color: var(--ok-2); background: rgba(34,197,94,.08); }
+.ex-head.bad { color: #f87171; background: rgba(239,68,68,.08); }
+.ex-body { padding: 12px 14px 14px; }
+.ex-ans {
+font-size: 13px;
+margin-bottom: 8px;
+font-weight: 700;
+color: #cbd5e1;
+}
+.ex-ans b { color: #7dd3fc; font-family: var(--mono); font-weight: 800; }
+.ex-txt {
+color: #cbd5e1;
+font-size: 13px;
+line-height: 1.85;
+}
+.ex-note {
+margin-top: 9px;
+color: var(--warn-2);
+font-size: 12.5px;
+line-height: 1.7;
+background: rgba(245,158,11,.08);
+border: 1px solid rgba(245,158,11,.3);
+border-radius: 7px;
+padding: 8px 10px;
+}
+/* ---- controls ---- */
+.controls {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 14px;
+flex-wrap: wrap;
+margin-top: 16px;
+padding: 14px 16px;
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+box-shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+.btn {
+appearance: none;
+font-family: var(--sans);
+font-size: 13.5px;
+font-weight: 700;
+color: #e2e8f0;
+background: var(--panel-2);
+border: 1px solid var(--border);
+border-radius: 9px;
+padding: 8px 18px;
+cursor: pointer;
+transition: all .2s ease;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.25); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn.primary {
+background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(34,197,94,.18));
+border-color: rgba(59,130,246,.55);
+}
+.btn.reset { background: transparent; color: var(--muted); border-color: transparent; }
+.btn.reset:hover:not(:disabled) { color: var(--err); border-color: var(--err); box-shadow: none; }
+.dots { display: flex; gap: 8px; align-items: center; }
+.dot-i {
+width: 10px; height: 10px;
+border-radius: 50%;
+background: #334155;
+border: none;
+padding: 0;
+cursor: pointer;
+transition: all .3s ease;
+}
+.dot-i.done { background: rgba(96,165,250,.55); }
+.dot-i.cur { background: var(--accent-2); transform: scale(1.5); box-shadow: 0 0 8px rgba(96,165,250,.9); }
+/* ---- hand-write cards ---- */
+.hw-list { display: flex; flex-direction: column; gap: 14px; }
+.hw-card { overflow: hidden; }
+.hw-card .panel-head { color: var(--warn-2); }
+.hw-title {
+padding: 14px 18px 4px;
+font-size: 15px;
+font-weight: 800;
+color: #f1f5f9;
+}
+.hw-title .hw-no {
+display: inline-block;
+margin-right: 8px;
+background: linear-gradient(90deg, var(--warn), var(--err));
+color: #0b1120;
+font-size: 11px;
+font-weight: 800;
+border-radius: 5px;
+padding: 1px 8px;
+vertical-align: 1px;
+}
+.hw-prompt {
+padding: 6px 18px 12px;
+color: #cbd5e1;
+font-size: 13px;
+line-height: 1.85;
+}
+.hw-prompt .em { color: var(--warn-2); font-weight: 700; }
+.hw-answer { display: none; }
+.hw-answer.show { display: block; animation: fadein .3s ease; }
+.code-lines {
+background: var(--code-bg);
+padding: 10px 0 14px;
+font-family: var(--mono);
+font-size: 13px;
+line-height: 1.8;
+overflow-x: auto;
+}
+.code-line {
+display: flex;
+align-items: baseline;
+padding: 0 14px 0 0;
+white-space: pre;
+}
+.code-line .gutter {
+flex: none;
+width: 40px;
+text-align: right;
+padding-right: 12px;
+color: #3d4b61;
+font-size: 12px;
+user-select: none;
+-webkit-user-select: none;
+}
+.code-line .ct { color: var(--text); }
+.tok-kw { color: #c792ea; }
+.tok-fn { color: #82aaff; }
+.tok-str { color: #c3e88d; }
+.tok-cmt { color: #6b8cae; font-style: italic; }
+.tok-num { color: var(--warn-2); }
+.tok-op { color: #f7768e; }
+.hw-foot {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 12px 18px 16px;
+border-top: 1px solid var(--border);
+}
+.hw-foot .btn.primary { margin-left: auto; }
+.hw-tip {
+color: var(--faint);
+font-size: 12px;
+font-family: var(--mono);
+}
+footer {
+text-align: center;
+color: var(--faint);
+font-size: 11.5px;
+padding: 22px 20px 36px;
+font-family: var(--mono);
+}
+footer .ft-note { color: var(--muted); margin-top: 4px; }
+@media (max-width: 600px) {
+.score-pill { margin-left: 0; }
+.controls { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+
+<header>
+<div class="head-top">
+<div class="logo">转岗 QA mini Quiz <small>· 概念选择 + 手写题</small></div>
+<div class="score-pill"><span class="sp-dot"></span>得分 <b id="score-num">0</b> / 10</div>
+</div>
+<div class="head-sub">概念选择 10 题 + 手写题 2 道 · 双击即可打开，全程离线可用</div>
+<nav class="tabbar" id="tabbar">
+<button class="tab active" data-tab="mcq">① 概念选择 <span class="tab-n">10 题</span></button>
+<button class="tab" data-tab="code">② 手写题 <span class="tab-n">2 题</span></button>
+</nav>
+</header>
+
+<main>
+
+<!-- ============ Section 1 · MCQ ============ -->
+<section class="demo active" id="sec-mcq">
+<div class="quiz-top">
+<div class="demo-title"><span class="badge">①</span>概念选择</div>
+<div class="demo-desc">点击选项即时判分 · 首次答对计分 · 答错展开解析 · 答完显示成绩</div>
+</div>
+<div class="progress-wrap">
+<div class="prog-meta">
+<span>第 <b id="cur-pos">1</b> / 10 题</span>
+<span>已答 <b id="done-count">0</b> / 10 · 正确 <b id="ok-count">0</b> / 10</span>
+</div>
+<div class="pbar"><div class="pbar-fill" id="pbar-fill"></div></div>
+</div>
+
+<div class="result-wrap" id="result-wrap">
+<div class="result-top">
+<div class="res-score" id="res-score">0<em> / 10</em></div>
+<div class="res-title" id="res-title"></div>
+</div>
+<div class="res-txt" id="res-txt"></div>
+<div class="res-actions">
+<button class="btn primary" id="btn-result-restart">🔄 重新开始</button>
+<span class="res-tip">可反复练习，成绩取首次作答</span>
+</div>
+</div>
+
+<div class="panel q-card">
+<div class="panel-head"><span class="dot"></span>第 <span id="q-no">1</span> 题</div>
+<div class="q-text" id="q-text"></div>
+<div class="opts" id="q-opts"></div>
+<div class="explain" id="q-explain"></div>
+</div>
+<div class="controls">
+<button class="btn" id="btn-prev">‹ 上一题</button>
+<div class="dots" id="q-dots"></div>
+<button class="btn" id="btn-next">下一题 ›</button>
+<button class="btn reset" id="btn-reset">重新开始</button>
+</div>
+</section>
+
+<!-- ============ Section 2 · Hand-write ============ -->
+<section class="demo" id="sec-code">
+<div class="quiz-top">
+<div class="demo-title"><span class="badge">②</span>手写题</div>
+<div class="demo-desc">先自己写，再点「显示答案」对照 · 答案带逐行中文注释</div>
+</div>
+<div class="hw-list" id="hw-list"></div>
+</section>
+
+</main>
+
+
+<footer>
+  <div>转岗 QA · 测试面试自测</div>
+  <div class="ft-note">数据驱动渲染：题目 / 手写题为数组数据，render() 声明式重建 · 零依赖、完全离线</div>
+</footer>
+
+
+<script>
+'use strict';
+/* =========================================================
+数据：10 道概念选择题（单题单正确项）
+label = 选项标签；text = 选项文字；correct = 是否为正确项；why = 选错时的解释
+========================================================= */
+var QUESTIONS = [
+{
+q: '关于软件测试的目的，下列说法正确的是？',
+explain: '测试的核心目的是<b>尽早、尽可能多地发现缺陷</b>，同时验证需求符合性、评估质量，为发布提供信心。经典结论：测试只能证明 Bug 存在，不能证明不存在（输入不可穷尽）。',
+options: [
+{ label: 'A', text: '证明程序完全没有错误，可以放心上线', correct: false, why: '测试只能证明 Bug 存在，不能证明不存在——输入空间不可穷尽。' },
+{ label: 'B', text: '尽可能早、尽可能多发现缺陷，并验证软件满足需求、评估质量', correct: true },
+{ label: 'C', text: '只要让所有测试用例通过，程序就不会再有 Bug', correct: false, why: '用例覆盖永远有限，用例全过不代表没有遗漏路径与边界问题。' },
+{ label: 'D', text: '证明开发写的每一行代码都符合预期', correct: false, why: '这是白盒代码走查的一部分，不是软件测试的整体目的，范围过窄。' }
+]
+},
+{
+q: '关于黑盒测试与白盒测试，说法正确的是？',
+explain: '<b>黑盒测试</b>不关心内部实现，只依据需求验证输入 → 输出是否正确（等价类、边界值、场景法都属于黑盒）；<b>白盒测试</b>基于代码结构（语句/分支/路径）设计用例。两者互补，与「由谁执行」无关。',
+options: [
+{ label: 'A', text: '黑盒测试是开发做的，白盒测试是测试做的', correct: false, why: '黑盒/白盒是按「是否查看内部结构」划分的方法，不是按角色划分。' },
+{ label: 'B', text: '黑盒测试不看内部实现，只验证输入输出是否符合需求', correct: true },
+{ label: 'C', text: '白盒测试不需要需求文档，只看代码就行', correct: false, why: '白盒也需要需求来判断期望结果，纯看代码无法判定「对不对」。' },
+{ label: 'D', text: '黑盒测试比白盒测试更高级，两者不会同时使用', correct: false, why: '两者互补，实践中常结合使用（如接口测试既做黑盒断言，也核对数据流）。' }
+]
+},
+{
+q: '等价类划分的核心思想是？',
+explain: '等价类划分把输入按「程序处理方式是否相同」划分成若干等价类，<b>从每个等价类中取一个代表数据</b>即可。同类内任一输入的处理结果相同，所以一个代表就能覆盖整类行为，从而用最少的用例获得足够的覆盖。',
+options: [
+{ label: 'A', text: '把每个可能的输入值都测一遍，保证没有遗漏', correct: false, why: '输入空间通常无穷，逐个测试不可行，这正是等价类要解决的问题。' },
+{ label: 'B', text: '把输入按处理方式是否相同划分为等价类，每类取一个代表即可', correct: true },
+{ label: 'C', text: '只测有效输入，无效输入交给用户在使用时发现', correct: false, why: '无效等价类必须测，否则异常提示与容错逻辑完全没被验证。' },
+{ label: 'D', text: '等价类划分和边界值无关，不需要考虑取值边界', correct: false, why: '两者是配套技术：等价类定范围，边界值定边界，配合使用效果最好。' }
+]
+},
+{
+q: '密码长度规定为 6~16 位，边界值分析应重点测哪些点？',
+explain: '缺陷最易出现在边界。对取值范围 [6,16]，<b>必测 4 点</b>：min=6（应通过）、max=16（应通过）、min-1=5（应拒绝）、max+1=17（应拒绝）。',
+options: [
+{ label: 'A', text: '只测长度中间的常见值，例如 10 位', correct: false, why: '中间值行为稳定，缺陷比例最高的是边界，只测中间值会漏掉边界 Bug。' },
+{ label: 'B', text: '只测 6 位和 16 位这两个端点', correct: false, why: '还差 min-1=5 与 max+1=17 两个外侧点——「刚好不合法」最易出错。' },
+{ label: 'C', text: '测 min=6、max=16、min-1=5、max+1=17 四个点', correct: true },
+{ label: 'D', text: '边界值只对密码字段有意义，其他字段不需要', correct: false, why: '所有有取值范围/长度的字段（邮箱、数量、金额等）都适用边界值分析。' }
+]
+},
+{
+q: 'Bug 的「严重程度」与「优先级」的关系是？',
+explain: '严重程度衡量 Bug <b>影响多大</b>（崩溃/数据丢失 = 严重）；优先级衡量<b>该多快处理</b>（上线前修 vs 下个版本修）。二者是<b>两个独立维度</b>：高严重度不一定高优先级（如罕见崩溃），低严重度也可能因影响大量用户而优先处理。',
+options: [
+{ label: 'A', text: '两者是同一个概念，只是叫法不同', correct: false, why: '严重度 = 影响大小，优先级 = 处理顺序，是正交的两个维度。' },
+{ label: 'B', text: '严重程度高的 Bug 优先级必然最高，永远最先修', correct: false, why: '罕见崩溃（高严重）可能排在小问题（影响面大）之后。' },
+{ label: 'C', text: '严重程度衡量影响大小，优先级衡量处理先后，二者独立', correct: true },
+{ label: 'D', text: '严重程度只能由开发人员评定，测试无权提出', correct: false, why: '测试提交时可建议严重度，评审时共同确认，并非开发专属。' }
+]
+},
+{
+q: '一个 Bug 在系统中的正常流转顺序是？',
+explain: '标准流程：<b>new → open → fix → verify → close</b>。验证失败时进入 <code>reopened</code>（重新打开），打回开发修复后再验证——这是生命周期的正常分支。',
+options: [
+{ label: 'A', text: 'new → close → verify → fix', correct: false, why: '关闭发生在验证通过之后，顺序不能倒置，也不该跳过打开/修复阶段。' },
+{ label: 'B', text: 'Bug 一经提交就是 fix，直接等开发修复', correct: false, why: '提交后需经评审确认有效并指派给开发，状态才流转到 open。' },
+{ label: 'C', text: 'new → open → fix → verify → close，验证失败进入 reopened 后重新修复', correct: true },
+{ label: 'D', text: 'Bug 关闭后永远不能再被打开', correct: false, why: '后续若复发可再 reopen，关闭不是永久性结论。' }
+]
+},
+{
+q: '从测试金字塔的「测试岗」视角看，接口测试最突出的特点是？',
+explain: '接口测试位于金字塔<b>底层</b>：执行快、不依赖 UI，直接覆盖业务逻辑/参数校验/鉴权等核心内容，<b>成本低而覆盖高</b>，是性价比之王。测试岗精力应主要投在这一层。',
+options: [
+{ label: 'A', text: '接口测试只验证 HTTP 状态码，其余交给 UI 测试', correct: false, why: '接口测试要验状态码、响应结构、业务码、安全、性能等，远不止状态码。' },
+{ label: 'B', text: '位于金字塔底层，成本低、覆盖核心业务逻辑，性价比最高', correct: true },
+{ label: 'C', text: '接口测试就是人工点击页面逐项验证', correct: false, why: '那是手工/UI 测试；接口测试是直接对 HTTP 接口发请求做断言。' },
+{ label: 'D', text: '接口测试位于金字塔顶层，用例最多、成本最高', correct: false, why: '顶层是手工探索（少而贵）；接口测试在底层，多而便宜。' }
+]
+},
+{
+q: '在用 Postman 对「登录接口返回 200 且返回 token」做断言，正确的是？',
+explain: 'Postman 的 Tests 标签用 <code>pm.test(name, fn)</code> 包裹断言，内部用 Chai 风格的 <code>pm.expect(...).to.eql(...)</code>，响应体用 <code>pm.response.json()</code> 解析。',
+options: [
+{ label: 'A', text: 'pm.test("状态码", () => pm.expect(pm.response.code).to.eql(200)); 并用 pm.response.json() 取响应体', correct: true },
+{ label: 'B', text: '直接写 pm.expect(pm.response.code).to.eql(200)，不必放进 pm.test', correct: false, why: 'pm.expect 需在 pm.test 回调内执行才有测试上下文，直接写不会被正确统计。' },
+{ label: 'C', text: 'pm.response.json() 只能写在 pre-request Script 里', correct: false, why: 'pre-request 是请求前执行；取响应体的断言应写在 Tests 标签。' },
+{ label: 'D', text: 'Postman 断言只能用 if/console.log，不支持链式 expect', correct: false, why: 'Postman 内置 Chai 风格断言库（pm.expect），支持链式 to.eql/to.include 等。' }
+]
+},
+{
+q: '要查出「所有下单金额超过 100 元的用户姓名」，正确的 SQL 是？',
+explain: '需要同时用 <code>users</code> 与 <code>orders</code> 两张表，用 <b>JOIN</b> 按主外键关联：<code>SELECT u.name FROM users u JOIN orders o ON u.id = o.user_id WHERE o.amount &gt; 100;</code> 关联条件必须是「订单 user_id 指向用户 id」，不能按姓名等字段乱关联。',
+options: [
+{ label: 'A', text: 'SELECT u.name FROM users u JOIN orders o ON u.id = o.user_id WHERE o.amount > 100;', correct: true },
+{ label: 'B', text: 'SELECT u.name FROM users u JOIN orders o ON u.name = o.name WHERE o.amount > 100;', correct: false, why: '姓名不唯一，正确关联键是主外键 u.id = o.user_id。' },
+{ label: 'C', text: 'JOIN 只能关联两张表，三张以上必须写多条 SELECT', correct: false, why: 'SQL 支持连续多次 JOIN，可以一次关联多张表。' },
+{ label: 'D', text: '联表查询不需要 ON 条件', correct: false, why: '缺少 ON 会做笛卡尔积（或语法错误），必须给出关联条件。' }
+]
+},
+{
+q: '关于 pytest 的 fixture 与「前端转测试」的优势，说法正确的是？',
+explain: 'pytest 的 fixture 通过<b>测试函数参数自动注入</b>（依赖注入），用于准备数据、登录会话与环境清理（setup/teardown）。前端背景转测试的最大优势是<b>看得懂请求/响应与错误边界</b>，写接口用例、定位联调 Bug 更顺手。',
+options: [
+{ label: 'A', text: 'fixture 通过依赖注入自动传入测试函数，用于数据准备与清理；前端背景转测试更易理解接口联调与请求参数', correct: true },
+{ label: 'B', text: 'fixture 必须手动在每个测试函数内部创建，前端背景在测试中毫无优势', correct: false, why: 'fixture 是自动注入的，不必手动创建；且前端背景在接口理解上明显有优势。' },
+{ label: 'C', text: 'fixture 只能用来 mock 网络请求，不能做数据准备', correct: false, why: 'fixture 能做任意 setup/teardown：造数据、建会话、连数据库、清理环境都可以。' },
+{ label: 'D', text: 'fixture 是 Postman 的功能，pytest 里用不了', correct: false, why: 'fixture 是 pytest 的核心机制；Postman 没有 pytest 这套 fixture。' }
+]
+}
+];
+/* =========================================================
+数据：2 道手写题（code 为逐行模型答案，// 注释即逐行讲解）
+========================================================= */
+var HANDWRITES = [
+{
+no: 1,
+title: 'pytest + requests 登录接口测试',
+prompt: '用 <code>pytest</code> + <code>requests</code> 写「登录接口」的自动化用例：<span class="em">① 登录成功：断言 HTTP 200 且响应体存在非空 token　② 密码错误：断言 HTTP 401</span>。',
+code: [
+'# 登录接口：POST /api/login，JSON 传 username / password',
+'import pytest',
+'import requests',
+'',
+'BASE = \'http://localhost:5000\'',
+'',
+'# ① 登录成功：断言 200 + 响应体存在非空 token',
+'def test_login_success():',
+'    resp = requests.post(',
+'        f\'{BASE}/api/login\',',
+'        json={\'username\': \'tom@qq.com\', \'password\': \'abc123\'},',
+'    )',
+'',
+'    # ② 断言一：状态码必须是 200',
+'    assert resp.status_code == 200',
+'',
+'    # ③ 断言二：token 存在且非空（鉴权凭证）',
+'    data = resp.json()',
+'    assert \'token\' in data and data[\'token\']',
+'',
+'',
+'# ① 密码错误：断言服务端返回 401',
+'def test_login_wrong_password():',
+'    resp = requests.post(',
+'        f\'{BASE}/api/login\',',
+'        json={\'username\': \'tom@qq.com\', \'password\': \'wrong-pass\'},',
+'    )',
+'',
+'    # ② 断言：错误密码 → 401 Unauthorized',
+'    assert resp.status_code == 401',
+''
+]
+},
+{
+no: 2,
+title: '设计「测试一个搜索框」的用例',
+prompt: '搜索框需求：输入关键字 → 回车/点搜索 → 展示结果；空关键字 → 提示「请输入搜索内容」。请给出<span class="em">等价类 + 边界值 + 场景法</span>分类的完整用例表。',
+code: [
+'# 需求：输入关键字 → 回车/点搜索 → 展示结果列表；空关键字 → 提示「请输入搜索内容」',
+'',
+'# ============ 一、等价类划分 ============',
+'# TC-01  有效类   关键字「手机」        → 展示包含手机的结果',
+'# TC-02  有效类   关键字「iphone」      → 展示相关结果',
+'# TC-03  无效类   全空格「   」        → 提示「请输入搜索内容」',
+'# TC-04  无效类   超长 1000 字符       → 正常搜索，不卡顿不报错',
+'',
+'# ============ 二、边界值分析 ============',
+'# TC-05  边界     1 个字符（最短）     → 正常搜索',
+'# TC-06  边界     50 个字符（上限）    → 正常搜索',
+'# TC-07  边界     51 个字符（上限+1）  → 拒绝或提示超长',
+'',
+'# ============ 三、场景法 ============',
+'# TC-08  基本流   输入关键字 → 回车    → 展示结果列表',
+'# TC-09  备选流   不输入直接回车       → 提示「请输入搜索内容」',
+'# TC-10  备选流   输入不存在的词       → 展示「未找到相关结果」',
+'# TC-11  异常流   输入 % <script>     → 按纯文本搜索，无 XSS、不报错',
+''
+]
+}
+];
+/* =========================================================
+状态
+========================================================= */
+var state = {
+tab: 'mcq',        /* 'mcq' | 'code' */
+current: 0,        /* 当前第几题（0-based） */
+score: 0,          /* 首次答对计 1 分 */
+answered: [],      /* 每题：null | 所选选项索引 */
+chosen: [],        /* 记录每题所选选项索引（展示用） */
+revealed: [false, false] /* 手写题是否显示答案 */
+};
+QUESTIONS.forEach(function () { state.answered.push(null); state.chosen.push(-1); });
+/* =========================================================
+工具函数
+========================================================= */
+function escHtml(s) {
+return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+/* 反引号 → <code> 内联代码，先转义再包 */
+function fmt(s) {
+return escHtml(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+function $(id) { return document.getElementById(id); }
+/* 代码语法高亮（与 companion demo 同一套 tokenizer） */
+function tokenize(line) {
+if (!line) return '';
+var ci = line.indexOf('//');
+var code = ci === -1 ? line : line.slice(0, ci);
+var cmt = ci === -1 ? '' : line.slice(ci);
+var html = '';
+var re = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b(?:def|import|assert|from|with|as|class|return|if|else|elif|for|while|not|in|is|None|True|False)\b)|([A-Za-z_$][\w$]*)(?=\s*\()|(\b\d+(?:\.\d+)?\b)|([+\-*/%<>=!&|]+)/g;
+var last = 0, m;
+while ((m = re.exec(code))) {
+if (m.index > last) html += escHtml(code.slice(last, m.index));
+if (m[1]) html += '<span class="tok-str">' + escHtml(m[1]) + '</span>';
+else if (m[2]) html += '<span class="tok-kw">' + escHtml(m[2]) + '</span>';
+else if (m[3]) html += '<span class="tok-fn">' + escHtml(m[3]) + '</span>';
+else if (m[4]) html += '<span class="tok-num">' + escHtml(m[4]) + '</span>';
+else if (m[5]) html += '<span class="tok-op">' + escHtml(m[5]) + '</span>';
+last = m.index + m[0].length;
+}
+if (last < code.length) html += escHtml(code.slice(last));
+if (cmt) html += '<span class="tok-cmt">' + escHtml(cmt) + '</span>';
+return html;
+}
+function renderCodeLines(lines, el) {
+var html = '';
+for (var i = 0; i < lines.length; i++) {
+html += '<div class="code-line"><span class="gutter">' + (i + 1) + '</span><span class="ct">' + tokenize(lines[i]) + '</span></div>';
+}
+el.innerHTML = html;
+}
+/* =========================================================
+渲染：Section 1 · MCQ
+========================================================= */
+function grade(n) {
+if (n >= 8) return { title: '测试思维扎实', cls: 't-ok', txt: '测试基础概念扎实，可进入实战：用 pytest + requests 写接口用例、用等价类/边界值设计用例，并准备「前端转测试的优势」话术。' };
+if (n >= 6) return { title: '查漏补缺', cls: 't-warn', txt: '在及格线附近。重点复习答错的题：<code>等价类/边界值</code>、<code>Bug 严重度 vs 优先级</code>、<code>Bug 生命周期</code>、<code>Postman 断言</code> 与 <code>SQL 联表</code>，再回来自测一遍。' };
+return { title: '建议重看测试模块', cls: 't-bad', txt: '建议回到交互演示，把「用例设计 / Bug 生命周期 / 接口测试 / 测试金字塔」过一遍再自测。重点：等价类/边界值是基础、接口测试是性价比之王、SQL 与 pytest 是转岗必备技能。' };
+}
+function renderResult() {
+var done = state.answered.filter(function (a) { return a !== null; }).length;
+var wrap = $('result-wrap');
+if (done === QUESTIONS.length) {
+var g = grade(state.score);
+$('res-score').innerHTML = state.score + '<em> / ' + QUESTIONS.length + '</em>';
+var rt = $('res-title');
+rt.textContent = g.title;
+rt.className = 'res-title ' + g.cls;
+$('res-txt').innerHTML = g.txt;
+wrap.classList.add('show');
+} else {
+wrap.classList.remove('show');
+}
+}
+function renderHeader() {
+$('score-num').textContent = state.score;
+}
+function renderMcq() {
+var q = QUESTIONS[state.current];
+$('q-no').textContent = state.current + 1;
+$('q-text').innerHTML = fmt(q.q);
+var optsEl = $('q-opts');
+optsEl.innerHTML = '';
+var answered = state.answered[state.current] !== null;
+q.options.forEach(function (opt, idx) {
+var btn = document.createElement('button');
+btn.className = 'opt';
+btn.type = 'button';
+var tag = document.createElement('span');
+tag.className = 'opt-tag';
+tag.textContent = opt.label;
+var txt = document.createElement('span');
+txt.className = 'opt-txt';
+txt.innerHTML = fmt(opt.text);
+var mark = document.createElement('span');
+mark.className = 'opt-mark';
+btn.appendChild(tag);
+btn.appendChild(txt);
+btn.appendChild(mark);
+if (answered) {
+btn.disabled = true;
+if (opt.correct) {
+btn.classList.add('correct');
+mark.textContent = '✓';
+} else if (state.chosen[state.current] === idx) {
+btn.classList.add('wrong');
+mark.textContent = '✗';
+} else {
+btn.classList.add('dim');
+}
+} else {
+btn.addEventListener('click', function () { onAnswer(idx); });
+}
+optsEl.appendChild(btn);
+});
+var ex = $('q-explain');
+if (answered) {
+var chosen = state.chosen[state.current];
+var isCorrect = q.options[chosen].correct;
+var correctOpt = q.options.filter(function (o) { return o.correct; })[0];
+var wrongOpt = isCorrect ? null : q.options[chosen];
+var html = '';
+html += '<div class="ex-head ' + (isCorrect ? 'ok' : 'bad') + '">' +
+(isCorrect ? '✓ 回答正确 · +1 分' : '✗ 回答错误 · 本题不得分') + '</div>';
+html += '<div class="ex-body">';
+html += '<div class="ex-ans">正确答案：<b>' + escHtml(correctOpt.label) + ' · ' + escHtml(correctOpt.text) + '</b></div>';
+html += '<div class="ex-txt">' + fmt(q.explain) + '</div>';
+if (wrongOpt) {
+html += '<div class="ex-note">你的选择：' + escHtml(wrongOpt.label) + ' · ' + escHtml(wrongOpt.text) + ' —— ' + fmt(wrongOpt.why) + '</div>';
+}
+html += '</div>';
+ex.innerHTML = html;
+ex.classList.add('show');
+} else {
+ex.innerHTML = '';
+ex.classList.remove('show');
+}
+var done = state.answered.filter(function (a) { return a !== null; }).length;
+var correct = 0;
+state.answered.forEach(function (a, i) {
+if (a !== null && QUESTIONS[i].options[a].correct) correct++;
+});
+$('cur-pos').textContent = state.current + 1;
+$('done-count').textContent = done;
+$('ok-count').textContent = correct;
+$('pbar-fill').style.width = Math.round(done / QUESTIONS.length * 100) + '%';
+$('btn-prev').disabled = state.current === 0;
+$('btn-next').disabled = state.current === QUESTIONS.length - 1;
+var dotsEl = $('q-dots');
+dotsEl.innerHTML = '';
+QUESTIONS.forEach(function (_, i) {
+var d = document.createElement('button');
+d.className = 'dot-i';
+d.type = 'button';
+if (state.answered[i] !== null) d.classList.add('done');
+if (i === state.current) d.classList.add('cur');
+d.title = '第 ' + (i + 1) + ' 题';
+d.addEventListener('click', function () { goTo(i); });
+dotsEl.appendChild(d);
+});
+renderResult();
+}
+function onAnswer(idx) {
+if (state.answered[state.current] !== null) return; /* 防连点 */
+state.answered[state.current] = idx;
+state.chosen[state.current] = idx;
+if (QUESTIONS[state.current].options[idx].correct) state.score++;
+renderMcq();
+renderHeader();
+}
+function goTo(i) {
+state.current = i;
+renderMcq();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+/* =========================================================
+渲染：Section 2 · 手写题
+========================================================= */
+function renderHandwrites() {
+var list = $('hw-list');
+list.innerHTML = '';
+HANDWRITES.forEach(function (task, i) {
+var card = document.createElement('div');
+card.className = 'panel hw-card';
+var head = document.createElement('div');
+head.className = 'panel-head';
+head.innerHTML = '<span class="dot orange"></span>手写题 ' + task.no + ' · 先自己写再看答案';
+var title = document.createElement('div');
+title.className = 'hw-title';
+title.innerHTML = '<span class="hw-no">手写 ' + task.no + '</span>' + escHtml(task.title);
+var prompt = document.createElement('div');
+prompt.className = 'hw-prompt';
+prompt.innerHTML = fmt(task.prompt);
+var ans = document.createElement('div');
+ans.className = 'hw-answer' + (state.revealed[i] ? ' show' : '');
+var code = document.createElement('div');
+code.className = 'code-lines';
+renderCodeLines(task.code, code);
+var foot = document.createElement('div');
+foot.className = 'hw-foot';
+var tip = document.createElement('span');
+tip.className = 'hw-tip';
+tip.textContent = state.revealed[i] ? '注释 ①②③ 即考察要点' : '答案含逐行中文注释';
+var btn = document.createElement('button');
+btn.className = 'btn primary';
+btn.type = 'button';
+btn.textContent = state.revealed[i] ? '隐藏答案' : '显示答案';
+btn.addEventListener('click', function () {
+state.revealed[i] = !state.revealed[i];
+renderHandwrites();
+});
+foot.appendChild(tip);
+foot.appendChild(btn);
+ans.appendChild(code);
+card.appendChild(head);
+card.appendChild(title);
+card.appendChild(prompt);
+card.appendChild(ans);
+card.appendChild(foot);
+list.appendChild(card);
+});
+}
+/* =========================================================
+渲染：整体
+========================================================= */
+function render() {
+renderHeader();
+renderMcq();
+renderHandwrites();
+renderResult();
+var tabs = document.querySelectorAll('#tabbar .tab');
+for (var i = 0; i < tabs.length; i++) {
+tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === state.tab);
+}
+$('sec-mcq').classList.toggle('active', state.tab === 'mcq');
+$('sec-code').classList.toggle('active', state.tab === 'code');
+}
+function switchTab(tab) {
+state.tab = tab;
+render();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function resetAll() {
+state.score = 0;
+state.current = 0;
+state.revealed = [false, false];
+state.answered = [];
+state.chosen = [];
+QUESTIONS.forEach(function () { state.answered.push(null); state.chosen.push(-1); });
+render();
+}
+/* =========================================================
+事件绑定
+========================================================= */
+$('btn-prev').addEventListener('click', function () { if (state.current > 0) goTo(state.current - 1); });
+$('btn-next').addEventListener('click', function () { if (state.current < QUESTIONS.length - 1) goTo(state.current + 1); });
+$('btn-reset').addEventListener('click', resetAll);
+$('btn-result-restart').addEventListener('click', resetAll);
+var tabButtons = document.querySelectorAll('#tabbar .tab');
+for (var t = 0; t < tabButtons.length; t++) {
+(function (btn) {
+btn.addEventListener('click', function () { switchTab(btn.getAttribute('data-tab')); });
+})(tabButtons[t]);
+}
+document.addEventListener('keydown', function (e) {
+if (state.tab !== 'mcq') return;
+if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+if (e.target.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) return;
+}
+if (e.key === 'ArrowLeft' && state.current > 0) goTo(state.current - 1);
+else if (e.key === 'ArrowRight' && state.current < QUESTIONS.length - 1) goTo(state.current + 1);
+});
+/* 初始渲染 */
+render();
+</script>
+
+</body>
+</html>
