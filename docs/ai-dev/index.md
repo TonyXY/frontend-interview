@@ -5,9 +5,9 @@ description: AI 编程工具/Prompt 工程/Agent/RAG — AI 辅助开发总览
 
 # 🤖 AI 辅助开发
 
-AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG — **2025-2026 年面试的新增热门板块**。共 14 个知识点，从工具使用到自建 AI 系统的完整路径。
+AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG、AI 应用开发 — **2025-2026 年面试的新增热门板块**。共 19 个知识点，从工具使用到自建 AI 系统再到 AI 应用开发的完整路径。
 
-<DifficultyBadge level="beginner" /> AI 工具使用经验 · <DifficultyBadge level="intermediate" /> 理解 AI 工作流原理 · <DifficultyBadge level="advanced" /> 构建 AI 应用与 Agent
+<DifficultyBadge level="beginner" /> AI 工具使用经验 · <DifficultyBadge level="intermediate" /> 理解 AI 工作流原理 · <DifficultyBadge level="advanced" /> 构建 AI 应用与 Agent · <DifficultyBadge level="intermediate" /> AI 应用前端开发
 
 ```mermaid
 flowchart TD
@@ -26,11 +26,19 @@ flowchart TD
     J[RAG 知识库]
     K[自建 AI Agent]
   end
-  Tools --> Workflow --> Advanced
+  subgraph AppDev[AI 应用开发层]
+    L[LLM 核心原理]
+    M[AI 应用前端开发]
+    N[AI 对话界面工程]
+    O[MCP 协议深度]
+    P[前端 AI 安全]
+  end
+  Tools --> Workflow --> Advanced --> AppDev
 
   style Tools fill:#e0f2fe,stroke:#2563eb
   style Workflow fill:#fef3c7,stroke:#d97706
   style Advanced fill:#f3e8ff,stroke:#7c3aed
+  style AppDev fill:#dcfce7,stroke:#16a34a
 ```
 
 ::: tip 💡 建议
@@ -117,5 +125,34 @@ P7+ 面试前沿方向，具备 AI 系统构建能力。
   <a href="./ai-interview" class="card">
     <h3>AI 面试专题 <Badge type="info" text="⭐中频" /></h3>
     <p>AI 面试模拟、能力评估、个性化复习计划</p>
+  </a>
+</div>
+
+---
+
+## 🟣 AI 应用开发（5 个）
+
+2026 年大厂 AI 应用开发岗的核心考点：从前端视角理解并构建 AI 应用。
+
+<div class="card-grid">
+  <a href="./llm-basics" class="card">
+    <h3>LLM 核心原理 <Badge type="info" text="🔥高频" /></h3>
+    <p>Token 化、上下文窗口、参数调优、幻觉、结构化输出</p>
+  </a>
+  <a href="./ai-app-frontend" class="card">
+    <h3>AI 应用前端开发 <Badge type="info" text="🔥高频" /></h3>
+    <p>SSE vs WebSocket、流式解析器手写、AbortController 取消</p>
+  </a>
+  <a href="./ai-chat-ui" class="card">
+    <h3>AI 对话界面工程 <Badge type="info" text="🔥高频" /></h3>
+    <p>打字机效果、Markdown 防截断、智能滚动、消息状态机</p>
+  </a>
+  <a href="./mcp-protocol" class="card">
+    <h3>MCP 协议深度 <Badge type="info" text="⭐中频" /></h3>
+    <p>Host/Client/Server 架构、三类能力、TypeScript 实战、ACP 生态</p>
+  </a>
+  <a href="./ai-security" class="card">
+    <h3>前端 AI 安全 <Badge type="info" text="⭐中频" /></h3>
+    <p>API Key 保护、Prompt 注入、输出消毒、数据合规、供应链</p>
   </a>
 </div>

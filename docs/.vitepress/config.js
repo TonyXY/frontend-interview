@@ -194,6 +194,16 @@ export default withMermaid(defineConfig({
             { text: '构建自己的 AI Agent', link: '/ai-dev/build-own-agent' },
             { text: 'AI 面试专题', link: '/ai-dev/ai-interview' }
           ]
+        },
+        {
+          text: '🟣 AI 应用开发',
+          items: [
+            { text: 'LLM 核心原理', link: '/ai-dev/llm-basics' },
+            { text: 'AI 应用前端开发', link: '/ai-dev/ai-app-frontend' },
+            { text: 'AI 对话界面工程', link: '/ai-dev/ai-chat-ui' },
+            { text: 'MCP 协议深度', link: '/ai-dev/mcp-protocol' },
+            { text: '前端 AI 安全', link: '/ai-dev/ai-security' }
+          ]
         }
       ],
 
