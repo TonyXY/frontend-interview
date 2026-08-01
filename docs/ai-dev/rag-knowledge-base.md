@@ -13,6 +13,30 @@ frequency: medium
 
 RAG（Retrieval-Augmented Generation）就是**给 AI 配一个专属知识库**——当 AI 被问到问题时，先从知识库检索相关文档，再基于检索结果生成回答。2026 年，RAG 已成为企业级 AI 应用的核心架构模式。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：给 AI 请一位图书管理员</span>
+  <div class="analogy-body">
+    想象你问 AI："我们的组件命名规范是什么？" AI 就像一位<strong>只背过课本、没进过图书馆的新员工</strong>——它凭记忆乱猜（幻觉），或者摇头说不知道。
+    RAG 就是给它请了一位<strong>图书管理员</strong>：先到专属书库（你的内部文档）查到相关章节，把书页递给 AI，让它<em>"照着书页回答，不许自己编"</em>。
+  </div>
+</div>
+
+<div class="analogy-card">
+  <span class="analogy-title">🧩 一句话记住 RAG 全流程</span>
+  <div class="analogy-body">
+    <strong>"切书 → 编目录 → 存书架 → 查目录 → 抽书页 → 照抄"</strong>
+  </div>
+  <table class="analogy-map">
+    <tr><th>RAG 术语</th><th>图书管理员类比</th><th>对应动作</th></tr>
+    <tr><td>文档切分 Chunking</td><td>把厚书切成可管理的"章节页"</td><td>段落分块 + 重叠</td></tr>
+    <tr><td>Embedding</td><td>给每页写"主题标签"（语义指纹）</td><td>文本 → 向量</td></tr>
+    <tr><td>向量数据库</td><td>按标签分类的书架</td><td>存储 + 索引</td></tr>
+    <tr><td>检索 Retrieval</td><td>查目录找最相关的几页</td><td>相似度 Top-K</td></tr>
+    <tr><td>Rerank 重排序</td><td>在候选页里挑最贴切的 3 页</td><td>精排</td></tr>
+    <tr><td>生成 Generation</td><td>把书页递给 AI 照着答</td><td>拼接 Prompt</td></tr>
+  </table>
+</div>
+
 ## RAG 的核心概念
 
 ```mermaid
@@ -198,6 +222,13 @@ Agent 不只是"查一次"，而是：
 | **Dify** | 平台 | 可视化 RAG 搭建 | 🟢 |
 
 ### 6. RAG 的常见陷阱
+
+<div class="analogy-card">
+  <span class="analogy-title">⚠️ 高频混淆点：RAG vs Fine-tuning</span>
+  <div class="analogy-body">
+    RAG 是<strong>考试带资料</strong>（临场翻书，资料随时换）；Fine-tuning 是<strong>考前刷题背熟</strong>（能力固化，但换题就傻眼）。<em>知识常更新的 → RAG；能力要固化的 → Fine-tuning。</em>
+  </div>
+</div>
 
 | 陷阱 | 表现 | 解决方案 |
 |------|------|---------|

@@ -17,6 +17,13 @@ AI 对话界面工程是**把"流式增量"变成"丝滑对话体验"的 UI 工�
 
 AI 消息的生命周期比普通消息复杂得多：**生成中、生成完、已中断、出错了**。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：外卖订单的状态流转</span>
+  <div class="analogy-body">
+    想想你点外卖：<strong>已下单（pending）→ 配送中（streaming）→ 已送达（done）</strong>。但外卖还有两个你没料到的状态——<em>"骑手中途取消"（interrupted：饭没送到但商家已经做了）</em>和<em>"配送异常"（error：超时/联系不上，可以重试）</em>。<strong>如果只用一个"配送中/已完成"两个状态，你根本分不清是取消还是出错，更没法决定能不能再点一次。</strong>消息状态机就是外卖 App 的订单状态——必须把"中断"和"出错"分开。
+  </div>
+</div>
+
 ```mermaid
 flowchart TD
     S["创建消息<br/>status: pending"] --> G["status: streaming<br/>内容逐字增长"]
@@ -82,6 +89,13 @@ function AssistantMessage({ message }) {
 
 AI 输出的是 Markdown，但**流式过程中 Markdown 是"半成品"**——代码块还没闭合，表格还差一行。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：厨师做饭，菜还没熟就要端上桌</span>
+  <div class="analogy-body">
+    流式渲染就像<strong>厨师边做边给你上菜</strong>：锅里的菜（Markdown）还在炒，就已经一勺勺端出来了。<em>半生不熟时你看不出这是道什么菜——代码块只有开头没结尾，渲染器会误以为它是普通文字。</em>聪明的做法：看到"菜名"（``` 开头）出现，就<strong>先把锅盖盖上（补上闭合标记）</strong>，让这道菜始终以"菜"的样子呈现，而不是中途闪成"一坨乱码"。
+  </div>
+</div>
+
 **经典 Bug 演示：**
 
 ```
@@ -130,6 +144,13 @@ function StreamingMarkdown({ content, status }) {
 ## 智能滚动（不打断阅读）
 
 AI 回复很长，滚动处理不好会**反复打断用户阅读**。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：陪跑，不是绑架</span>
+  <div class="analogy-body">
+    自动滚动就像<strong>陪别人跑步</strong>——对方在往前跑（你在看底部），你就跟着跑（跟随滚动）；<em>对方突然停下来看风景（向上翻历史），你还硬拽着他跑，那就很烦人</em>。正确做法：<strong>对方不跑你也不跑，等他重新回到跑道上（滚回底部），你再继续陪跑</strong>。顺手递一瓶水（"回到底部"按钮），比硬拽强得多。
+  </div>
+</div>
 
 ```jsx
 function useAutoScroll(scrollRef, isStreaming) {

@@ -48,6 +48,13 @@ flowchart TD
 | **典型场景** | 对话流式输出 | Agent 工具调用、实时协作 |
 | **2026 现状** | 90% 的 Chat 应用默认选择 | 复杂 Agent 场景再用 |
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：水龙头 vs 对讲机</span>
+  <div class="analogy-body">
+    <strong>SSE 是"水龙头"</strong>：你拧开龙头（发起请求），水（内容）源源不断流出来，不用你反复问"还有吗？"。<strong>WebSocket 是"对讲机"</strong>：两边随时都能喊话，不只是你听它说。LLM 对话本质是"你问它答"——你只需要一根<em>出水的水管（SSE）</em>；只有当 AI 要主动给你推消息（Agent 实时汇报、协作编辑）时，才需要<em>对讲机（WS）</em>。
+  </div>
+</div>
+
 **为什么 SSE 是 2026 年 Chat 应用的主流：**
 - LLM API 大多是"你问它答"的单向流，不需要客户端推送
 - SSE 走标准 HTTP，负载均衡、缓存、监控体系都能复用
@@ -69,6 +76,13 @@ data: [DONE]
 ```
 
 **关键坑：`fetch` 的响应是一块块到的，不能一次 `res.json()`，必须流式读取。**
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：拼贴撕碎的纸条</span>
+  <div class="analogy-body">
+    服务器发来的不是一整封信，而是一把<strong>被撕碎的纸条</strong>，还按信封（网络包）一包包送来。<strong>每一包都可能：纸条是半截的（中文被切成两半）、一行话跨两个信封、甚至半句话正好卡在信封口。</strong>所以你要：<em>先收到自己桌上的"待拼区"（buffer），拼出完整的纸条（\n\n 事件）才去读内容；拼不完整的就留在桌上等下一包。</em>
+  </div>
+</div>
 
 ### 2. 用 fetch + ReadableStream 手写解析
 

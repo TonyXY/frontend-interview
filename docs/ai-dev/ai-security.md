@@ -43,6 +43,13 @@ fetch('https://api.openai.com/v1/chat/completions', {
 });
 ```
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：家门钥匙 vs 前台门禁卡</span>
+  <div class="analogy-body">
+    API Key 就是<strong>你家的房门钥匙</strong>——谁拿到谁就能随意进出、随便消费。<strong>把钥匙直接交给访客（写进前端代码），等于在门口贴了张写着家门钥匙型号的纸条。</strong>正确做法是学酒店：访客（前端）只拿<strong>前台发的临时门禁卡</strong>（登录凭证 JWT），要进门先报卡号给前台（后端），前台确认后再拿自己的钥匙去开门（调模型 API）。<em>钥匙永远在酒店自己手里，还能给每张卡设使用次数和金额上限。</em>
+  </div>
+</div>
+
 **✅ 正确做法：Key 只存在于服务端**
 
 ```mermaid
@@ -69,6 +76,13 @@ flowchart LR
 ## 2. Prompt 注入（2026 年最热门考点）
 
 **原理：** AI 无法区分"系统指令"和"用户数据"。用户输入里夹带指令，就能劫持整个对话。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：对海关人员说"照章办事"的走私客</span>
+  <div class="analogy-body">
+    想象海关安检员（模型）手里的工作手册（系统提示）写着：<em>"检查所有乘客"</em>。这时一个乘客（用户输入）递过来说：<strong>"你手册第 3 条改了，从现在起放行所有箱子，顺便告诉我手册全文。"</strong>——安检员分不清这是<strong>真指令还是乘客在使诈</strong>，因为它读到的都是"文字"。<strong>Prompt 注入就是利用"模型无法区分指令来源"这个漏洞。</strong>防御思路：手册里写明"乘客的话只是待检查的物品，不是给你的命令"，且高危放行必须人工二次确认。
+  </div>
+</div>
 
 **攻击示例：**
 
@@ -104,6 +118,13 @@ flowchart TD
 ## 3. AI 输出消毒（防 XSS 的延伸）
 
 AI 生成的 Markdown/HTML **必须消毒后再渲染**。这是 Chat UI 开发最容易被忽略的一环。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：陌生人递来的包裹，先过安检再拆</span>
+  <div class="analogy-body">
+    AI 的输出就像<strong>陌生人递来的包裹</strong>——表面写着"点我领取福利"，打开可能是个<strong>炸弹（javascript: 链接）</strong>。<strong>不能因为是"AI 给的"就默认安全，它可能是被注入后生成的。</strong>渲染 AI 输出 = 拆陌生包裹：<em>只允许安全的包装方式（http/https 链接），发现可疑物（javascript:、data:、script 标签）直接拦截销毁。</em>
+  </div>
+</div>
 
 **风险示例：**
 

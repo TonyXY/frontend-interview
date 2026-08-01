@@ -5,7 +5,14 @@ description: AI 编程工具/Prompt 工程/Agent/RAG — AI 辅助开发总览
 
 # 🤖 AI 辅助开发
 
-AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG、AI 应用开发 — **2025-2026 年面试的新增热门板块**。共 19 个知识点，从工具使用到自建 AI 系统再到 AI 应用开发的完整路径。
+AI 编程工具、Prompt 工程、AI 工作流、Agent、RAG、AI 应用开发 — **2025-2026 年面试的新增热门板块**。共 20 个知识点，从工具使用到自建 AI 系统再到 AI 应用开发的完整路径。
+
+<div class="analogy-card">
+  <span class="analogy-title">🃏 考前冲刺：AI 难点速记卡</span>
+  <div class="analogy-body">
+    五大难点（LLM 原理 / 流式开发 / Chat UI / MCP / 安全）的<strong>一句话类比 + 记忆锚点 + 混淆点对照</strong>，面试前 10 分钟过一遍 → <a href="./cheat-sheet"><strong>前往速记卡 →</strong></a>
+  </div>
+</div>
 
 <DifficultyBadge level="beginner" /> AI 工具使用经验 · <DifficultyBadge level="intermediate" /> 理解 AI 工作流原理 · <DifficultyBadge level="advanced" /> 构建 AI 应用与 Agent · <DifficultyBadge level="intermediate" /> AI 应用前端开发
 

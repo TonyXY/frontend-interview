@@ -36,6 +36,13 @@ flowchart LR
 
 模型**不直接读文字**，而是把文本切成 Token（词元）再计算。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：给文本"切麻将牌"</span>
+  <div class="analogy-body">
+    想象模型读的不是书，而是把文字洗成一副<strong>麻将牌</strong>——每个 Token 就是一张牌。它"看"到的不是一篇文章，而是一长串牌。<em>中文一个字可能占 1~2 张牌，英文一个词也可能拆成 2 张牌——所以"同样意思"，中文和英文的"牌数"（费用）不一样。</em>
+  </div>
+</div>
+
 | 概念 | 说明 | 前端感知 |
 |------|------|---------|
 | **Token** | 模型处理的最小单位 | 计费按 Token，不是按字数 |
@@ -51,6 +58,13 @@ flowchart LR
 ### 2. 上下文窗口（Context Window）
 
 模型只能"看到"窗口内的内容，**窗口之外它完全不记得**。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：你的短期记忆只有"10 张便利贴"</span>
+  <div class="analogy-body">
+    上下文窗口就像你桌子上的<strong>便利贴墙</strong>——一共只能贴 10 张。新内容来了就贴一张，旧的就会被挤掉撕掉。模型不是"忘了"，是<em>它的便利贴墙就那么大</em>。<strong>聊天记录越聊越长，就像便利贴越贴越多——最老的早被挤掉了。</strong>
+  </div>
+</div>
 
 ```mermaid
 flowchart LR
@@ -93,6 +107,13 @@ if (data.usage.prompt_tokens > 100000) {
 
 模型输出是**概率采样**，不是查表。同样的问题，温度参数不同结果就不同。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：掷骰子，不是查字典</span>
+  <div class="analogy-body">
+    普通程序是<strong>查字典</strong>：同样输入永远同样输出。模型是<strong>掷骰子</strong>：它心里对"下一个词"有一堆候选，每个候选带一个概率权重。<em>temperature 就是"掷骰子的手劲"——劲小（0.1）基本落在最可能的词上；劲大（1.5）就敢往冷门词上甩。</em>这就是为什么同样的问题，AI 每次回答都不一样。
+  </div>
+</div>
+
 | 参数 | 作用 | 调大效果 | 典型场景 |
 |------|------|---------|---------|
 | **temperature** | 随机性 | 更有创意/更发散 | 文案、头脑风暴 |
@@ -114,6 +135,13 @@ if (data.usage.prompt_tokens > 100000) {
 
 模型会**一本正经地胡说八道**——因为它生成的是"最像正确答案的文字"，而不是"查证过的事实"。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：爱面子的"民间专家"</span>
+  <div class="analogy-body">
+    模型就像一个<strong>爱面子又没读过书的人</strong>——被问到不知道的事，它不会说"我不懂"，而是凭直觉编一个<strong>听起来最专业、最合理的答案</strong>，还说得特别自信。<em>它不是故意的，它的训练目标就是"生成像样的文字"，不是"说真话"。</em>所以关键数据不能靠它记忆，要给它资料（RAG）。
+  </div>
+</div>
+
 ```mermaid
 flowchart TD
     A["用户问事实性问题"] --> B{"知识在训练集?"}
@@ -134,6 +162,13 @@ flowchart TD
 ### 5. 结构化输出（JSON Mode / Function Calling）
 
 聊天输出文本不可控，但**业务系统需要结构化数据**。这是 2026 年 AI 应用开发的核心技能。
+
+<div class="analogy-card">
+  <span class="analogy-title">🧩 一句话记住三种输出方式</span>
+  <div class="analogy-body">
+    <strong>"纯文本=自由作文，JSON Mode=填表格，Function Calling=填申请表"</strong> —— 作文你想写啥写啥（<em>容易跑题</em>）；填表格必须按格子来（<em>格式有保证</em>）；填申请表不但格式固定，还规定你必须盖谁的章（<em>参数类型强约束</em>）。
+  </div>
+</div>
 
 | 方式 | 适用场景 | 可靠性 |
 |------|---------|--------|

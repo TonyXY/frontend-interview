@@ -163,7 +163,8 @@ export default withMermaid(defineConfig({
         {
           text: '🤖 AI 辅助开发',
           items: [
-            { text: '总览', link: '/ai-dev/' }
+            { text: '总览', link: '/ai-dev/' },
+            { text: 'AI 难点速记卡', link: '/ai-dev/cheat-sheet' }
           ]
         },
         {

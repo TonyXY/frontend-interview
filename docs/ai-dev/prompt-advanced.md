@@ -50,6 +50,13 @@ flowchart TD
 
 **核心思想**：让 AI 在回答之前"想一下"，显著提升复杂推理的准确性。
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：教小孩做应用题要"分步写过程"</span>
+  <div class="analogy-body">
+    你问小孩"小明有 3 个苹果，又买了 5 个，吃了 2 个，还剩几个？"——他直接喊答案可能喊错。但如果你让他<strong>"先算一共买了几个，再算吃掉了几个，最后说还剩几个"</strong>，正确率立刻飙升。<em>AI 也一样：直接问容易"跳步出错"，让它把推理过程一步一步写出来，错误就会在过程中暴露并自我修正。</em>这就是"逐步思考"四个字的魔法。
+  </div>
+</div>
+
 **零样本 CoT（最简单的魔法）：**
 ```diff
 - "实现一个深拷贝函数"
@@ -90,6 +97,13 @@ Step 5: 给出一个实际代码示例展示两者的区别"
 ### 2. Few-shot 学习
 
 **核心思想**：给 AI 2-3 个输入/输出示例，让它"学会"你要的模式。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：新员工看 3 份"标准答卷"就会干活</span>
+  <div class="analogy-body">
+    教新同事写周报，你光说"写得规范点"没用——<strong>直接甩给他 3 份老同事的标准周报（Few-shot 示例），他立刻知道格式、语气、详略。</strong>AI 也一样：<em>文字描述是"意会"，示例是"模仿"</em>。给 2~3 个输入/输出对，比写一百字规则更有效，因为它直接"照抄"你的风格。
+  </div>
+</div>
 
 **代码迁移 Few-shot：**
 ```
@@ -193,6 +207,13 @@ interface UserProfileProps {
 ```
 
 ### 5. Self-Reflection（让 AI 自我纠错）
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：交卷前让自己当 5 分钟"阅卷老师"</span>
+  <div class="analogy-body">
+    学生写完作文直接交，容易错字连篇；聪明的学生会<strong>角色切换成"阅卷老师"再读一遍</strong>——立刻看出逻辑漏洞和语病。<em>Self-Reflection 就是让 AI 写完代码后，换一个"Code Reviewer"的身份重新审查自己刚写的代码。</em>人容易看自己的东西"自带滤镜"，AI 换个角色反而能发现自己的 bug——因为它本质是换个视角重新推理一遍。
+  </div>
+</div>
 
 ```mermaid
 flowchart TD

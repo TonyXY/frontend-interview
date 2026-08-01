@@ -15,6 +15,13 @@ Agent 模式是 2026 年 AI 编程的**核心范式转变**——从"你问一�
 
 ## Agent 的核心能力
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：雇了个项目经理 vs 雇了个打字员</span>
+  <div class="analogy-body">
+    普通 AI 聊天像<strong>打字员</strong>：你说一句它打一句，你怎么指挥它怎么做，出了错还得你发现。Agent 像<strong>项目经理</strong>：你只说"下周五把官网改版上线"，它会自己拆解成设计、开发、测试、部署，安排工具执行，每步验证，出问题自己修，搞不定才来请示你。<em>一句话区别：聊天是"给指令"，Agent 是"给目标"。</em>
+  </div>
+</div>
+
 ```mermaid
 flowchart TD
     A[用户输入目标] --> B[Agent 规划]
@@ -52,6 +59,13 @@ flowchart TD
 ### 1. Plan / Execute 分离模式
 
 这是 Agent 最核心的设计模式，**"先想清楚再做"**。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：装修先出设计图，再动工</span>
+  <div class="analogy-body">
+    装修队不可能拿着锤子就进场——必须先<strong>出设计图（Plan）</strong>，你审完点头（<em>人工审批</em>），才<strong>按图施工（Execute）</strong>。中途要改？改设计图，再按新图施工。这就是 Plan/Execute 分离：<em>"先想清楚再做"而不是"边做边想"</em>，避免 AI 闷头乱改最后把项目改崩。
+  </div>
+</div>
 
 ```mermaid
 flowchart LR
@@ -161,6 +175,13 @@ Agent 的能力取决于它能调用的工具种类：
 ### 4. 自主纠错（Self-Healing）
 
 Agent 最具价值的能力之一——**出了问题自己修**。
+
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：厨师炒菜要自己尝咸淡</span>
+  <div class="analogy-body">
+    好厨师不是炒完就端上来，而是<strong>边炒边尝</strong>（运行验证）——咸了就加糖（修复类型错误），淡了加盐（修逻辑），糊了重炒（回退重来）。<strong>连续几次尝着都不对，就关火叫主厨（回退到稳定状态 + 通知人工介入）</strong>，而不是硬着头皮把糊菜端给客人。Agent 的自愈就是这套"尝-调-再尝"的循环。
+  </div>
+</div>
 
 ```mermaid
 flowchart TD

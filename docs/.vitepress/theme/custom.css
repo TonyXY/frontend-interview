@@ -142,6 +142,79 @@
   color: #3730a3;
 }
 
+/* ===== 类比记忆卡 (形象化理解) ===== */
+.analogy-card {
+  position: relative;
+  margin: 20px 0;
+  padding: 16px 20px 16px 52px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(37, 99, 235, 0.05));
+}
+
+.analogy-card::before {
+  content: '🎬';
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  font-size: 22px;
+}
+
+.analogy-card .analogy-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.analogy-card .analogy-body {
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--vp-c-text-1);
+}
+
+.analogy-card .analogy-body strong {
+  color: #b45309;
+}
+
+.analogy-card .analogy-body em {
+  color: var(--vp-c-text-2);
+  font-style: normal;
+}
+
+.analogy-card + .analogy-card {
+  margin-top: 12px;
+}
+
+/* 类比映射表 */
+.analogy-map {
+  width: 100%;
+  margin: 10px 0 4px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.analogy-map th {
+  background: rgba(245, 158, 11, 0.12);
+  text-align: left;
+  padding: 6px 12px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.analogy-map td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+}
+
+.analogy-map td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
 /* ===== Mermaid 流程图：修复节点文字被裁剪 =====
  * Mermaid 计算 foreignObject 高度时假设 line-height: 1.5（16px × 1.5 = 24px/行），
  * 但 foreignObject 内的 <p> 是 XHTML，会继承 VitePress 全局 .vp-doc 的 line-height

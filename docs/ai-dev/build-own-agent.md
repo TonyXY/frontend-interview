@@ -15,6 +15,13 @@ frequency: medium
 
 ## 什么是 Agent
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：给机器人装上"大脑-手脚-眼睛"</span>
+  <div class="analogy-body">
+    传统程序像<strong>自动售货机</strong>：投币（输入）→ 固定掉货（输出），逻辑写死。<strong>Agent 像能自己干活的机器人</strong>：有<strong>眼睛</strong>（感知：读你的需求、看环境）、有<strong>大脑</strong>（思考：分析目标、规划步骤、决定下一步）、有<strong>手脚</strong>（行动：敲代码、改文件、调 API）。<em>而且它会"边走边看"：做完一步，用眼睛确认结果（反馈），再决定下一步怎么走。</em>
+  </div>
+</div>
+
 ```mermaid
 flowchart TD
     A[Agent 本质] --> B[感知<br/>Perception]
@@ -214,6 +221,13 @@ module.exports = {
 | **Multi-Agent** | 多个 Specialist 协作 | 大型复杂系统 |
 
 ### 5. 状态管理与记忆
+
+<div class="analogy-card">
+  <span class="analogy-title">🧩 一句话记住 Agent 的三层记忆</span>
+  <div class="analogy-body">
+    <strong>"短期=正在做的手头事，工作=桌上的草稿纸，长期=归档的文件夹"</strong> —— <em>短期记忆</em>是当前任务（正在改哪个文件）、<em>工作记忆</em>是桌上的半成品（打开的文件、报错列表）、<em>长期记忆</em>是归档的工程资料（项目结构、技术栈、历史决策）。<strong>最容易忘的是：Agent 崩溃/重启后只剩长期记忆，手头的活全没了——所以关键进度要同步进长期记忆。</strong>
+  </div>
+</div>
 
 ```typescript
 // Agent 记忆管理示例

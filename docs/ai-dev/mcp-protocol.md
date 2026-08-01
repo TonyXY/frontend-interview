@@ -49,6 +49,26 @@ flowchart LR
 
 ## MCP 架构：Host / Client / Server 三端
 
+<div class="analogy-card">
+  <span class="analogy-title">🎬 生活类比：人、手、工具</span>
+  <div class="analogy-body">
+    把 MCP 想成你干活：<strong>Host 是"人"</strong>（决策者：用工具做什么），<strong>Client 是"手"</strong>（人的延伸：负责伸出去握工具），<strong>Server 是"工具"</strong>（扳手/螺丝刀：只干一件事）。<em>常见错误是把 Client 记成 Server 的一部分——记住 Client 是长在"人"这边的，不是"工具"那边。</em>
+  </div>
+</div>
+
+<div class="analogy-card">
+  <span class="analogy-title">🧩 三类能力一句话记忆</span>
+  <div class="analogy-body">
+    <strong>"工具会干活、资源能查书、提示词是模板"</strong> —— Tools 让 AI <strong>做</strong>（有副作用），Resources 让 AI <strong>读</strong>（只读数据），Prompts 给用户<strong>套模板</strong>（主动调用）。
+  </div>
+  <table class="analogy-map">
+    <tr><th>能力</th><th>类比</th><th>一句话特征</th></tr>
+    <tr><td>Tools 工具</td><td>电钻</td><td>拧螺丝（执行动作，有后果）</td></tr>
+    <tr><td>Resources 资源</td><td>说明书</td><td>查资料（只读，随时可订阅更新）</td></tr>
+    <tr><td>Prompts 提示词</td><td>模具</td><td>批量印同款（用户主动用）</td></tr>
+  </table>
+</div>
+
 | 角色 | 是什么 | 职责 |
 |------|--------|------|
 | **Host** | 用户使用的 AI 应用 | 管理连接、授权、对话流程 |
@@ -180,6 +200,13 @@ flowchart TD
 ## 生态：ACP 与 MCP 的关系
 
 2026 年新出现了 ACP（Agent Communication Protocol）——**Agent 之间的通信协议**。不要混淆：
+
+<div class="analogy-card">
+  <span class="analogy-title">🧩 一句话分清 MCP 和 ACP</span>
+  <div class="analogy-body">
+    <strong>"MCP 是人和工具，ACP 是人和人"</strong> —— MCP 让 AI 用工具（<em>手够到扳手</em>），ACP 让 Agent 之间协作（<em>同事之间对需求</em>）。两个协议不在同一层，未来共存。
+  </div>
+</div>
 
 | 协议 | 解决什么问题 | 类比 |
 |------|------------|------|
