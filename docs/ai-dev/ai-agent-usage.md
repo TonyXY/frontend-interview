@@ -132,8 +132,8 @@ flowchart TD
 
 **应用场景：**
 - **OpenCode Orchestration**：Orchestrator 分配子任务给 Specialist Agent
-- **Cascade（Cursor）**：主 Agent + 子 Agent 协作
-- **Claude Code**：单 Agent + Tool Use 深度推理
+- **Cursor Agents Window**：本地/worktree/云端并行跑多个 Agent
+- **Claude Code Dynamic Workflows**：单 Agent 深度推理，可编排多 Agent 并行
 
 ### 3. 工具调用（Tool Use）
 
@@ -200,11 +200,11 @@ Agent: "功能已完成"
 
 | 工具 | Agent 模式 | Cloud Agent | 多 Agent | 工具链 | 最适用场景 |
 |------|-----------|------------|---------|--------|-----------|
-| **Cursor** | ✅ Plan/Execute | ✅ 7x24 | ✅ Cascade | ✅ MCP | 日常开发 + 异步自动化 |
-| **Claude Code** | ✅ 终端 Agent | ❌ | ❌ | ✅ MCP | 复杂重构 + 深度推理 |
-| **GitHub Copilot** | ✅ Spark | ❌ | ❌ | ❌ | 轻量生成 |
+| **Cursor** | ✅ Plan/Execute | ✅ 7x24 Cloud | ✅ Agents Window | ✅ MCP | 日常开发 + 异步自动化 |
+| **Claude Code** | ✅ Auto Mode | ✅ as a Service | ✅ Dynamic Workflows | ✅ MCP | 复杂重构 + 深度推理 |
+| **GitHub Copilot** | ✅ Agent Mode | ✅ Workspace | ❌ | ✅ MCP | 轻量生成 + 企业流程 |
 | **OpenCode** | ✅ Orchestration | ✅ | ✅ Specialist | ✅ Skills | 自定义工作流 |
-| **Devin Desktop** | ✅ Plan/Execute | ✅ Cloud | ✅ | ✅ Plugins | 团队协作 |
+| **Devin Desktop** | ✅ Plan/Execute | ✅ Cloud | ✅ | ✅ Plugins/MCP | 团队协作 |
 
 ## 面试问法
 
@@ -214,7 +214,7 @@ Agent: "功能已完成"
 
 - 🔥 **多 Agent 协作了解吗？**
   - 回答框架：Orchestrator + Specialist Agent 模式
-  - 加分点：提到 OpenCode 的 Orchestration / Cursor Cascade
+  - 加分点：提到 OpenCode 的 Orchestration / Cursor Agents Window 并行编排
 
 - ⭐ **AI Agent 的局限性？什么场景不适合？**
   - 回答框架：上下文窗口限制、复杂决策需要人判断、安全问题

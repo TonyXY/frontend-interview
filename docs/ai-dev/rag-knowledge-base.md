@@ -48,7 +48,7 @@ flowchart TD
 | **Embedding 模型** | 将文本转为向量 | text-embedding-3-small（OpenAI）、BGE-M3（开源） |
 | **向量数据库** | 存储和检索向量 | Milvus、Chroma、Pinecone、PGvector |
 | **检索策略** | 如何找到最相关的文档 | 语义搜索、混合搜索（语义+关键词） |
-| **生成环节** | 基于检索结果生成回答 | GPT-5.5、Claude 4.x |
+| **生成环节** | 基于检索结果生成回答 | GPT-5.5、Claude Opus 4.8 |
 
 ### 2. 前端团队能用 RAG 做什么
 

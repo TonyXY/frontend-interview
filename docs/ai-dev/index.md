@@ -46,7 +46,7 @@ AI 是前端面试的新变量。即使公司不以 AI 为核心业务，**面�
 <div class="card-grid">
   <a href="./ai-tools-overview" class="card">
     <h3>AI 编程工具对比 <Badge type="info" text="🔥高频" /></h3>
-    <p>Cursor/Codeium/Windsurf/GitHub Copilot 优劣势与选型</p>
+    <p>Cursor/Claude Code/Copilot/Trae/Cline 优劣势与选型</p>
   </a>
   <a href="./prompt-basics" class="card">
     <h3>Prompt 基础 <Badge type="info" text="🔥高频" /></h3>

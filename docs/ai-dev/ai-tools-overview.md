@@ -1,6 +1,6 @@
 ---
 title: AI 编程工具对比
-description: 主流 AI 编程工具（Copilot/Cursor/Devin/OpenCode）能力对比、选型建议与面试回答
+description: 主流 AI 编程工具（Copilot/Cursor/Claude Code/Devin/Trae/Cline）能力对比、选型建议与面试回答
 difficulty: beginner
 frequency: medium
 ---
@@ -26,26 +26,28 @@ quadrantChart
     quadrant-4 "专业工具"
     "Copilot": [0.4, 0.5]
     "Cursor": [0.75, 0.85]
+    "Claude Code": [0.8, 0.9]
     "Devin Desktop": [0.7, 0.8]
-    "OpenCode": [0.8, 0.9]
+    "Trae": [0.65, 0.7]
+    "Cline": [0.7, 0.75]
 ```
 
 ## 主流工具对比
 
-| 维度 | GitHub Copilot | Cursor | Claude Code | Devin Desktop | Gemini Code Assist | OpenCode |
-|------|---------------|--------|------------|---------------|-------------------|----------|
-| **基础模型** | GPT-5.5 / MAI-Code | Grok 4.5 / Composer | Claude 4.x | GPT-5.x / Claude 4.x | Gemini 2.5 Pro | Claude 4.x / GPT-5.x |
-| **代码补全** | ⭐⭐⭐⭐⭐ 极快 | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐（无补全） | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **多行生成** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ Composer | ⭐⭐⭐⭐⭐ Agent | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Agent 模式** | ✅ GitHub Spark | ✅ Cloud Agents（7x24） | ✅ 终端 Agent | ✅ Devin Local/Cloud | ✅ | ✅ 子代理编排 |
-| **云 Agent** | ❌ | ✅ 云端全天候运行 | ❌（终端原生） | ✅ Devin Cloud | ✅ | ✅ |
-| **上下文感知** | 当前文件 + 附近 | 全项目索引 + Router | 全项目 + Git 历史 | 多工作区+多仓库 | 全仓库 100万 token | 多文件/多仓库 |
-| **自定义规则** | `.github/copilot-instructions.md` | `.cursor/rules/` + Hooks | `CLAUDE.md` + Hooks | Skills/Hooks/Plugins | GCP 集成规则 | Skills / Agent |
-| **多文件编辑** | ✅ 2026 新增 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **终端集成** | ❌ | ✅ | ✅（终端原生） | ✅ | ❌ | ✅ |
-| **移动端** | ❌ | ✅ iPad/iPhone | ❌ | ❌ | ❌ | ❌ |
-| **智能路由** | ❌ | ✅ Cursor Router | ❌ | ❌ | ❌ | ❌ |
-| **价格** | $10/月（个人） | $20/月（Pro） | $0.10/次调用 | $15/月（Desktop） | GCP 订阅 | 开源免费 / 按量付费 |
+| 维度 | GitHub Copilot | Cursor | Claude Code | Devin Desktop | Trae | Cline |
+|------|---------------|--------|------------|---------------|------|-------|
+| **基础模型** | GPT-5.5 / MAI-Code | GPT-5.5 / Claude Opus 4.8 / Sonnet 4 | Claude Opus 4.8 / Sonnet 4 | 多模型（自研 + Claude） | 豆包 + Claude | 任意 OpenAI 兼容 API |
+| **代码补全** | ⭐⭐⭐⭐⭐ 极快 | ⭐⭐⭐⭐⭐ Tab 补全标杆 | ⭐⭐（非主打） | ⭐⭐⭐⭐ 准确 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **多行生成** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ Composer 2 | ⭐⭐⭐⭐⭐ Agent | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Agent 模式** | ✅ Agent Mode | ✅ Agents Window（多 Agent 并行） | ✅ 终端 Agent（Auto Mode） | ✅ Devin Local/Cloud | ✅ | ✅ |
+| **云 Agent** | ✅ Workspace | ✅ 云端全天候运行 | ✅ Claude Code as a Service | ✅ Devin Cloud | ❌ | ❌ |
+| **上下文感知** | 工作区级 | 项目级索引（10万行+） | 200K tokens + Git 历史 | 多工作区+多仓库 | 项目级 | 项目级 |
+| **自定义规则** | `.github/copilot-instructions.md` | `.cursor/rules/` + Hooks | `CLAUDE.md` + Hooks | Skills/Hooks/Plugins | 规则配置 | 规则 + MCP |
+| **多文件编辑** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **终端集成** | ❌ | ✅ CLI Debug Mode | ✅（终端原生） | ✅ | ❌ | ❌ |
+| **移动端** | ❌ | ✅ iPad/iPhone | ❌ | ✅ 移动端查看 | ✅ TRAE SOLO 手机版 | ❌ |
+| **智能路由** | ❌ | ✅ Cursor Router | ❌ | ✅ | ❌ | ✅ Cline v3.2 路由 |
+| **价格** | $10/月（个人） | $20/月（Pro） | $20/月（Pro 订阅） | Free / $20 / $200 / Teams | 免费 / $10 | 免费 + API 费（月均 $8-12） |
 
 ## 各工具的强项场景
 
@@ -78,30 +80,35 @@ function debounce(fn, delay, immediate = false) {
 适合：**复杂重构、跨文件修改、7x24 Cloud Agent 自动化**
 
 ```markdown
-// Cursor 2026 核心能力：
-// 1. Cloud Agents：在云端全天候运行 Agent，即使你关掉电脑也在工作
+// Cursor 3.x 核心能力：
+// 1. Agents Window：本地/worktree/远程 SSH/云端并行跑多个 Agent，tiled 布局统一管理
 // 2. Cursor Router：智能路由到性价比最高的模型（Intelligence/Balance/Cost 三档）
-// 3. Side Chats（/side /btw）：不打断主 Agent 的前提下探索
-// 4. iPad/iPhone：移动端查看 Agent 进度、Review PR
+// 3. /multitask：并行子智能体处理不同文件，互不干扰
+// 4. /worktree + /best-of-n：隔离分支 + 多模型并行评估
+// 5. CLI Debug Mode：终端控制面，可做根因定位、侧向追问、配置管理
+// 6. Canvases：Agent 直接产出可交互 artifact，而非只有代码
+// 7. iPad/iPhone：移动端查看 Agent 进度、Review PR
 ```
 
-2026 年的 Cursor 不再是"编辑器"，而是**Agent 运行平台**——Cloud Agents 可以自动执行 PR Review、CI 修复、依赖升级等异步任务。
+2026 年的 Cursor 已迭代到 **3.x**，不再是"编辑器"，而是**多 Agent 工作台**——Cloud Agents 可以自动执行 PR Review、CI 修复、依赖升级等异步任务；`Composer 2` 模型（2026 年 3 月推出）百万 token 成本较前代下降 86%。
 
 ### Devin Desktop（原 Windsurf）— 工程化 Agent
 
 适合：**需要端到端自动化、多仓库协作的团队**
 
-2025 年底，Windsurf 被 Cognition 收购并整合为 **Devin Desktop**。特色：
-- **Devin Local**：本地 Agent 模式，支持 Plan/Execute 分离
+2025 年底，Windsurf 被 Cognition 收购并整合为 **Devin Desktop**。2026 年 7 月起，**Cascade 正式退役**，由 Devin Local 全面替代：
+- **Devin Local**：Rust 重写，token 效率提升 30%，原生支持 subagent，替代原 Cascade
 - **Devin Cloud**：云端 Agent，Slack 集成，可跨频道/仓库工作
-- **Plugins 系统**：扩展 Devin 的能力
-- **MCP 支持**：连接自定义工具链
+- **Agent Command Center**：任务级 Spaces、浏览器工具、云端 VM handoff 统一到控制台
+- **ACP 协议**：开放的 Agent-编辑器通信标准，已被 JetBrains、Google、GitHub 等采纳
+- **Plugins 系统**：扩展 Devin 的能力；**MCP 支持**：连接自定义工具链
+- 注意：classic setup 已于 6/30 弃用，需迁移到 declarative configuration（blueprints）
 
 ### Claude Code（Anthropic）— 终端原生 Agent
 
 适合：**偏好终端工作流、需要深度推理、复杂重构**
 
-2025 年底 Anthropic 推出的 **Claude Code** 是终端原生的 AI 编码 Agent，直接与终端、文件系统和 Git 交互。
+2025 年底 Anthropic 推出的 **Claude Code** 已是终端原生 AI 编码 Agent 的行业标杆——2026 年 4 月 **Claude Opus 4.8** 在 SWE-bench Verified 上达到 **80.8%**（行业第一），Stripe 用它 1 天内完成了 5000 万行 Ruby 代码库的全库迁移。
 
 ```bash
 # Claude Code 典型用法
@@ -111,11 +118,14 @@ claude "在 src/utils/ 下实现一个日期格式化工具函数，包含 TypeS
 claude --agent "将整个 pages/ 目录从 Page Router 迁移到 App Router"
 ```
 
-特色：
+特色（v2.1.x）：
 - **终端优先**：不依赖 IDE，任何编辑器都能配合
-- **深度推理**：Claude 4.x 级推理能力，适合复杂重构和架构设计
+- **Auto Mode + xhigh effort**：全程零干预自主编码，自跑自修
+- **Dynamic Workflows**（`/flows`）：后台编排数十到上百个 Agent 并行运行，正面竞争 CrewAI/AutoGen
+- **Task Budgets**：为任务设定 token 预算上限，控制成本
 - **Git 原生**：自动创建分支、commit、PR
-- **Claude Code as a Service**：可集成到 CI/CD 流水线
+- **Claude Code as a Service**：可集成到 CI/CD 流水线；v2.1.162+ 支持管理员版本控制
+- 配套 **Claude Design**：设计稿 → 可交互原型 → 前端代码，一键导出到 Claude Code 继续迭代
 
 ### Gemini Code Assist（Google）— VS Code + JetBrains 集成
 
@@ -127,6 +137,7 @@ claude --agent "将整个 pages/ 目录从 Page Router 迁移到 App Router"
 - **代码库感知**：不依赖索引，直接理解全仓库代码
 - **Google Cloud 集成**：与 Cloud Code、Artifact Registry 深度联动
 - **企业安全**：代码不上传第三方服务器，SOC 2 合规
+- ⚠️ **注意**：独立的 Gemini CLI 已于 2026 年 6 月退役，功能迁移到 **Antigravity CLI**
 
 ### OpenCode — 开源 + Orchestration
 
@@ -139,6 +150,28 @@ task(category="quick", load_skills=[], prompt="Review the code in src/components
 
 2026 年 OpenCode 的差异化在于 **Orchestration**——它不是单 Agent 工具，而是 Agent 编排平台，可以组合多个 Specialist Agent 完成复杂任务。
 
+### Trae（字节跳动）— 免费中文 Vibe Coding
+
+适合：**中文开发者、预算敏感、追求零门槛上手**
+
+字节跳动出品的 AI 原生 IDE，2026 年初注册用户已突破 **600 万**：
+
+- **原生中文**：中文交互体验最好，适合国内团队
+- **免费额度大方**：基础功能免费，Pro $10/月
+- **TRAE SOLO 手机版**（2026 年 5 月上线）：地铁上丢需求让 AI 写代码，移动端独此一家
+- **豆包 + Claude 双模型**：本地自研模型降本，复杂任务可切 Claude
+
+### Cline — 开源性价比之王
+
+适合：**开源项目、BYOK、预算敏感**
+
+VS Code 插件形态（5M+ 安装量，61K+ GitHub Stars），2026 年最火的纯插件 Agent：
+
+- **Cline v3.2 智能路由**：自动选择最便宜的模型，月均 API 费用仅 $8-12
+- **完全开源**：代码可审计，社区活跃
+- **任意 OpenAI 兼容 API**：可接 DeepSeek/通义/本地 Ollama 等
+- **不改变编辑器习惯**：纯插件，无需迁移 IDE
+
 ## 工具决策树
 
 ```mermaid
@@ -147,27 +180,29 @@ flowchart TD
     
     B -->|IDE 内补全| C[需要 Agent 自动化?]
     B -->|终端原生| D[Claude Code<br/>终端 Agent]
-    B -->|GCP 生态| E[Gemini Code Assist]
+    B -->|中文/低成本| E[Trae<br/>免费中文 IDE]
+    B -->|开源/自选模型| F[Cline / Aider<br/>BYOK 插件]
     
-    C -->|日常编码辅助| F[Copilot]
-    C -->|需要 Agent 能力| G{云 Agent 需求?}
+    C -->|日常编码辅助| G[Copilot]
+    C -->|需要 Agent 能力| H{云 Agent 需求?}
     
-    G -->|需要 7x24 云 Agent| H[Cursor Cloud Agents]
-    G -->|本地 Agent 即可| I{预算?}
+    H -->|需要 7x24 云 Agent| I[Cursor Cloud Agents]
+    H -->|本地 Agent 即可| J{预算?}
     
-    I -->|免费/开源| J[OpenCode]
-    I -->|付费| K{团队规模?}
+    J -->|免费/开源| K[OpenCode / Cline]
+    J -->|付费| L{团队规模?}
     
-    K -->|个人| L[Cursor Pro / Claude Code]
-    K -->|团队| M[Devin Desktop / Cursor Team]
+    L -->|个人| M[Cursor Pro / Claude Code]
+    L -->|团队| N[Devin Desktop / Cursor Team]
     
-    F --> N[✅ 极速补全 + 轻量生成]
-    D --> O[✅ 深度推理 + 复杂重构]
-    E --> P[✅ 全仓库理解 + 企业安全]
-    H --> Q[✅ 异步自动化 + 移动端监控]
-    J --> R[✅ 自定义工作流 + 编排]
-    L --> S[✅ Agent + Router 智能路由]
-    M --> T[✅ 多仓库协作 + Slack 集成]
+    G --> O[✅ 极速补全 + 轻量生成]
+    D --> P[✅ 深度推理 + 复杂重构]
+    E --> Q[✅ 中文体验 + 免费额度]
+    F --> R[✅ 模型灵活 + 成本可控]
+    I --> S[✅ 异步自动化 + 移动端监控]
+    K --> T[✅ 自定义工作流 + 编排]
+    M --> U[✅ Agent + Router 智能路由]
+    N --> V[✅ 多仓库协作 + Slack 集成]
 ```
 
 ## 面试中如何展示 AI 能力
