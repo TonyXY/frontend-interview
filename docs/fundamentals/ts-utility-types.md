@@ -436,6 +436,10 @@ type Merged = Merge<Base, Extra>
   - 用 `K extends keyof any` 更灵活
   - Omit 内部用 Exclude 过滤，多传的 key 会被忽略
 
+## 🖥️ 实战练习
+
+- 🏋️ <a href="../ts-utils-practice.html" target="_blank" rel="noopener">手写工具类型练习页</a> — 5 道题从易到难（MyRequired → PickByValue），先自己写、点开对答案，含解析与易错点
+
 ## 💡 AI 辅助学习
 
 > 用这个 Prompt 练习工具类型实现：

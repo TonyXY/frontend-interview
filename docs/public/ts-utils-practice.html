@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeScript 手写工具类型 · 5 题循序渐进</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --panel: #111a2e;
+    --panel-2: #0f1626;
+    --border: #24304a;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #22c55e;
+    --accent-2: #4ade80;
+    --warn: #f87171;
+    --gold: #fbbf24;
+    --code-bg: #0d1524;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    line-height: 1.7;
+    padding: 40px 20px 80px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  /* ===== Header ===== */
+  header { text-align: center; margin-bottom: 12px; }
+  header h1 { font-size: 28px; letter-spacing: 0.5px; }
+  header h1 .hl { color: var(--accent-2); }
+  header p { color: var(--text-dim); font-size: 14px; margin-top: 8px; }
+  .rules {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin: 22px 0 28px;
+  }
+  .rules span {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--text-dim);
+  }
+  .rules span b { color: var(--accent-2); font-weight: 600; }
+
+  /* ===== Progress ===== */
+  .progress {
+    position: sticky; top: 12px; z-index: 10;
+    background: rgba(11,17,32,.92); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 18px; margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    font-size: 13px; color: var(--text-dim);
+  }
+  .progress .bar { flex: 1; height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+  .progress .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 3px; transition: width .4s ease; }
+  .progress .pct { white-space: nowrap; font-weight: 600; color: var(--text); min-width: 44px; text-align: right; }
+
+  /* ===== Card ===== */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    margin-bottom: 22px;
+    transition: border-color .25s ease, box-shadow .25s ease;
+  }
+  .card:hover { border-color: #32425f; }
+  .card.done { border-color: rgba(34,197,94,.45); }
+
+  .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .qnum {
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent), #15803d);
+    color: #04120a; font-weight: 700; font-size: 15px;
+  }
+  .qtitle { font-size: 19px; font-weight: 600; }
+  .badge {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    padding: 3px 12px; border-radius: 999px; flex-shrink: 0;
+  }
+  .badge.easy { background: rgba(34,197,94,.15); color: var(--accent-2); border: 1px solid rgba(34,197,94,.35); }
+  .badge.mid { background: rgba(251,191,36,.12); color: var(--gold); border: 1px solid rgba(251,191,36,.35); }
+  .badge.hard { background: rgba(248,113,113,.12); color: var(--warn); border: 1px solid rgba(248,113,113,.35); }
+
+  .req { color: var(--text-dim); font-size: 14.5px; margin: 10px 0 16px; }
+  .req b { color: var(--text); font-weight: 600; }
+
+  /* ===== Code ===== */
+  pre.code {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px; overflow-x: auto; font-size: 13.5px;
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, "Courier New", monospace;
+    line-height: 1.65;
+  }
+  pre.code .c { color: #64748b; font-style: italic; }       /* comment */
+  pre.code .s { color: #fbbf24; }                            /* string */
+  pre.code .k { color: #60a5fa; font-weight: 600; }         /* keyword */
+  pre.code .t { color: #34d399; }                            /* type */
+  pre.code .e { color: #f472b6; }                            /* entity/class-ish */
+
+  details.hint {
+    margin-top: 14px; border: 1px dashed var(--border); border-radius: 10px;
+    background: var(--panel-2); overflow: hidden;
+  }
+  details.hint summary {
+    cursor: pointer; padding: 10px 16px; font-size: 13.5px; color: var(--gold);
+    user-select: none; list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  details.hint summary::-webkit-details-marker { display: none; }
+  details.hint summary::before { content: "💡"; }
+  details.hint[open] summary { border-bottom: 1px dashed var(--border); }
+  details.hint .hint-body { padding: 12px 16px; font-size: 14px; color: var(--text-dim); }
+
+  /* ===== Answer ===== */
+  .answer-btn {
+    margin-top: 16px; width: 100%;
+    background: linear-gradient(135deg, var(--accent), #15803d);
+    color: #04120a; border: none; border-radius: 10px;
+    padding: 11px 0; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    transition: filter .2s ease, transform .1s ease;
+  }
+  .answer-btn:hover { filter: brightness(1.08); }
+  .answer-btn:active { transform: scale(.99); }
+  .answer-btn.open { background: linear-gradient(135deg, #334155, #1e293b); color: var(--text-dim); }
+
+  .answer { display: none; margin-top: 18px; }
+  .card.done .answer { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  .answer h4 {
+    font-size: 13px; color: var(--accent-2); letter-spacing: 1px;
+    margin: 14px 0 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .answer h4::before { content: ""; width: 4px; height: 14px; background: var(--accent); border-radius: 2px; }
+  .answer .exp { font-size: 14px; color: var(--text-dim); }
+  .answer .exp b { color: var(--text); }
+  .answer .tip {
+    background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.22);
+    border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-dim);
+  }
+  .answer .tip b { color: var(--gold); }
+
+  footer { text-align: center; color: #475569; font-size: 12.5px; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>TypeScript 手写工具类型 · <span class="hl">5 题循序渐进</span></h1>
+    <p>面试必考 · 从映射类型到条件类型 · 每题先自己实现，再点开答案对照</p>
+    <div class="rules">
+      <span>① 先看题目，独立实现</span>
+      <span>② 写完再 <b>显示答案</b> 对照</span>
+      <span>③ 看解析与易错点</span>
+      <span>④ 全部答完可复盘</span>
+    </div>
+  </header>
+
+  <div class="progress">
+    <span>已对答案 <b id="doneCount">0</b> / 5</span>
+    <div class="bar"><i id="bar"></i></div>
+    <span class="pct" id="pct">0%</span>
+  </div>
+
+  <div class="card" id="q1">
+    <div class="card-head">
+      <div class="qnum">1</div>
+      <div class="qtitle">实现 MyRequired</div>
+      <span class="badge easy">简单</span>
+    </div>
+    <p class="req">实现一个 <b>MyRequired&lt;T&gt;</b>，把类型中所有<b>可选属性变为必选</b>，非可选属性保持不变。内置类型是 <b>Required&lt;T&gt;</b>，请基于映射类型手写实现。</p>
+    <pre class="code"><code id="code1"></code></pre>
+    <details class="hint">
+      <summary>提示</summary>
+      <div class="hint-body">映射类型遍历 <code>keyof T</code> 时，在属性名后加 <code>-?</code> 修饰符即可移除可选标记。注意修饰符的位置在类型声明之前。</div>
+    </details>
+    <button class="answer-btn" onclick="toggle(this)">✅ 显示答案</button>
+    <div class="answer">
+      <h4>答案</h4>
+      <pre class="code"><code id="ans1"></code></pre>
+      <h4>解析</h4>
+      <p class="exp">
+        <b>映射类型</b>遍历 T 的所有键，逐键重建对象；<b><code>-?</code> 是移除修饰符的语法</b>，把 <code>a?: string</code> 变成 <code>a: string</code>。
+        这与内置 <code>Required&lt;T&gt;</code> 的实现完全一致——面试加分项：能说出「<code>Required</code> 就是映射类型 + <code>-?</code>」。
+      </p>
+      <h4>易错点</h4>
+      <p class="tip">
+        ⚠️ 修饰符位置写错：<code>[K in keyof T]-?: T[K]</code> 中 <code>-?</code> 必须在冒号<b>之前</b>；<br>
+        ⚠️ 方向写反：写成 <code>[K in keyof T]?: T[K]</code> 是给所有属性<b>加上</b>可选，正好相反；<br>
+        ⚠️ 忘记保持原值类型：重建时必须写 <code>T[K]</code>，而不是 <code>any</code> 或空值。
+      </p>
+    </div>
+  </div>
+
+  <div class="card" id="q2">
+    <div class="card-head">
+      <div class="qnum">2</div>
+      <div class="qtitle">实现 MyOmit</div>
+      <span class="badge easy">简单</span>
+    </div>
+    <p class="req">实现 <b>MyOmit&lt;T, K&gt;</b>，从 T 中<b>排除</b> K 指定的键，返回剩余属性组成的新类型。内置 <b>Omit&lt;T, K&gt;</b> 的官方实现是基于 <b>Pick + Exclude</b> 组合的，请按这个思路实现。</p>
+    <pre class="code"><code id="code2"></code></pre>
+    <details class="hint">
+      <summary>提示</summary>
+      <div class="hint-body"><code>Exclude&lt;keyof T, K&gt;</code> 先算出「除 K 之外的所有键」，再用 <code>Pick</code> 挑出这些键。泛型约束 <code>K extends keyof T</code> 别忘了。</div>
+    </details>
+    <button class="answer-btn" onclick="toggle(this)">✅ 显示答案</button>
+    <div class="answer">
+      <h4>答案</h4>
+      <pre class="code"><code id="ans2"></code></pre>
+      <h4>解析</h4>
+      <p class="exp">
+        <b><code>Exclude&lt;keyof T, K&gt;</code></b>：对联合类型 <code>keyof T</code> 做条件类型分发，剔除 K 中的成员，得到剩余键集合；<br>
+        <b><code>Pick&lt;T, ...&gt;</code></b>：从 T 中只取这些剩余键。两步合起来就是「<b>删掉 K，保留其余</b>」。
+        这也是官方内置 <code>Omit</code> 的真实实现，直接背诵即可。
+      </p>
+      <h4>易错点</h4>
+      <p class="tip">
+        ⚠️ <code>Exclude</code> 参数顺序：<code>Exclude&lt;A, B&gt;</code> 表示「A 中排除 B」——第一参是全集 <code>keyof T</code>，第二参是 <code>K</code>，写反就全没了；<br>
+        ⚠️ 泛型约束 <code>K extends keyof T</code> 必须写，否则传入不存在的键编译器不报错（行为错误）；<br>
+        ⚠️ 手写映射版本也可：<code>{ [P in Exclude&lt;keyof T, K&gt;]: T[P] }</code>——面试两种都能答出来是加分项。
+      </p>
+    </div>
+  </div>
+
+  <div class="card" id="q3">
+    <div class="card-head">
+      <div class="qnum">3</div>
+      <div class="qtitle">实现 MyReturnType</div>
+      <span class="badge mid">中等</span>
+    </div>
+    <p class="req">实现 <b>MyReturnType&lt;T&gt;</b>，提取<b>函数类型的返回值类型</b>。要求：<b>不展开</b> Promise（返回 <code>Promise&lt;boolean&gt;</code> 而非 <code>boolean</code>）；非函数类型返回 <code>never</code>。这是条件类型 + infer 的经典考点。</p>
+    <pre class="code"><code id="code3"></code></pre>
+    <details class="hint">
+      <summary>提示</summary>
+      <div class="hint-body">用 <code>T extends (...args: any[]) =&gt; infer R ? R : never</code> 匹配函数签名，<code>infer R</code> 在 true 分支中捕获返回值。注意参数要写成 <code>...args: any[]</code> 而不是空的 <code>()</code>。</div>
+    </details>
+    <button class="answer-btn" onclick="toggle(this)">✅ 显示答案</button>
+    <div class="answer">
+      <h4>答案</h4>
+      <pre class="code"><code id="ans3"></code></pre>
+      <h4>解析</h4>
+      <p class="exp">
+        条件类型 <code>T extends X ? A : B</code> 中，<b><code>infer R</code></b> 声明一个「待推断的类型变量」，TS 会从函数签名的<b>返回值位置</b>把真实类型解出来填入 R。
+        匹配失败（T 不是函数）走 false 分支返回 <code>never</code>。
+        这是 TS 条件类型最核心的面试题，<code>Parameters</code>、<code>ConstructorParameters</code>、<code>InstanceType</code> 都是同一套路。
+      </p>
+      <h4>易错点</h4>
+      <p class="tip">
+        ⚠️ <code>infer</code> 只能出现在条件类型的 true 分支里，不能单独在类型顶层使用；<br>
+        ⚠️ 参数必须写 <code>...args: any[]</code>：只写 <code>() =&gt; infer R</code> 只能匹配<b>无参函数</b>，带参函数直接返回 never；<br>
+        ⚠️ 不展开 Promise：期望 <code>Promise&lt;boolean&gt;</code> 原样返回，不要自作主张再套一层 <code>Awaited</code>；<br>
+        ⚠️ 重载函数（overload）取的是<b>最后一个</b>签名的返回值——面试官可能追问。
+      </p>
+    </div>
+  </div>
+
+  <div class="card" id="q4">
+    <div class="card-head">
+      <div class="qnum">4</div>
+      <div class="qtitle">实现 DeepRequired</div>
+      <span class="badge hard">难</span>
+    </div>
+    <p class="req">实现 <b>DeepRequired&lt;T&gt;</b>：递归地把<b>所有层级</b>嵌套对象中的可选属性全部变为必选（不只是第一层）。要求：<b>函数类型原样返回</b>；<b>数组递归处理元素</b>；基本类型原样返回。这是「映射类型 + 递归 + 条件类型」的综合题。</p>
+    <pre class="code"><code id="code4"></code></pre>
+    <details class="hint">
+      <summary>提示</summary>
+      <div class="hint-body">先判断 T 是不是函数（函数也是 object，必须最先排除）→ 是不是数组（数组也是 object，其次排除）→ 剩下的 object 用 <code>-?</code> + 递归处理每个属性值 → 基本类型原样返回。</div>
+    </details>
+    <button class="answer-btn" onclick="toggle(this)">✅ 显示答案</button>
+    <div class="answer">
+      <h4>答案</h4>
+      <pre class="code"><code id="ans4"></code></pre>
+      <h4>解析</h4>
+      <p class="exp">
+        四层判断，<b>顺序是本题关键</b>：<br>
+        ① <b>函数</b> → 原样返回（TS 里函数属于 object，若不先排除会被当对象拆解成奇怪的键）；<br>
+        ② <b>数组</b> → 用 <code>Array&lt;infer U&gt;</code> 提取元素类型，递归处理元素后重组数组——数组里的对象属性也会被深处理；<br>
+        ③ <b>其他 object</b> → 映射类型逐键 <code>-?</code> 去可选，并对属性值 <b>递归</b> 调用自身；<br>
+        ④ <b>基本类型</b> → 原样返回，终止递归。
+      </p>
+      <h4>易错点</h4>
+      <p class="tip">
+        ⚠️ <b>分支顺序</b>：函数和数组必须先于 object 判断，否则 <code>{ [K in keyof T] }</code> 会把函数拆成 <code>call/apply/...</code>、把数组拆成 <code>0/1/length</code> 的怪形状；<br>
+        ⚠️ 数组元素也要<b>深处理</b>：写成 <code>T extends Array&lt;infer U&gt; ? DeepRequired&lt;U&gt;[]</code> 才能让数组里的对象属性也变必选，而不是直接把数组当整体返回；<br>
+        ⚠️ 忘记递归：只做 <code>-?</code> 不递归的话，嵌套层的内层可选属性不会被处理——这正是「Deep」的意义；<br>
+        ⚠️ 元组 <code>[a, b]</code> 会被当作普通数组（形状退化为数组）——如需严格保留元组形状，需加 <code>IsTuple</code> 辅助类型判断（加分项，了解即可）；<br>
+        ⚠️ 循环引用类型会无限递归（TS 会报深度上限）——可主动说明此限制。
+      </p>
+    </div>
+  </div>
+
+  <div class="card" id="q5">
+    <div class="card-head">
+      <div class="qnum">5</div>
+      <div class="qtitle">实现 PickByValue</div>
+      <span class="badge hard">难</span>
+    </div>
+    <p class="req">实现 <b>PickByValue&lt;T, V&gt;</b>：根据<b>值的类型</b>筛选属性，只保留「值类型匹配 V」的键。比如 <code>PickByValue&lt;T, string&gt;</code> 只保留值为 string 的属性，其余键丢弃。这是「映射类型 + key 重映射（as 子句）+ 条件类型」的综合题。</p>
+    <pre class="code"><code id="code5"></code></pre>
+    <details class="hint">
+      <summary>提示</summary>
+      <div class="hint-body">映射类型遍历 <code>keyof T</code> 时用 <code>as</code> 子句重映射键名：<code>T[K] extends V</code> 命中则保留 K，否则重映射为 <code>never</code>（键被过滤）。TS 4.1+ 支持。</div>
+    </details>
+    <button class="answer-btn" onclick="toggle(this)">✅ 显示答案</button>
+    <div class="answer">
+      <h4>答案</h4>
+      <pre class="code"><code id="ans5"></code></pre>
+      <h4>解析</h4>
+      <p class="exp">
+        <b>key 重映射</b>：映射类型里 <code>[K in keyof T as NewKey]</code> 可以重命名/过滤键。当 <code>T[K] extends V</code> 为 true 时保留原键 K；为 false 时把键重映射为 <code>never</code>——<b>键变成 never 即被过滤</b>，属性直接消失。
+        值部分仍是 <code>T[K]</code>，完整保留原类型。
+      </p>
+      <h4>易错点</h4>
+      <p class="tip">
+        ⚠️ 不能只写 <code>{ [K in keyof T]: T[K] extends V ? K : never }</code>：这不会过滤键，而是把<b>值</b>改成了键名/never——过滤键必须用 <code>as</code> 重映射；<br>
+        ⚠️ 老版本写法（无 as 子句）：<code>Pick&lt;T, { [K in keyof T]: T[K] extends V ? K : never }[keyof T]&gt;</code>——把命中键组成联合再 Pick，了解即可；<br>
+        ⚠️ 子类型匹配：若属性值是字面量 <code>name: 'foo'</code>，<code>PickByValue&lt;T, string&gt;</code> 也会保留它（<code>'foo' extends string</code> 成立）；若 V 是 <code>string</code> 而属性是 <code>string | undefined</code>，则<b>不会</b>匹配（联合类型需整体 extends）。
+      </p>
+    </div>
+  </div>
+
+  <footer>TypeScript 手写工具类型练习 · 全程离线可用 · 双击即可打开</footer>
+</div>
+
+<script>
+  const code = {
+    code1: `type MyRequired<T> = /* 你的实现 */
+
+// 测试用例
+type T1 = MyRequired<{ a?: string; b?: number; c: boolean }>
+// 期望：{ a: string; b: number; c: boolean }`,
+    ans1: `type MyRequired<T> = {
+  [K in keyof T]-?: T[K]
+}`,
+    code2: `type MyOmit<T, K extends keyof T> = /* 你的实现 */
+
+// 测试用例
+type T2 = MyOmit<{ a: string; b: number; c: boolean }, 'a' | 'c'>
+// 期望：{ b: number }`,
+    ans2: `type MyOmit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>`,
+    code3: `type MyReturnType<T> = /* 你的实现 */
+
+// 测试用例
+type T3 = MyReturnType<() => string>             // 期望：string
+type T4 = MyReturnType<(x: number) => number[]>  // 期望：number[]
+type T5 = MyReturnType<() => Promise<boolean>>   // 期望：Promise<boolean>（不展开）`,
+    ans3: `type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never`,
+    code4: `type DeepRequired<T> = /* 你的实现 */
+
+// 测试用例
+type T6 = DeepRequired<{
+  a?: { b?: string; c?: { d?: number } }
+  e?: boolean
+  f?: string[]
+}>
+// 期望：{ a: { b: string; c: { d: number } }; e: boolean; f: string[] }`,
+    ans4: `type DeepRequired<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends Array<infer U>
+    ? DeepRequired<U>[]
+    : T extends object
+      ? { [K in keyof T]-?: DeepRequired<T[K]> }
+      : T`,
+    code5: `type PickByValue<T, V> = /* 你的实现 */
+
+// 测试用例
+type T7 = PickByValue<{ name: string; age: number; tag: string; ok: boolean }, string>
+// 期望：{ name: string; tag: string }`,
+    ans5: `type PickByValue<T, V> = {
+  [K in keyof T as T[K] extends V ? K : never]: T[K]
+}`
+  };
+
+  function hl(code) {
+    const esc = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return esc.replace(
+      /(\/\/.*$)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|\b(type|extends|infer|keyof|in|as|readonly|any|never|unknown|object|string|number|boolean|void|true|false)\b|(\b[A-Z][A-Za-z0-9]*\b)|(\.{3}[A-Za-z0-9_]+)/gm,
+      function (m, c, s, k, ty, spread) {
+        if (c) return '<span class="c">' + m + '</span>';
+        if (s) return '<span class="s">' + m + '</span>';
+        if (k) return '<span class="k">' + m + '</span>';
+        if (ty) return '<span class="t">' + m + '</span>';
+        if (spread) return '<span class="k">' + m + '</span>';
+        return m;
+      }
+    );
+  }
+
+  function render() {
+    for (const [id, src] of Object.entries(code)) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = hl(src);
+    }
+  }
+  render();
+
+  function toggle(btn) {
+    const card = btn.closest('.card');
+    const isOpen = card.classList.contains('done');
+    card.classList.toggle('done', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.innerHTML = isOpen ? '✅ 显示答案' : '🙈 隐藏答案';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.card.done').length;
+    document.getElementById('doneCount').textContent = done;
+    document.getElementById('pct').textContent = Math.round(done / 5 * 100) + '%';
+    document.getElementById('bar').style.width = (done / 5 * 100) + '%';
+  }
+</script>
+</body>
+</html>
