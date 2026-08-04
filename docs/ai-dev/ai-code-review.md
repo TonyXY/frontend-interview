@@ -53,7 +53,7 @@ flowchart TD
 
 **模板一：全方位 Review**
 
-```
+````
 请对这个 PR 做 Code Review：
 PR 描述：[功能描述]
 
@@ -72,7 +72,7 @@ Review 重点：
 ```diff
 // paste the diff here
 ```
-```
+````
 
 **模板二：安全检查 Prompt**
 

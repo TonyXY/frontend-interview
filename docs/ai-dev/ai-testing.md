@@ -46,7 +46,7 @@ flowchart TD
 
 **模板一：工具函数测试**
 
-```
+````
 请用 Vitest 为以下工具函数生成测试用例：
 
 ```typescript
@@ -64,11 +64,11 @@ export function debounce<T extends (...args: any[]) => void>(
 3. debounce 需要用 vi.useFakeTimers 测试异步场景
 4. 测试文件格式：format.test.ts
 5. 不要遗漏类型测试
-```
+````
 
 **模板二：组件测试**
 
-```
+````
 请用 Vitest + @testing-library/react 为以下组件生成测试：
 
 ```tsx
@@ -97,11 +97,11 @@ interface Props {
 8. 点击外部关闭下拉
 
 测试文件：SearchableSelect.test.tsx
-```
+````
 
 **模板三：Hook 测试**
 
-```
+````
 请用 Vitest + @testing-library/react-hooks 为以下 Hook 生成测试：
 
 ```typescript
@@ -117,7 +117,7 @@ export function useDebouncedValue<T>(value: T, delay: number): T
 5. 清理时取消等待中的更新
 
 测试文件：useDebouncedValue.test.ts
-```
+````
 
 ### 2. AI 生成测试的最佳策略
 
@@ -175,7 +175,7 @@ const users = Array.from({ length: 10 }, () => buildUser())
 ```
 
 **Mock 数据 Prompt：**
-```
+````
 帮我生成 User、Order、Product 三个类型的 Mock 工厂函数。
 使用 @faker-js/faker。
 
@@ -187,7 +187,7 @@ interface Product { id: string; name: string; price: number; category: string; s
 ```
 
 每个工厂支持 overrides 参数，生成合理范围的随机数据。
-```
+````
 
 ### 4. AI 生成测试的检查清单
 

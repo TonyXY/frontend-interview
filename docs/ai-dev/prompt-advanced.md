@@ -136,7 +136,7 @@ jQuery: $(document).ready(() => { $.get("/api/data", (res) => { $("#list").html(
 **核心思想**：让 AI 输出**程序可直接解析的结构化数据**，而非自由文本。
 
 **JSON Schema 约束：**
-```
+````
 请分析以下 React 组件的问题，输出 JSON 格式：
 
 ```json
@@ -160,7 +160,7 @@ jQuery: $(document).ready(() => { $.get("/api/data", (res) => { $("#list").html(
 ```
 
 代码：[粘贴代码]
-```
+````
 
 **Markdown 表格输出：**
 ```
@@ -175,7 +175,7 @@ jQuery: $(document).ready(() => { $.get("/api/data", (res) => { $("#list").html(
 ```
 
 **TypeScript 类型约束输出：**
-```
+````
 请生成一个 React 组件代码，类型定义如下：
 
 ```typescript
@@ -186,6 +186,7 @@ interface UserProfileProps {
 
 // 输出符合此类型定义的完整组件
 ```
+````
 
 ### 4. 上下文管理
 

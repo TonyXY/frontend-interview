@@ -163,7 +163,7 @@ Prompt：
 **场景四：测试生成**
 
 Prompt：
-```
+````
 我有以下工具函数，请帮我写 Vitest 测试用例：
 
 ```typescript
@@ -180,7 +180,7 @@ export function debounce<T extends (...args: any[]) => any>(
 - 用 describe/it 组织
 - debounce 需要测试异步场景（vi.useFakeTimers）
 - 测试代码格式规范
-```
+````
 
 ### 3. AI 生成代码质量检查清单
 

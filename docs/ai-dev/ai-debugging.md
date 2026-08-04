@@ -37,7 +37,7 @@ flowchart TD
 
 ### 1. 调试 Prompt 公式
 
-```
+````
 ## Bug 报告
 组件/模块：[文件名]
 框架版本：[React 18 / Vue 3 / Node 20]
@@ -60,12 +60,12 @@ flowchart TD
 
 ## 我已排查
 [试过哪些方法/排除了哪些可能]
-```
+````
 
 **三种常见调试场景：**
 
 **场景一：运行时错误**
-```
+````
 收到报错: "Cannot read properties of undefined (reading 'map')"
 代码：
 ```javascript
@@ -75,7 +75,7 @@ function List({ items }) {
 ```
 组件调用 <List items={undefined} />
 请分析原因和修复方案。
-```
+````
 
 **场景二：逻辑 Bug**
 ```
@@ -106,7 +106,7 @@ function List({ items }) {
 
 **最佳实践：给 AI 看完整的错误栈**
 
-```
+````
 ❌ 不好的调试 Prompt:
 "我的页面报错了，帮我看看"
 
@@ -121,13 +121,13 @@ export default function Page() {
 ```
 请分析 Hydration 失败的原因并修复。
 "
-```
+````
 
 ### 3. 常见调试场景模板
 
 **模板一：React 组件 Bug**
 
-```
+````
 React 18 组件，报错 "Too many re-renders"。
 代码：
 ```tsx
@@ -140,11 +140,11 @@ function SearchPage() {
 }
 ```
 请分析什么导致无限重渲染，并修复。
-```
+````
 
 **模板二：异步逻辑 Bug**
 
-```
+````
 Vue 3 + Pinia，用户登录后状态不同步：
 ```vue
 <script setup>
@@ -163,11 +163,11 @@ async function login() {
 ```
 现象：login() 执行后跳转到 /dashboard，但页面上显示"未登录"，
 刷新后才正常。请分析原因。
-```
+````
 
 **模板三：类型错误**
 
-```
+````
 TypeScript 类型错误，不确定怎么正确定义：
 ```typescript
 interface EventMap {
@@ -185,7 +185,7 @@ class Emitter<T extends Record<string, any>> {
 type Test = Emitter<EventMap>
 ```
 帮我修复类型定义，让 on/emit 有完整的类型推导。
-```
+````
 
 ### 4. AI 调试的局限性
 
